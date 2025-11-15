@@ -1,0 +1,28 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient Background -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- White Card -->
+  <rect x="100" y="100" width="1000" height="430" rx="24" fill="white" opacity="0.95"/>
+  
+  <!-- Title -->
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#667eea" text-anchor="middle">
+    ZayiflamaPlan
+  </text>
+  
+  <!-- Description -->
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="32" fill="#64748b" text-anchor="middle">
+    Gerçek insanların gerçek zayıflama planlarını
+  </text>
+  <text x="600" y="410" font-family="Arial, sans-serif" font-size="32" fill="#64748b" text-anchor="middle">
+    paylaştığı platform
+  </text>
+</svg>

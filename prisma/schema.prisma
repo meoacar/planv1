@@ -1,0 +1,451 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  username      String?         @unique
+  passwordHash  String?
+  name          String?
+  bio           String?         @db.Text
+  image         String?         @db.Text
+  role          Role            @default(USER)
+  isBanned      Boolean         @default(false)
+  currentWeight Float?
+  targetWeight  Float?
+  height        Float?
+  emailVerified DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      Account[]
+  comments      Comment[]
+  followers     Follow[]        @relation("UserFollowers")
+  following     Follow[]        @relation("UserFollowing")
+  likes         Like[]
+  notifications Notification[]
+  plans         Plan[]
+  photos        ProgressPhoto[]
+  sessions      Session[]
+  weightLogs    WeightLog[]
+  sentMessages     Message[]    @relation("SentMessages")
+  receivedMessages Message[]    @relation("ReceivedMessages")
+  conversations    Conversation[] @relation("ConversationParticipants")
+  recipes          Recipe[]
+  recipeComments   RecipeComment[]
+  recipeLikes      RecipeLike[]
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Plan {
+  id               String     @id @default(cuid())
+  slug             String     @unique
+  title            String
+  description      String     @db.Text
+  authorId         String
+  duration         Int
+  targetWeightLoss Float?
+  difficulty       Difficulty @default(medium)
+  tags             String?    @db.Text
+  authorStory      String?    @db.Text
+  authorWeightLoss Float?
+  authorDuration   Int?
+  beforePhotoUrl   String?
+  afterPhotoUrl    String?
+  status           PlanStatus @default(pending)
+  views            Int        @default(0)
+  likesCount       Int        @default(0)
+  commentsCount    Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  publishedAt      DateTime?
+  comments         Comment[]
+  likes            Like[]
+  days             PlanDay[]
+  author           User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([slug])
+  @@index([authorId, createdAt])
+  @@index([status, createdAt])
+  @@index([publishedAt])
+  @@fulltext([title, description])
+  @@map("plans")
+}
+
+model PlanDay {
+  id        String  @id @default(cuid())
+  planId    String
+  dayNumber Int
+  breakfast String? @db.Text
+  snack1    String? @db.Text
+  lunch     String? @db.Text
+  snack2    String? @db.Text
+  dinner    String? @db.Text
+  notes     String? @db.Text
+  plan      Plan    @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, dayNumber])
+  @@index([planId])
+  @@map("plan_days")
+}
+
+model Recipe {
+  id               String       @id @default(cuid())
+  slug             String       @unique
+  title            String
+  description      String       @db.Text
+  authorId         String
+  ingredients      String       @db.Text // JSON array
+  instructions     String       @db.Text
+  prepTime         Int? // minutes
+  cookTime         Int? // minutes
+  servings         Int          @default(1)
+  calories         Float?
+  protein          Float?
+  carbs            Float?
+  fat              Float?
+  fiber            Float?
+  category         RecipeCategory @default(main)
+  mealType         MealType?
+  tags             String?      @db.Text // JSON array
+  images           String?      @db.Text // JSON array of image URLs (max 4)
+  videoUrl         String?
+  difficulty       Difficulty   @default(medium)
+  status           PlanStatus   @default(pending)
+  views            Int          @default(0)
+  likesCount       Int          @default(0)
+  commentsCount    Int          @default(0)
+  isFeatured       Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  publishedAt      DateTime?
+  author           User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments         RecipeComment[]
+  likes            RecipeLike[]
+
+  @@index([slug])
+  @@index([authorId, createdAt])
+  @@index([status, createdAt])
+  @@index([publishedAt])
+  @@index([category, status])
+  @@fulltext([title, description])
+  @@map("recipes")
+}
+
+model RecipeComment {
+  id        String        @id @default(cuid())
+  recipeId  String
+  authorId  String
+  body      String        @db.Text
+  status    CommentStatus @default(visible)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  recipe    Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, createdAt])
+  @@index([authorId])
+  @@index([status, createdAt])
+  @@map("recipe_comments")
+}
+
+model RecipeLike {
+  id        String   @id @default(cuid())
+  recipeId  String
+  userId    String
+  createdAt DateTime @default(now())
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([recipeId])
+  @@index([userId])
+  @@map("recipe_likes")
+}
+
+model Comment {
+  id         String        @id @default(cuid())
+  authorId   String
+  targetType TargetType
+  targetId   String
+  body       String        @db.Text
+  status     CommentStatus @default(visible)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  plan       Plan          @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([targetType, targetId, createdAt])
+  @@index([authorId])
+  @@index([status, createdAt])
+  @@index([targetId], map: "comments_targetId_fkey")
+  @@map("comments")
+}
+
+model Like {
+  id         String     @id @default(cuid())
+  userId     String
+  targetType TargetType
+  targetId   String
+  createdAt  DateTime   @default(now())
+  plan       Plan       @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+  @@index([userId])
+  @@index([targetId], map: "likes_targetId_fkey")
+  @@map("likes")
+}
+
+model Follow {
+  id        String   @id @default(cuid())
+  userId    String
+  targetId  String
+  createdAt DateTime @default(now())
+  target    User     @relation("UserFollowers", fields: [targetId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserFollowing", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetId])
+  @@index([userId])
+  @@index([targetId])
+  @@map("follows")
+}
+
+model WeightLog {
+  id        String   @id @default(cuid())
+  userId    String
+  weight    Float
+  date      DateTime @default(now())
+  note      String?  @db.Text
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("weight_logs")
+}
+
+model ProgressPhoto {
+  id            String    @id @default(cuid())
+  userId        String
+  photoUrl      String
+  weight        Float?
+  type          PhotoType @default(progress)
+  caption       String?   @db.Text
+  likesCount    Int       @default(0)
+  commentsCount Int       @default(0)
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("progress_photos")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  type       NotificationType
+  title      String
+  body       String           @db.Text
+  targetType TargetType?
+  targetId   String?
+  read       Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
+  @@map("notifications")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PlanStatus {
+  draft
+  pending
+  published
+  rejected
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+enum CommentStatus {
+  pending
+  visible
+  hidden
+}
+
+enum TargetType {
+  plan
+  photo
+}
+
+enum PhotoType {
+  before
+  after
+  progress
+}
+
+enum NotificationType {
+  like
+  comment
+  follow
+  plan_approved
+  plan_rejected
+  message
+}
+
+enum RecipeCategory {
+  breakfast
+  lunch
+  dinner
+  snack
+  dessert
+  drink
+  main
+  side
+  salad
+  soup
+}
+
+enum MealType {
+  breakfast
+  lunch
+  dinner
+  snack
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  category  String   // general, moderation, email, security
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("settings")
+}
+
+model RolePermission {
+  id          String   @id @default(cuid())
+  role        String   // USER, ADMIN, MODERATOR, etc.
+  resource    String   // plan, user, comment, setting, etc.
+  action      String   // create, read, update, delete, approve, moderate
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([role, resource, action])
+  @@index([role])
+  @@map("role_permissions")
+}
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  name        String
+  key         String   @unique
+  permissions String   @db.Text // JSON array of permissions
+  isActive    Boolean  @default(true)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+  @@index([isActive])
+  @@map("api_keys")
+}
+
+model PlanView {
+  id        String   @id @default(cuid())
+  planId    String
+  userId    String?
+  ipAddress String?
+  viewedAt  DateTime @default(now())
+
+  @@index([planId, userId, viewedAt])
+  @@index([planId, ipAddress, viewedAt])
+  @@map("plan_views")
+}
+
+model Conversation {
+  id           String    @id @default(cuid())
+  participants User[]    @relation("ConversationParticipants")
+  messages     Message[]
+  lastMessageAt DateTime @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  body           String       @db.Text
+  read           Boolean      @default(false)
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([read])
+  @@map("messages")
+}
