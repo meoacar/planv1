@@ -85,6 +85,31 @@ export async function POST(req: NextRequest) {
     // Create plan
     const plan = await PlanService.createPlan(session.user.id, validatedData)
 
+    // Gamification: Award badge and XP for first plan
+    try {
+      const { awardBadge, addXP, addLeaguePoints, updateQuestProgress } = await import('@/services/gamification.service')
+      
+      // Check if this is user's first plan
+      const { prisma } = await import('@/lib/db')
+      const planCount = await prisma.plan.count({
+        where: { authorId: session.user.id }
+      })
+      
+      if (planCount === 1) {
+        await awardBadge(session.user.id, 'first_plan')
+      }
+      
+      // Award XP and league points
+      await addXP(session.user.id, 50, 'Plan oluşturdu')
+      await addLeaguePoints(session.user.id, 50)
+      
+      // Update quest progress
+      await updateQuestProgress(session.user.id, 'daily_create_plan', 1).catch(() => {})
+    } catch (error) {
+      console.error('Gamification error:', error)
+      // Don't fail the request if gamification fails
+    }
+
     return NextResponse.json({
       success: true,
       data: plan,

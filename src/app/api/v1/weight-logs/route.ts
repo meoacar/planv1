@@ -72,6 +72,45 @@ export async function POST(req: NextRequest) {
     // Create log
     const log = await TrackingService.createWeightLog(session.user.id, validatedData)
 
+    // Gamification: Award badges for weight loss milestones
+    try {
+      const { awardBadge, addXP, addLeaguePoints, updateQuestProgress } = await import('@/services/gamification.service')
+      const { prisma } = await import('@/lib/db')
+      
+      // Get user's initial weight and current weight
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { currentWeight: true }
+      })
+      
+      const firstLog = await prisma.weightLog.findFirst({
+        where: { userId: session.user.id },
+        orderBy: { date: 'asc' }
+      })
+      
+      if (user?.currentWeight && firstLog) {
+        const weightLoss = firstLog.weight - validatedData.weight
+        
+        // Award badges for milestones
+        if (weightLoss >= 5) await awardBadge(session.user.id, 'weight_loss_5kg').catch(() => {})
+        if (weightLoss >= 10) await awardBadge(session.user.id, 'weight_loss_10kg').catch(() => {})
+        if (weightLoss >= 20) await awardBadge(session.user.id, 'weight_loss_20kg').catch(() => {})
+        
+        // Award league points based on weight loss
+        if (weightLoss > 0) {
+          await addLeaguePoints(session.user.id, Math.floor(weightLoss * 10))
+        }
+      }
+      
+      // Award XP for logging weight
+      await addXP(session.user.id, 15, 'Kilo kaydı ekledi')
+      
+      // Update quest progress
+      await updateQuestProgress(session.user.id, 'daily_weigh_in', 1).catch(() => {})
+    } catch (error) {
+      console.error('Gamification error:', error)
+    }
+
     return NextResponse.json({
       success: true,
       data: log,

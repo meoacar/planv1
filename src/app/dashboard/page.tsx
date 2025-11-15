@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navbar'
+import { GamificationWidget } from '@/components/gamification-widget'
 import Link from 'next/link'
 import { formatDistanceToNow, startOfWeek, endOfWeek, subDays } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -546,6 +547,9 @@ export default async function DashboardPage() {
 
           {/* Sağ Kolon - Hızlı İşlemler ve Son Aktiviteler */}
           <div className="space-y-6">
+            {/* Gamification Widget */}
+            <GamificationWidget />
+            
             {/* İlerleme Fotoğrafları */}
             <Card className="shadow-lg">
               <CardHeader>
@@ -635,6 +639,12 @@ export default async function DashboardPage() {
                   <Link href="/kesfet">
                     <Users className="h-4 w-4 mr-2" />
                     Planları Keşfet
+                  </Link>
+                </Button>
+                <Button asChild className="w-full justify-start" variant="outline">
+                  <Link href="/gruplar">
+                    👥
+                    <span className="ml-2">Gruplara Katıl</span>
                   </Link>
                 </Button>
                 <Button asChild className="w-full justify-start" variant="outline">

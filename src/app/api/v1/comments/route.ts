@@ -99,6 +99,29 @@ export async function POST(req: NextRequest) {
       await NotificationService.notifyComment(validatedData.targetId, session.user.id)
     }
 
+    // Gamification: Award badge and XP for first comment
+    try {
+      const { awardBadge, addXP, updateQuestProgress } = await import('@/services/gamification.service')
+      const { prisma } = await import('@/lib/db')
+      
+      // Check if this is user's first comment
+      const commentCount = await prisma.comment.count({
+        where: { authorId: session.user.id }
+      })
+      
+      if (commentCount === 1) {
+        await awardBadge(session.user.id, 'first_comment')
+      }
+      
+      // Award XP
+      await addXP(session.user.id, 10, 'Yorum yaptı')
+      
+      // Update quest progress
+      await updateQuestProgress(session.user.id, 'daily_comment', 1).catch(() => {})
+    } catch (error) {
+      console.error('Gamification error:', error)
+    }
+
     return NextResponse.json({
       success: true,
       data: comment,

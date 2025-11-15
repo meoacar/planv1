@@ -10,7 +10,7 @@ export interface UploadResult {
 
 export async function uploadFile(
   file: File,
-  folder: 'progress-photos' | 'plans' | 'avatars' | 'recipes' = 'progress-photos'
+  folder: 'progress-photos' | 'plans' | 'avatars' | 'recipes' | 'groups' = 'progress-photos'
 ): Promise<UploadResult> {
   try {
     // Dosya boyutu kontrolü (5MB)

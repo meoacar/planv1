@@ -87,6 +87,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        
+        // Fetch gamification data
+        try {
+          const user = await db.user.findUnique({
+            where: { id: token.id as string },
+            select: { coins: true, xp: true, level: true },
+          })
+          if (user) {
+            session.user.coins = user.coins
+            session.user.xp = user.xp
+            session.user.level = user.level
+          }
+        } catch (error) {
+          console.error('Error fetching gamification data:', error)
+        }
       }
       return session
     },

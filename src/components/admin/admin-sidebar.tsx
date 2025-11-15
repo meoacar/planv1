@@ -17,6 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChefHat,
+  Trophy,
+  Gamepad2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -50,6 +52,16 @@ const menuItems = [
     title: "Yorumlar",
     href: "/admin/yorumlar",
     icon: MessageSquare,
+  },
+  {
+    title: "Gruplar",
+    href: "/admin/gruplar",
+    icon: Users,
+  },
+  {
+    title: "Gamification",
+    href: "/admin/gamification/badges",
+    icon: Trophy,
   },
   {
     title: "API Keys",

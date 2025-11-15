@@ -52,6 +52,14 @@ export async function POST(
     // Send notification if liked
     if (result.liked) {
       await NotificationService.notifyLike(plan.id, session.user.id)
+      
+      // Gamification: Update quest progress for likes
+      try {
+        const { updateQuestProgress } = await import('@/services/gamification.service')
+        await updateQuestProgress(session.user.id, 'daily_like', 1).catch(() => {})
+      } catch (error) {
+        console.error('Gamification error:', error)
+      }
     }
 
     return NextResponse.json({

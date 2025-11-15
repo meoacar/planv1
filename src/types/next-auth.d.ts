@@ -5,11 +5,17 @@ declare module 'next-auth' {
     user: {
       id: string
       role: string
+      coins?: number
+      xp?: number
+      level?: number
     } & DefaultSession['user']
   }
 
   interface User {
     role: string
+    coins?: number
+    xp?: number
+    level?: number
   }
 }
 

@@ -22,7 +22,9 @@ import {
   Plus,
   ChevronDown,
   Heart,
-  Camera
+  Camera,
+  Trophy,
+  Coins
 } from 'lucide-react'
 
 type User = {
@@ -31,6 +33,9 @@ type User = {
   username: string | null
   image: string | null
   role: string
+  coins?: number
+  xp?: number
+  level?: number
 }
 
 export function Navbar() {
@@ -62,38 +67,94 @@ export function Navbar() {
   }, [])
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-opacity">
-          🌟 {siteName}
+    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 shadow-sm">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold hover:opacity-80 transition-opacity">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-lg">
+            🌟
+          </div>
+          <span className="hidden sm:inline">{siteName}</span>
         </Link>
         
-        <nav className="flex items-center gap-6">
+        {/* Main Navigation */}
+        <nav className="flex items-center gap-2 md:gap-4">
           <Link 
             href="/kesfet" 
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
             Keşfet
           </Link>
           
           <Link 
             href="/tarifler" 
-            className="text-sm font-medium hover:text-primary transition-colors"
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
             Tarifler
           </Link>
+          
+          <Link 
+            href="/gruplar" 
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
+          >
+            👥 Gruplar
+          </Link>
+          
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1.5 h-9">
+                  <Trophy className="h-4 w-4" />
+                  <span className="hidden lg:inline">Oyunlaştırma</span>
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/rozetler" className="cursor-pointer">
+                    🏆
+                    <span className="ml-2">Rozetler</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/gorevler" className="cursor-pointer">
+                    📋
+                    <span className="ml-2">Görevler</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/magaza" className="cursor-pointer">
+                    🛒
+                    <span className="ml-2">Mağaza</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/lonca" className="cursor-pointer">
+                    🏰
+                    <span className="ml-2">Loncalar</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/sezonlar" className="cursor-pointer">
+                    ⚔️
+                    <span className="ml-2">Sezonlar & Ligler</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           
           {user ? (
             <>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                  <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1.5 h-9">
                     <Plus className="h-4 w-4" />
-                    Ekle
-                    <ChevronDown className="h-3 w-3" />
+                    <span className="hidden lg:inline">Ekle</span>
+                    <ChevronDown className="h-3 w-3 opacity-50" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-44">
                   <DropdownMenuItem asChild>
                     <Link href="/plan-ekle" className="cursor-pointer">
                       <FileText className="mr-2 h-4 w-4" />
@@ -106,24 +167,43 @@ export function Navbar() {
                       <span className="ml-2">Tarif Ekle</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/gruplar/olustur" className="cursor-pointer">
+                      👥
+                      <span className="ml-2">Grup Oluştur</span>
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Coins & Level Display */}
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full border border-amber-500/20 shadow-sm">
+                <div className="flex items-center gap-1">
+                  <Coins className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" />
+                  <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 min-w-[24px]">{user.coins || 0}</span>
+                </div>
+                <div className="w-px h-3.5 bg-amber-500/30" />
+                <div className="flex items-center gap-1">
+                  <Trophy className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-semibold text-primary min-w-[20px]">{user.level || 1}</span>
+                </div>
+              </div>
 
               {user.role === 'ADMIN' && (
                 <Link 
                   href="/admin" 
-                  className="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors flex items-center gap-1"
+                  className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 rounded-lg transition-colors"
                 >
                   <Shield className="h-4 w-4" />
-                  Admin
+                  <span className="hidden lg:inline">Admin</span>
                 </Link>
               )}
 
               {/* User Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                  <button className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent rounded-lg transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center overflow-hidden ring-2 ring-primary/10">
                       {user?.image ? (
                         <img 
                           src={user.image} 
@@ -134,10 +214,10 @@ export function Navbar() {
                         <span className="text-sm">👤</span>
                       )}
                     </div>
-                    <span className="text-sm font-medium hidden md:block">
+                    <span className="text-sm font-medium hidden lg:block max-w-[100px] truncate">
                       {user?.name || user?.username || 'Kullanıcı'}
                     </span>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground opacity-50" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -221,14 +301,14 @@ export function Navbar() {
               </DropdownMenu>
             </>
           ) : (
-            <>
-              <Button asChild variant="ghost" size="sm">
+            <div className="flex items-center gap-2">
+              <Button asChild variant="ghost" size="sm" className="h-9">
                 <Link href="/giris">Giriş Yap</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="h-9 shadow-sm">
                 <Link href="/kayit">Kayıt Ol</Link>
               </Button>
-            </>
+            </div>
           )}
         </nav>
       </div>
