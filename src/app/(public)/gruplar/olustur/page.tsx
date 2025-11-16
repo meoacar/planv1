@@ -131,8 +131,11 @@ export default function CreateGroupPage() {
         throw new Error(data.error?.message || "Grup oluşturulamadı");
       }
 
-      // Başarılı, grup sayfasına yönlendir
-      router.push(`/gruplar/${data.data.slug}`);
+      // Başarılı mesaj göster
+      alert(data.message || "Grubunuz oluşturuldu ve admin onayı bekliyor.");
+      
+      // Gruplar sayfasına yönlendir (grup henüz yayında olmadığı için detay sayfasına gitmeyelim)
+      router.push("/gruplar");
     } catch (err: any) {
       setError(err.message);
     } finally {

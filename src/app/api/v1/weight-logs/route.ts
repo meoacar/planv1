@@ -107,6 +107,14 @@ export async function POST(req: NextRequest) {
       
       // Update quest progress
       await updateQuestProgress(session.user.id, 'daily_weigh_in', 1).catch(() => {})
+      
+      // Add Guild XP
+      try {
+        const { addGuildXP, GuildXPAction } = await import('@/services/guild-xp.service')
+        await addGuildXP(session.user.id, GuildXPAction.DAILY_WEIGH_IN)
+      } catch (error) {
+        console.error('Guild XP error:', error)
+      }
     } catch (error) {
       console.error('Gamification error:', error)
     }

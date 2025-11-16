@@ -8,6 +8,9 @@ declare module 'next-auth' {
       coins?: number
       xp?: number
       level?: number
+      isBanned?: boolean
+      bannedUntil?: Date | null
+      banReason?: string | null
     } & DefaultSession['user']
   }
 
@@ -16,6 +19,9 @@ declare module 'next-auth' {
     coins?: number
     xp?: number
     level?: number
+    isBanned?: boolean
+    bannedUntil?: Date | null
+    banReason?: string | null
   }
 }
 

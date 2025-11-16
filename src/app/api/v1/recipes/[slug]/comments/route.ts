@@ -64,6 +64,14 @@ export async function POST(
     const recipe = await RecipeService.getRecipeBySlug(params.slug)
     const comment = await RecipeService.addComment(recipe.id, session.user.id, validatedData.body)
 
+    // Add Guild XP
+    try {
+      const { addGuildXP, GuildXPAction } = await import('@/services/guild-xp.service')
+      await addGuildXP(session.user.id, GuildXPAction.COMMENT)
+    } catch (error) {
+      console.error('Guild XP error:', error)
+    }
+
     return NextResponse.json({
       success: true,
       data: comment,

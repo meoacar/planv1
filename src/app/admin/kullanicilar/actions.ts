@@ -132,6 +132,8 @@ export async function updateUser(
     bio: string | null
     role: 'USER' | 'ADMIN'
     isBanned: boolean
+    bannedUntil: Date | null
+    banReason: string | null
     currentWeight: number | null
     targetWeight: number | null
     height: number | null
@@ -143,9 +145,16 @@ export async function updateUser(
     throw new Error('Unauthorized')
   }
 
+  // Eğer yasaklama kaldırılıyorsa, yasaklama bilgilerini temizle
+  const updateData = {
+    ...data,
+    bannedUntil: data.isBanned ? data.bannedUntil : null,
+    banReason: data.isBanned ? data.banReason : null,
+  }
+
   await db.user.update({
     where: { id: userId },
-    data,
+    data: updateData,
   })
 
   return { success: true }

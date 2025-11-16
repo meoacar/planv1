@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -8,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getPlansForModeration } from './actions'
 import { PlanActions } from '@/components/admin/plan-actions'
 import { PlanFilters } from '@/components/admin/plan-filters'
@@ -45,20 +45,71 @@ export default async function AdminPlansPage({
           </div>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue={status} className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="all">Tümü</TabsTrigger>
-              <TabsTrigger value="pending">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 border-b">
+              <Link 
+                href="/admin/planlar?status=all"
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  status === 'all' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Tümü
+              </Link>
+              <Link 
+                href="/admin/planlar?status=pending"
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+                  status === 'pending' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
                 Bekleyen
-                <Badge variant="warning" className="ml-2">
-                  {plans.filter(p => p.status === 'pending').length}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="published">Yayında</TabsTrigger>
-              <TabsTrigger value="rejected">Reddedilen</TabsTrigger>
-            </TabsList>
+                {plans.filter(p => p.status === 'pending').length > 0 && (
+                  <Badge variant="warning">
+                    {plans.filter(p => p.status === 'pending').length}
+                  </Badge>
+                )}
+              </Link>
+              <Link 
+                href="/admin/planlar?status=under_review"
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+                  status === 'under_review' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                İnceleniyor
+                {plans.filter(p => p.status === 'under_review').length > 0 && (
+                  <Badge variant="default">
+                    {plans.filter(p => p.status === 'under_review').length}
+                  </Badge>
+                )}
+              </Link>
+              <Link 
+                href="/admin/planlar?status=published"
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  status === 'published' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Yayında
+              </Link>
+              <Link 
+                href="/admin/planlar?status=rejected"
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  status === 'rejected' 
+                    ? 'border-primary text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Reddedilen
+              </Link>
+            </div>
 
-            <TabsContent value={status} className="space-y-4">
+            <div className="space-y-4">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -97,11 +148,13 @@ export default async function AdminPlansPage({
                           variant={
                             plan.status === 'published' ? 'success' :
                             plan.status === 'pending' ? 'warning' :
+                            plan.status === 'under_review' ? 'default' :
                             'destructive'
                           }
                         >
                           {plan.status === 'published' ? 'Yayında' :
                            plan.status === 'pending' ? 'Bekliyor' :
+                           plan.status === 'under_review' ? 'İnceleniyor' :
                            'Reddedildi'}
                         </Badge>
                       </TableCell>
@@ -127,8 +180,8 @@ export default async function AdminPlansPage({
                   <p className="text-muted-foreground">Plan bulunamadı</p>
                 </div>
               )}
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

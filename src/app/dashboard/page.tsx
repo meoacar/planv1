@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
+import { checkUserBan } from '@/lib/check-ban'
 import { db } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,7 +26,7 @@ import {
 } from 'lucide-react'
 
 export default async function DashboardPage() {
-  const session = await auth()
+  const session = await checkUserBan()
 
   if (!session?.user) {
     redirect('/giris')
@@ -651,6 +652,12 @@ export default async function DashboardPage() {
                   <Link href={`/profil/${user?.username}`}>
                     <Activity className="h-4 w-4 mr-2" />
                     Profilimi Görüntüle
+                  </Link>
+                </Button>
+                <Button asChild className="w-full justify-start" variant="outline">
+                  <Link href="/dashboard/itirazlarim">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    İtirazlarım
                   </Link>
                 </Button>
               </CardContent>

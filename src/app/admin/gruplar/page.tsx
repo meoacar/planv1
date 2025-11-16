@@ -35,18 +35,20 @@ async function getGroups() {
 }
 
 async function getStats() {
-  const [totalGroups, publicGroups, privateGroups, totalMembers, totalPosts] = await Promise.all([
+  const [totalGroups, pendingGroups, publishedGroups, rejectedGroups, totalMembers, totalPosts] = await Promise.all([
     db.group.count(),
-    db.group.count({ where: { isPublic: true } }),
-    db.group.count({ where: { isPublic: false } }),
+    db.group.count({ where: { status: "pending" } }),
+    db.group.count({ where: { status: "published" } }),
+    db.group.count({ where: { status: "rejected" } }),
     db.groupMember.count(),
     db.groupPost.count(),
   ]);
 
   return {
     totalGroups,
-    publicGroups,
-    privateGroups,
+    pendingGroups,
+    publishedGroups,
+    rejectedGroups,
     totalMembers,
     totalPosts,
   };
@@ -76,23 +78,29 @@ export default async function AdminGroupsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-6">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Toplam Grup</CardDescription>
             <CardTitle className="text-3xl">{stats.totalGroups}</CardTitle>
           </CardHeader>
         </Card>
-        <Card>
+        <Card className="border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20">
           <CardHeader className="pb-2">
-            <CardDescription>Açık Gruplar</CardDescription>
-            <CardTitle className="text-3xl">{stats.publicGroups}</CardTitle>
+            <CardDescription>⏳ Bekleyen</CardDescription>
+            <CardTitle className="text-3xl">{stats.pendingGroups}</CardTitle>
           </CardHeader>
         </Card>
-        <Card>
+        <Card className="border-green-500/50 bg-green-50 dark:bg-green-950/20">
           <CardHeader className="pb-2">
-            <CardDescription>Özel Gruplar</CardDescription>
-            <CardTitle className="text-3xl">{stats.privateGroups}</CardTitle>
+            <CardDescription>✅ Yayında</CardDescription>
+            <CardTitle className="text-3xl">{stats.publishedGroups}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="border-red-500/50 bg-red-50 dark:bg-red-950/20">
+          <CardHeader className="pb-2">
+            <CardDescription>❌ Reddedilen</CardDescription>
+            <CardTitle className="text-3xl">{stats.rejectedGroups}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -139,6 +147,21 @@ export default async function AdminGroupsPage() {
                         >
                           {group.name}
                         </Link>
+                        {group.status === "pending" && (
+                          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                            ⏳ Bekliyor
+                          </Badge>
+                        )}
+                        {group.status === "published" && (
+                          <Badge variant="secondary" className="bg-green-100 text-green-800">
+                            ✅ Yayında
+                          </Badge>
+                        )}
+                        {group.status === "rejected" && (
+                          <Badge variant="secondary" className="bg-red-100 text-red-800">
+                            ❌ Reddedildi
+                          </Badge>
+                        )}
                         {!group.isPublic && (
                           <Badge variant="secondary">🔒 Özel</Badge>
                         )}
@@ -162,13 +185,27 @@ export default async function AdminGroupsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/gruplar/${group.slug}`} target="_blank">
-                          Görüntüle
-                        </Link>
-                      </Button>
-                      <Button variant="destructive" size="sm">
-                        Sil
+                      {group.status === "pending" && (
+                        <>
+                          <form action={`/api/admin/groups/${group.id}/approve`} method="POST">
+                            <Button variant="default" size="sm" type="submit">
+                              ✅ Onayla
+                            </Button>
+                          </form>
+                          <Button variant="destructive" size="sm">
+                            ❌ Reddet
+                          </Button>
+                        </>
+                      )}
+                      {group.status === "published" && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/gruplar/${group.slug}`} target="_blank">
+                            Görüntüle
+                          </Link>
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="sm">
+                        🗑️
                       </Button>
                     </div>
                   </div>

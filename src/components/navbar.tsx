@@ -276,6 +276,13 @@ export function Navbar() {
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem asChild>
+                    <Link href="/dashboard/itirazlarim" className="cursor-pointer">
+                      📢
+                      <span className="ml-2">İtirazlarım</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
                     <Link href="/mesajlar" className="cursor-pointer">
                       💬
                       <span className="ml-2">Mesajlar</span>

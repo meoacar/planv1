@@ -54,14 +54,24 @@ const menuItems = [
     icon: MessageSquare,
   },
   {
+    title: "İtirazlar",
+    href: "/admin/itirazlar",
+    icon: MessageSquare,
+  },
+  {
     title: "Gruplar",
     href: "/admin/gruplar",
     icon: Users,
   },
   {
+    title: "Loncalar",
+    href: "/admin/loncalar",
+    icon: Trophy,
+  },
+  {
     title: "Gamification",
     href: "/admin/gamification/badges",
-    icon: Trophy,
+    icon: Gamepad2,
   },
   {
     title: "API Keys",
@@ -99,10 +109,28 @@ export function AdminSidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [counts, setCounts] = useState<any>({})
 
   useEffect(() => {
     setMounted(true)
+    fetchCounts()
+    
+    // Refresh counts every 30 seconds
+    const interval = setInterval(fetchCounts, 30000)
+    return () => clearInterval(interval)
   }, [])
+
+  const fetchCounts = async () => {
+    try {
+      const res = await fetch('/api/admin/counts')
+      if (res.ok) {
+        const data = await res.json()
+        setCounts(data)
+      }
+    } catch (error) {
+      // Silently fail - counts will remain empty
+    }
+  }
 
   if (!mounted) {
     return (
@@ -149,13 +177,20 @@ export function AdminSidebar() {
         {menuItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href
+          
+          // Get count for this menu item
+          let count = 0
+          if (item.href === '/admin/planlar') count = counts.plans || 0
+          if (item.href === '/admin/tarifler') count = counts.recipes || 0
+          if (item.href === '/admin/yorumlar') count = counts.comments || 0
+          if (item.href === '/admin/itirazlar') count = counts.appeals || 0
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors relative",
                 isActive
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -164,7 +199,26 @@ export function AdminSidebar() {
               title={collapsed ? item.title : undefined}
             >
               <Icon className="h-4 w-4 flex-shrink-0" />
-              {!collapsed && item.title}
+              {!collapsed && (
+                <>
+                  <span className="flex-1">{item.title}</span>
+                  {count > 0 && (
+                    <span className={cn(
+                      "px-2 py-0.5 text-xs font-bold rounded-full",
+                      isActive 
+                        ? "bg-primary-foreground text-primary"
+                        : "bg-orange-500 text-white"
+                    )}>
+                      {count}
+                    </span>
+                  )}
+                </>
+              )}
+              {collapsed && count > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {count > 9 ? '9+' : count}
+                </span>
+              )}
             </Link>
           )
         })}

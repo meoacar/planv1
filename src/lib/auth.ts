@@ -88,19 +88,45 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string
         session.user.role = token.role as string
         
-        // Fetch gamification data
+        // Fetch user data including ban status
         try {
           const user = await db.user.findUnique({
             where: { id: token.id as string },
-            select: { coins: true, xp: true, level: true },
+            select: { 
+              coins: true, 
+              xp: true, 
+              level: true,
+              isBanned: true,
+              bannedUntil: true,
+              banReason: true,
+            },
           })
+          
           if (user) {
             session.user.coins = user.coins
             session.user.xp = user.xp
             session.user.level = user.level
+            session.user.isBanned = user.isBanned
+            session.user.bannedUntil = user.bannedUntil
+            session.user.banReason = user.banReason
+
+            // Eğer yasaklama süresi dolmuşsa, yasaklamayı kaldır
+            if (user.isBanned && user.bannedUntil && new Date(user.bannedUntil) < new Date()) {
+              await db.user.update({
+                where: { id: token.id as string },
+                data: { 
+                  isBanned: false, 
+                  bannedUntil: null, 
+                  banReason: null 
+                },
+              })
+              session.user.isBanned = false
+              session.user.bannedUntil = null
+              session.user.banReason = null
+            }
           }
         } catch (error) {
-          console.error('Error fetching gamification data:', error)
+          console.error('Error fetching user data:', error)
         }
       }
       return session

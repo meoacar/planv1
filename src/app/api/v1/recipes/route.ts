@@ -87,6 +87,16 @@ export async function POST(req: NextRequest) {
     // Create recipe
     const recipe = await RecipeService.createRecipe(session.user.id, validatedData)
 
+    // Add Guild XP (only if published)
+    if (recipe.status === 'published') {
+      try {
+        const { addGuildXP, GuildXPAction } = await import('@/services/guild-xp.service')
+        await addGuildXP(session.user.id, GuildXPAction.RECIPE_SHARE)
+      } catch (error) {
+        console.error('Guild XP error:', error)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: recipe,

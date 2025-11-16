@@ -17,9 +17,10 @@ interface DailyMenuTabsProps {
   loading: boolean
   onAddDay: () => void
   onRemoveDay: (dayNumber: number) => void
+  existingDays?: any[]
 }
 
-function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: DailyMenuTabsProps) {
+function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, existingDays }: DailyMenuTabsProps) {
   const [activeTab, setActiveTab] = useState('day1')
 
   return (
@@ -44,12 +45,13 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
               <div className="flex items-center gap-2 overflow-x-auto pb-2">
                 <TabsList className="inline-flex h-auto p-1 bg-muted">
                   {Array.from({ length: dayCount }, (_, i) => i + 1).map((dayNumber) => (
-                    <TabsTrigger
-                      key={dayNumber}
-                      value={`day${dayNumber}`}
-                      className="relative data-[state=active]:bg-background"
-                    >
-                      {dayNumber}. Gün
+                    <div key={dayNumber} className="relative inline-flex items-center">
+                      <TabsTrigger
+                        value={`day${dayNumber}`}
+                        className="data-[state=active]:bg-background"
+                      >
+                        {dayNumber}. Gün
+                      </TabsTrigger>
                       {dayCount > 1 && (
                         <button
                           type="button"
@@ -60,13 +62,14 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                               setActiveTab('day1')
                             }
                           }}
-                          className="ml-2 hover:text-destructive"
+                          className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive/10 hover:bg-destructive/20 flex items-center justify-center text-destructive hover:text-destructive transition-colors"
                           disabled={loading}
+                          aria-label={`${dayNumber}. günü sil`}
                         >
                           <X className="h-3 w-3" />
                         </button>
                       )}
-                    </TabsTrigger>
+                    </div>
                   ))}
                 </TabsList>
                 
@@ -97,7 +100,9 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
             </div>
 
             {/* Tab Contents */}
-            {Array.from({ length: dayCount }, (_, i) => i + 1).map((dayNumber) => (
+            {Array.from({ length: dayCount }, (_, i) => i + 1).map((dayNumber) => {
+              const existingDay = existingDays?.find(d => d.dayNumber === dayNumber)
+              return (
               <TabsContent key={dayNumber} value={`day${dayNumber}`} className="space-y-4 mt-0">
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -108,6 +113,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                       placeholder="Örn: 2 yumurta (omlet), 1 dilim beyaz peynir, Yeşil çay"
                       rows={2}
                       disabled={loading}
+                      defaultValue={existingDay?.breakfast || ''}
                     />
                   </div>
 
@@ -118,6 +124,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                       name={`day${dayNumber}-snack1`}
                       placeholder="Örn: 1 avuç ceviz"
                       disabled={loading}
+                      defaultValue={existingDay?.snack1 || ''}
                     />
                   </div>
 
@@ -129,6 +136,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                       placeholder="Örn: Izgara tavuk (150g), Bol yeşil salata"
                       rows={2}
                       disabled={loading}
+                      defaultValue={existingDay?.lunch || ''}
                     />
                   </div>
 
@@ -139,6 +147,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                       name={`day${dayNumber}-snack2`}
                       placeholder="Örn: Yoğurt (şekersiz)"
                       disabled={loading}
+                      defaultValue={existingDay?.snack2 || ''}
                     />
                   </div>
 
@@ -148,6 +157,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                       id={`day${dayNumber}-dinner`}
                       name={`day${dayNumber}-dinner`}
                       placeholder="Örn: Izgara somon (150g), Buharda brokoli"
+                      defaultValue={existingDay?.dinner || ''}
                       rows={2}
                       disabled={loading}
                     />
@@ -160,6 +170,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                       name={`day${dayNumber}-notes`}
                       placeholder="Örn: İlk gün biraz açlık hissedebilirsiniz"
                       disabled={loading}
+                      defaultValue={existingDay?.notes || ''}
                     />
                   </div>
                 </div>
@@ -189,7 +200,8 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
                   )}
                 </div>
               </TabsContent>
-            ))}
+            )
+            })}
           </Tabs>
         )}
 
@@ -204,14 +216,18 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay }: D
   )
 }
 
-export function CreatePlanForm() {
+interface CreatePlanFormProps {
+  existingPlan?: any
+}
+
+export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
   const [loading, setLoading] = useState(false)
-  const [dayCount, setDayCount] = useState(1)
-  const [titleLength, setTitleLength] = useState(0)
-  const [descriptionLength, setDescriptionLength] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [difficulty, setDifficulty] = useState('')
-  const [storyLength, setStoryLength] = useState(0)
+  const [dayCount, setDayCount] = useState(existingPlan?.days?.length || 1)
+  const [titleLength, setTitleLength] = useState(existingPlan?.title?.length || 0)
+  const [descriptionLength, setDescriptionLength] = useState(existingPlan?.description?.length || 0)
+  const [duration, setDuration] = useState(existingPlan?.duration || 0)
+  const [difficulty, setDifficulty] = useState(existingPlan?.difficulty || '')
+  const [storyLength, setStoryLength] = useState(existingPlan?.authorStory?.length || 0)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -308,6 +324,7 @@ export function CreatePlanForm() {
               maxLength={100}
               required
               disabled={loading}
+              defaultValue={existingPlan?.title || ''}
               onChange={(e) => setTitleLength(e.target.value.length)}
             />
             <p className="text-xs text-muted-foreground">
@@ -328,6 +345,7 @@ export function CreatePlanForm() {
               maxLength={500}
               required
               disabled={loading}
+              defaultValue={existingPlan?.description || ''}
               onChange={(e) => setDescriptionLength(e.target.value.length)}
             />
             <p className="text-xs text-muted-foreground">
@@ -342,6 +360,7 @@ export function CreatePlanForm() {
               name="tags"
               placeholder="evde, hızlı, kolay, sağlıklı, ekonomik"
               disabled={loading}
+              defaultValue={existingPlan?.tags || ''}
             />
             <p className="text-xs text-muted-foreground">
               Virgülle ayırarak etiket ekleyin (örn: evde, hızlı, kolay)
@@ -360,6 +379,7 @@ export function CreatePlanForm() {
                 max="365"
                 required
                 disabled={loading}
+                defaultValue={existingPlan?.duration || ''}
                 onChange={(e) => {
                   const value = parseInt(e.target.value) || 0
                   setDuration(value)
@@ -379,6 +399,7 @@ export function CreatePlanForm() {
                 max="100"
                 step="0.1"
                 disabled={loading}
+                defaultValue={existingPlan?.targetWeightLoss || ''}
               />
             </div>
 
@@ -390,6 +411,7 @@ export function CreatePlanForm() {
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 required
                 disabled={loading}
+                defaultValue={existingPlan?.difficulty || ''}
                 onChange={(e) => setDifficulty(e.target.value)}
               >
                 <option value="">Seçiniz...</option>
@@ -419,6 +441,7 @@ export function CreatePlanForm() {
               placeholder="Örn: Pandemi döneminde 15kg aldım ve kendimi çok kötü hissediyordum..."
               rows={6}
               disabled={loading}
+              defaultValue={existingPlan?.authorStory || ''}
               onChange={(e) => setStoryLength(e.target.value.length)}
             />
           </div>
@@ -435,6 +458,7 @@ export function CreatePlanForm() {
                 max="100"
                 step="0.1"
                 disabled={loading}
+                defaultValue={existingPlan?.authorWeightLoss || ''}
               />
             </div>
 
@@ -448,6 +472,7 @@ export function CreatePlanForm() {
                 min="1"
                 max="365"
                 disabled={loading}
+                defaultValue={existingPlan?.authorDuration || ''}
               />
             </div>
           </div>
@@ -458,6 +483,7 @@ export function CreatePlanForm() {
       <DailyMenuTabs
         dayCount={dayCount}
         duration={duration}
+        existingDays={existingPlan?.days}
         loading={loading}
         onAddDay={addDay}
         onRemoveDay={removeDay}

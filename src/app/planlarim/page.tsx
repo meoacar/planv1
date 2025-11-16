@@ -102,7 +102,11 @@ export default async function MyPlansPage() {
                           {formatDistanceToNow(new Date(plan.createdAt), { addSuffix: true, locale: tr })}
                         </span>
                       </div>
-                      <CardTitle className="text-xl mb-2">{plan.title}</CardTitle>
+                      <Link href={`/plan/${plan.slug}`}>
+                        <CardTitle className="text-xl mb-2 hover:text-primary transition-colors cursor-pointer">
+                          {plan.title}
+                        </CardTitle>
+                      </Link>
                       <CardDescription className="line-clamp-2">
                         {plan.description}
                       </CardDescription>
@@ -114,9 +118,14 @@ export default async function MyPlansPage() {
                         </Button>
                       )}
                       {plan.status === 'rejected' && (
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={`/plan-ekle?edit=${plan.id}`}>Düzenle</Link>
-                        </Button>
+                        <>
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/plan/${plan.slug}`}>İtiraz Et</Link>
+                          </Button>
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={`/plan-ekle?edit=${plan.id}`}>Düzenle</Link>
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>

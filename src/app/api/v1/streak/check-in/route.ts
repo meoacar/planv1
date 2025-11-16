@@ -15,6 +15,16 @@ export async function POST(req: NextRequest) {
     // Update daily quest progress
     await gamificationService.updateQuestProgress(session.user.id, 'daily_check_in', 1);
 
+    // Add Guild XP for 7-day streak
+    if (result.streak === 7) {
+      try {
+        const { addGuildXP, GuildXPAction } = await import('@/services/guild-xp.service');
+        await addGuildXP(session.user.id, GuildXPAction.STREAK_7);
+      } catch (error) {
+        console.error('Guild XP error:', error);
+      }
+    }
+
     return apiResponse.success(result);
   } catch (error: any) {
     console.error('POST /api/v1/streak/check-in error:', error);

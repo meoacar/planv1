@@ -41,12 +41,24 @@ export async function getAdminStats() {
     }),
   ])
 
+  // Try to get pending appeals count, fallback to 0 if table doesn't exist yet
+  let pendingAppeals = 0
+  try {
+    if (db.contentAppeal) {
+      pendingAppeals = await db.contentAppeal.count({ where: { status: 'pending' } })
+    }
+  } catch (error) {
+    // Table doesn't exist yet, migration not applied
+    console.log('ContentAppeal table not found - migration not applied yet')
+  }
+
   return {
     totalUsers,
     totalPlans,
     totalComments,
     pendingPlans,
     pendingComments,
+    pendingAppeals,
     newUsersToday,
     newPlansToday,
   }

@@ -1,9 +1,8 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
-import { apiResponse } from '@/lib/api-response';
+import { successResponse, errorResponse } from '@/lib/api-response';
 import { createGuildSchema } from '@/validations/gamification.schema';
-import * as gamificationService from '@/services/gamification.service';
-import { prisma } from '@/lib/db';
+import { db as prisma } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,7 +13,9 @@ export async function GET(req: NextRequest) {
 
     const [guilds, total] = await Promise.all([
       prisma.guild.findMany({
-        where: { isPublic: true },
+        where: { 
+          status: 'published', // Sadece onaylanmış loncalar (public ve private)
+        },
         include: {
           leader: { select: { id: true, username: true, name: true, image: true } },
           _count: { select: { members: true } },
@@ -23,10 +24,10 @@ export async function GET(req: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.guild.count({ where: { isPublic: true } }),
+      prisma.guild.count({ where: { status: 'published' } }),
     ]);
 
-    return apiResponse.success(guilds, {
+    return successResponse(guilds, {
       page,
       limit,
       total,
@@ -34,7 +35,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('GET /api/v1/guilds error:', error);
-    return apiResponse.error(error.message || 'Failed to fetch guilds', 500);
+    return errorResponse('FETCH_ERROR', error.message || 'Failed to fetch guilds', 500);
   }
 }
 
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return apiResponse.error('Unauthorized', 401);
+      return errorResponse('UNAUTHORIZED', 'Giriş yapmalısınız', 401);
     }
 
     const body = await req.json();
@@ -54,22 +55,48 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingMembership) {
-      return apiResponse.error('You are already in a guild', 400);
+      return errorResponse('ALREADY_IN_GUILD', 'Zaten bir loncadasınız', 400);
     }
 
-    const guild = await gamificationService.createGuild(
-      validated.name,
-      validated.slug,
-      session.user.id,
-      validated.description
-    );
+    // Create guild with all fields
+    const guild = await prisma.guild.create({
+      data: {
+        name: validated.name,
+        slug: validated.slug,
+        leaderId: session.user.id,
+        description: validated.description,
+        icon: validated.icon,
+        color: validated.color,
+        category: validated.category,
+        isPublic: validated.isPublic,
+        maxMembers: validated.maxMembers,
+        rules: validated.rules,
+        monthlyGoal: validated.monthlyGoal,
+        status: 'pending', // Admin onayı bekliyor
+      },
+    });
 
-    return apiResponse.success(guild, undefined, 201);
+    // Add leader as member
+    await prisma.guildMember.create({
+      data: {
+        guildId: guild.id,
+        userId: session.user.id,
+        role: 'leader',
+      },
+    });
+
+    // Update member count
+    await prisma.guild.update({
+      where: { id: guild.id },
+      data: { memberCount: 1 },
+    });
+
+    return successResponse(guild);
   } catch (error: any) {
     console.error('POST /api/v1/guilds error:', error);
     if (error.name === 'ZodError') {
-      return apiResponse.error('Invalid input', 400, error.errors);
+      return errorResponse('VALIDATION_ERROR', 'Geçersiz veri', 400);
     }
-    return apiResponse.error(error.message || 'Failed to create guild', 500);
+    return errorResponse('CREATE_ERROR', error.message || 'Lonca oluşturulamadı', 500);
   }
 }

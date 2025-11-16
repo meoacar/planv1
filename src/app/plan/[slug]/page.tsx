@@ -12,6 +12,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { Metadata } from 'next'
 import { getSetting } from '@/lib/settings'
+import AppealButton from '@/components/appeal-button'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -233,10 +234,20 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
                   }`}>
                     {plan.status === 'pending' && 'Planınız inceleme aşamasında. Admin onayından sonra tüm kullanıcılar tarafından görülebilir olacak.'}
                     {plan.status === 'draft' && 'Bu plan henüz yayınlanmadı ve sadece sizin tarafınızdan görülebilir.'}
-                    {plan.status === 'rejected' && 'Planınız admin tarafından reddedildi. Gerekli düzenlemeleri yaparak tekrar gönderebilirsiniz.'}
+                    {plan.status === 'rejected' && (
+                      <>
+                        Planınız admin tarafından reddedildi. Gerekli düzenlemeleri yaparak tekrar gönderebilirsiniz.
+                        {plan.rejectionReason && (
+                          <div className="mt-3 p-3 bg-red-100 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                            <p className="text-sm font-semibold mb-1">Red Sebebi:</p>
+                            <p className="text-sm">{plan.rejectionReason}</p>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </p>
-                  {isAdmin && (
-                    <div className="flex gap-2 mt-4">
+                  <div className="flex gap-2 mt-4">
+                    {isAdmin && (
                       <Button 
                         size="sm" 
                         asChild
@@ -250,8 +261,15 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
                           🛡️ Admin Panelinde Görüntüle
                         </Link>
                       </Button>
-                    </div>
-                  )}
+                    )}
+                    {plan.status === 'rejected' && isAuthor && (
+                      <AppealButton
+                        contentType="plan"
+                        contentId={plan.id}
+                        isRejected={true}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

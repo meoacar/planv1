@@ -33,7 +33,9 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = {
+      status: "published", // Sadece onaylanmış grupları göster
+    };
 
     if (category) {
       where.category = category;
@@ -122,6 +124,7 @@ export async function POST(req: NextRequest) {
         maxMembers: validated.maxMembers,
         tags: validated.tags ? JSON.stringify(validated.tags) : null,
         rules: validated.rules,
+        status: "pending", // Admin onayı bekliyor
         creatorId: session.user.id,
         members: {
           create: {
@@ -145,6 +148,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: group,
+      message: "Grubunuz oluşturuldu ve admin onayı bekliyor.",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

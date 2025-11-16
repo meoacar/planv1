@@ -53,6 +53,7 @@ export default async function AdminUsersPage({
                 <TableHead>Kullanıcı</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Rol</TableHead>
+                <TableHead>Durum</TableHead>
                 <TableHead>Plan</TableHead>
                 <TableHead>Yorum</TableHead>
                 <TableHead>Kayıt Tarihi</TableHead>
@@ -80,6 +81,20 @@ export default async function AdminUsersPage({
                     <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
                       {user.role}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {user.isBanned ? (
+                      <div className="flex flex-col gap-1">
+                        <Badge variant="destructive">Yasaklı</Badge>
+                        {user.bannedUntil && (
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(user.bannedUntil).toLocaleDateString('tr-TR')} tarihine kadar
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <Badge variant="success">Aktif</Badge>
+                    )}
                   </TableCell>
                   <TableCell>{user._count.plans}</TableCell>
                   <TableCell>{user._count.comments}</TableCell>

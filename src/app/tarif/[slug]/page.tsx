@@ -11,6 +11,7 @@ import { tr } from 'date-fns/locale'
 import { Clock, Users, Flame, ChefHat } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
+import AppealButton from '@/components/appeal-button'
 
 const categoryLabels: Record<string, string> = {
   breakfast: 'Kahvaltı',
@@ -122,11 +123,18 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ s
               {recipe.status === 'draft' && '📝 Taslak Tarif'}
               {recipe.status === 'rejected' && '❌ Tarif Reddedildi'}
             </h3>
-            <p className="text-sm">
+            <p className="text-sm mb-4">
               {recipe.status === 'pending' && 'Tarifiniz inceleme aşamasında. Admin onayından sonra yayınlanacak.'}
               {recipe.status === 'draft' && 'Bu tarif henüz yayınlanmadı.'}
               {recipe.status === 'rejected' && 'Tarifiniz reddedildi. Düzenleyip tekrar gönderebilirsiniz.'}
             </p>
+            {recipe.status === 'rejected' && isAuthor && !isAdmin && (
+              <AppealButton
+                contentType="recipe"
+                contentId={recipe.id}
+                isRejected={true}
+              />
+            )}
           </div>
         )}
 

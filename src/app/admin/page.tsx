@@ -114,6 +114,13 @@ export default async function AdminDashboardPage() {
               </Link>
             </Button>
             <Button asChild className="w-full justify-start" variant="outline">
+              <Link href="/admin/itirazlar?status=pending">
+                <AlertCircle className="h-4 w-4 mr-2" />
+                İtirazları İncele
+                <Badge variant="warning" className="ml-auto">{stats.pendingAppeals || 0}</Badge>
+              </Link>
+            </Button>
+            <Button asChild className="w-full justify-start" variant="outline">
               <Link href="/admin/kullanicilar">
                 <Users className="h-4 w-4 mr-2" />
                 Kullanıcı Yönetimi

@@ -89,8 +89,12 @@ export const createGuildSchema = z.object({
   slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/),
   description: z.string().max(1000).optional(),
   icon: z.string().max(100).optional(),
+  color: z.string().max(20).optional(),
+  category: z.string().max(50).optional(),
   isPublic: z.boolean().default(true),
-  maxMembers: z.number().int().min(10).max(100).default(50),
+  maxMembers: z.number().int().min(5).max(100).default(50),
+  rules: z.string().max(1000).optional(),
+  monthlyGoal: z.string().max(100).optional(),
 });
 
 export const updateGuildSchema = createGuildSchema.partial();
