@@ -9,43 +9,43 @@ datasource db {
 }
 
 model User {
-  id                   String            @id @default(cuid())
-  email                String            @unique
-  username             String?           @unique
+  id                   String             @id @default(cuid())
+  email                String             @unique
+  username             String?            @unique
   passwordHash         String?
   name                 String?
-  bio                  String?           @db.Text
-  image                String?           @db.Text
-  role                 Role              @default(USER)
-  isBanned             Boolean           @default(false)
+  bio                  String?            @db.Text
+  image                String?            @db.Text
+  role                 Role               @default(USER)
+  isBanned             Boolean            @default(false)
   bannedUntil          DateTime?
-  banReason            String?           @db.Text
+  banReason            String?            @db.Text
   currentWeight        Float?
   targetWeight         Float?
   height               Float?
   emailVerified        DateTime?
   // Gamification fields
-  xp                   Int               @default(0)
-  level                Int               @default(1)
-  coins                Int               @default(0)
-  streak               Int               @default(0)
+  xp                   Int                @default(0)
+  level                Int                @default(1)
+  coins                Int                @default(0)
+  streak               Int                @default(0)
   lastCheckIn          DateTime?
-  reputationScore      Int               @default(0)
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  reputationScore      Int                @default(0)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
   accounts             Account[]
   comments             Comment[]
-  followers            Follow[]          @relation("UserFollowers")
-  following            Follow[]          @relation("UserFollowing")
+  followers            Follow[]           @relation("UserFollowers")
+  following            Follow[]           @relation("UserFollowing")
   likes                Like[]
   notifications        Notification[]
   plans                Plan[]
   photos               ProgressPhoto[]
   sessions             Session[]
   weightLogs           WeightLog[]
-  sentMessages         Message[]         @relation("SentMessages")
-  receivedMessages     Message[]         @relation("ReceivedMessages")
-  conversations        Conversation[]    @relation("ConversationParticipants")
+  sentMessages         Message[]          @relation("SentMessages")
+  receivedMessages     Message[]          @relation("ReceivedMessages")
+  conversations        Conversation[]     @relation("ConversationParticipants")
   recipes              Recipe[]
   recipeComments       RecipeComment[]
   recipeLikes          RecipeLike[]
@@ -59,17 +59,21 @@ model User {
   leagueParticipations UserLeague[]
   battlePasses         UserBattlePass[]
   streakRecoveries     StreakRecovery[]
-  referralsMade        Referral[]        @relation("ReferrerUser")
-  referralsReceived    Referral[]        @relation("ReferredUser")
+  referralsMade        Referral[]         @relation("ReferrerUser")
+  referralsReceived    Referral[]         @relation("ReferredUser")
   referralCode         ReferralCode?
-  ledGuilds            Guild[]           @relation("GuildLeader")
+  ledGuilds            Guild[]            @relation("GuildLeader")
   // Group relations
   groupMemberships     GroupMember[]
   groupPosts           GroupPost[]
-  createdGroups        Group[]           @relation("GroupCreator")
+  createdGroups        Group[]            @relation("GroupCreator")
   // Appeal relations
   appeals              ContentAppeal[]
-  resolvedAppeals      ContentAppeal[]   @relation("AppealResolver")
+  resolvedAppeals      ContentAppeal[]    @relation("AppealResolver")
+  // Cohort relations
+  cohorts              UserCohort[]       @relation("UserCohorts")
+  passwordResets       PasswordReset[]
+  pushSubscriptions    PushSubscription[]
 
   @@index([email])
   @@index([username])
@@ -166,39 +170,39 @@ model PlanDay {
 }
 
 model Recipe {
-  id            String          @id @default(cuid())
-  slug          String          @unique
-  title         String
-  description   String          @db.Text
-  authorId      String
-  ingredients   String          @db.Text // JSON array
-  instructions  String          @db.Text
-  prepTime      Int? // minutes
-  cookTime      Int? // minutes
-  servings      Int             @default(1)
-  calories      Float?
-  protein       Float?
-  carbs         Float?
-  fat           Float?
-  fiber         Float?
-  category      RecipeCategory  @default(main)
-  mealType      MealType?
-  tags          String?         @db.Text // JSON array
-  images        String?         @db.Text // JSON array of image URLs (max 4)
-  videoUrl      String?
-  difficulty    Difficulty      @default(medium)
-  status        PlanStatus      @default(pending)
-  rejectionReason String?       @db.Text
-  views         Int             @default(0)
-  likesCount    Int             @default(0)
-  commentsCount Int             @default(0)
-  isFeatured    Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  publishedAt   DateTime?
-  author        User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments      RecipeComment[]
-  likes         RecipeLike[]
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  description     String          @db.Text
+  authorId        String
+  ingredients     String          @db.Text // JSON array
+  instructions    String          @db.Text
+  prepTime        Int? // minutes
+  cookTime        Int? // minutes
+  servings        Int             @default(1)
+  calories        Float?
+  protein         Float?
+  carbs           Float?
+  fat             Float?
+  fiber           Float?
+  category        RecipeCategory  @default(main)
+  mealType        MealType?
+  tags            String?         @db.Text // JSON array
+  images          String?         @db.Text // JSON array of image URLs (max 4)
+  videoUrl        String?
+  difficulty      Difficulty      @default(medium)
+  status          PlanStatus      @default(pending)
+  rejectionReason String?         @db.Text
+  views           Int             @default(0)
+  likesCount      Int             @default(0)
+  commentsCount   Int             @default(0)
+  isFeatured      Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  publishedAt     DateTime?
+  author          User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments        RecipeComment[]
+  likes           RecipeLike[]
 
   @@index([slug])
   @@index([authorId, createdAt])
@@ -681,27 +685,27 @@ model UserLeague {
 
 // Guilds (Loncalar)
 model Guild {
-  id              String        @id @default(cuid())
-  name            String        @unique
-  slug            String        @unique
-  description     String?       @db.Text
+  id              String             @id @default(cuid())
+  name            String             @unique
+  slug            String             @unique
+  description     String?            @db.Text
   icon            String?
-  color           String?       // Lonca renk teması
-  category        String?       // fitness, diet, motivation, etc.
+  color           String? // Lonca renk teması
+  category        String? // fitness, diet, motivation, etc.
   leaderId        String
-  memberCount     Int           @default(1)
-  totalXP         Int           @default(0)
-  level           Int           @default(1)
-  isPublic        Boolean       @default(true)
-  maxMembers      Int           @default(50)
-  rules           String?       @db.Text // Lonca kuralları
-  monthlyGoal     String?       // Aylık hedef
-  status          GroupStatus   @default(pending)
-  rejectionReason String?       @db.Text
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  memberCount     Int                @default(1)
+  totalXP         Int                @default(0)
+  level           Int                @default(1)
+  isPublic        Boolean            @default(true)
+  maxMembers      Int                @default(50)
+  rules           String?            @db.Text // Lonca kuralları
+  monthlyGoal     String? // Aylık hedef
+  status          GroupStatus        @default(pending)
+  rejectionReason String?            @db.Text
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
   publishedAt     DateTime?
-  leader          User                @relation("GuildLeader", fields: [leaderId], references: [id], onDelete: Restrict)
+  leader          User               @relation("GuildLeader", fields: [leaderId], references: [id], onDelete: Restrict)
   members         GuildMember[]
   joinRequests    GuildJoinRequest[]
 
@@ -731,15 +735,15 @@ model GuildMember {
 
 // Guild Join Requests (Lonca Katılma İstekleri)
 model GuildJoinRequest {
-  id        String                @id @default(cuid())
+  id        String                 @id @default(cuid())
   guildId   String
   userId    String
-  message   String?               @db.Text
+  message   String?                @db.Text
   status    GuildJoinRequestStatus @default(pending)
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-  guild     Guild                 @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  guild     Guild                  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([guildId, userId])
   @@index([guildId, status])
@@ -1030,20 +1034,20 @@ enum GroupStatus {
 
 // Content Appeals (İçerik İtirazları)
 model ContentAppeal {
-  id            String        @id @default(cuid())
-  userId        String
-  contentType   AppealContent // plan, recipe, comment, etc.
-  contentId     String
-  reason        String        @db.Text
-  status        AppealStatus  @default(pending)
-  priority      Int           @default(0) // calculated from user reputation
-  adminNote     String?       @db.Text
-  resolvedBy    String?
-  resolvedAt    DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resolver      User?         @relation("AppealResolver", fields: [resolvedBy], references: [id], onDelete: SetNull)
+  id          String        @id @default(cuid())
+  userId      String
+  contentType AppealContent // plan, recipe, comment, etc.
+  contentId   String
+  reason      String        @db.Text
+  status      AppealStatus  @default(pending)
+  priority    Int           @default(0) // calculated from user reputation
+  adminNote   String?       @db.Text
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resolver    User?         @relation("AppealResolver", fields: [resolvedBy], references: [id], onDelete: SetNull)
 
   @@index([userId, createdAt])
   @@index([status, priority])
@@ -1065,4 +1069,245 @@ enum AppealStatus {
   under_review
   approved
   rejected
+}
+
+// ====================================================
+// ANALYTICS & COHORT SYSTEM (ANALİTİK & KOHORT SİSTEMİ)
+// ====================================================
+
+// Cohort Definitions (Kullanıcı Segmentleri)
+model CohortDefinition {
+  id          String            @id @default(cuid())
+  name        String
+  description String?           @db.Text
+  filters     Json // { age: { min: 25, max: 35 }, recipesCount: { gte: 5 }, lastActive: "30d" }
+  isActive    Boolean           @default(true)
+  createdBy   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  users       UserCohort[]
+  metrics     RetentionMetric[]
+
+  @@index([isActive, createdAt])
+  @@index([createdAt])
+  @@map("cohort_definitions")
+}
+
+// User Cohort Membership (Kullanıcı-Kohort İlişkisi)
+model UserCohort {
+  id       String           @id @default(cuid())
+  cohortId String
+  userId   String
+  addedAt  DateTime         @default(now())
+  cohort   CohortDefinition @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  user     User             @relation("UserCohorts", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, userId])
+  @@index([userId])
+  @@index([cohortId, addedAt])
+  @@map("user_cohorts")
+}
+
+// Retention Metrics (Tutunma Metrikleri)
+model RetentionMetric {
+  id        String           @id @default(cuid())
+  cohortId  String
+  date      DateTime
+  dayNumber Int // 1, 7, 30, 90 (days since cohort creation)
+  retained  Int // number of users still active
+  total     Int // total users in cohort
+  rate      Float // retention rate (retained/total)
+  createdAt DateTime         @default(now())
+  cohort    CohortDefinition @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, date, dayNumber])
+  @@index([cohortId, dayNumber])
+  @@index([date])
+  @@map("retention_metrics")
+}
+
+// A/B Testing
+model ABTest {
+  id          String             @id @default(cuid())
+  name        String
+  description String?            @db.Text
+  variants    Json // [{ name: "control", weight: 50 }, { name: "variant_a", weight: 50 }]
+  isActive    Boolean            @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  assignments ABTestAssignment[]
+
+  @@index([isActive, startDate])
+  @@map("ab_tests")
+}
+
+// A/B Test Assignments
+model ABTestAssignment {
+  id        String   @id @default(cuid())
+  testId    String
+  userId    String
+  variant   String // "control", "variant_a", etc.
+  createdAt DateTime @default(now())
+  test      ABTest   @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, userId])
+  @@index([userId])
+  @@index([testId, variant])
+  @@map("ab_test_assignments")
+}
+
+// Password Reset Tokens
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_resets")
+}
+
+// Push Subscriptions (Web Push Notifications)
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @db.VarChar(500)
+  p256dh    String   @db.Text
+  auth      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+
+// ====================================================
+// CONTENT MANAGEMENT SYSTEM (CMS)
+// ====================================================
+
+// Pages (Sayfalar) - Hakkımızda, Gizlilik, vb.
+model Page {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  content     String      @db.LongText
+  metaTitle   String?
+  metaDesc    String?     @db.Text
+  status      PageStatus  @default(draft)
+  isPublished Boolean     @default(false)
+  sortOrder   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  publishedAt DateTime?
+
+  @@index([slug])
+  @@index([status])
+  @@index([isPublished])
+  @@map("pages")
+}
+
+// Footer Links (Footer Linkleri)
+model FooterLink {
+  id        String           @id @default(cuid())
+  title     String
+  url       String
+  column    FooterColumn     @default(company)
+  sortOrder Int              @default(0)
+  isActive  Boolean          @default(true)
+  openInNew Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([column, sortOrder])
+  @@index([isActive])
+  @@map("footer_links")
+}
+
+// Footer Social Links (Footer Sosyal Medya Linkleri)
+model FooterSocial {
+  id        String   @id @default(cuid())
+  platform  String   // facebook, twitter, instagram, youtube, linkedin
+  url       String
+  icon      String   // icon name or emoji
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("footer_socials")
+}
+
+// Footer Settings (Footer Ayarları)
+model FooterSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("footer_settings")
+}
+
+
+
+// ====================================================
+// CMS ENUMS
+// ====================================================
+
+enum PageStatus {
+  draft
+  published
+  archived
+}
+
+enum FooterColumn {
+  company      // Şirket
+  support      // Destek
+  legal        // Yasal
+  community    // Topluluk
+}
+
+// ====================================================
+// CONTACT SYSTEM (İletişim Sistemi)
+// ====================================================
+
+model ContactMessage {
+  id          String               @id @default(cuid())
+  name        String
+  email       String
+  subject     String
+  message     String               @db.Text
+  status      ContactMessageStatus @default(new)
+  response    String?              @db.Text
+  respondedBy String?
+  respondedAt DateTime?
+  ipAddress   String?
+  userAgent   String?              @db.Text
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@map("contact_messages")
+}
+
+enum ContactMessageStatus {
+  new
+  read
+  responded
+  archived
+  spam
 }

@@ -19,6 +19,7 @@ import {
   ChefHat,
   Trophy,
   Gamepad2,
+  UsersRound,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -74,6 +75,11 @@ const menuItems = [
     icon: Gamepad2,
   },
   {
+    title: "Cohorts",
+    href: "/admin/cohorts",
+    icon: UsersRound,
+  },
+  {
     title: "API Keys",
     href: "/admin/api-keys",
     icon: Database,
@@ -102,6 +108,21 @@ const menuItems = [
     title: "Ayarlar",
     href: "/admin/ayarlar",
     icon: Settings,
+  },
+  {
+    title: "Sayfalar",
+    href: "/admin/sayfalar",
+    icon: FileText,
+  },
+  {
+    title: "Footer",
+    href: "/admin/footer",
+    icon: Settings,
+  },
+  {
+    title: "İletişim Mesajları",
+    href: "/admin/iletisim",
+    icon: MessageSquare,
   },
 ]
 

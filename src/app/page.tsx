@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Navbar } from '@/components/navbar'
+import { Footer } from '@/components/layout/footer'
 import { getSetting } from '@/lib/settings'
 import { auth } from '@/lib/auth'
 import { 
@@ -318,29 +319,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-background/50 backdrop-blur-sm py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-center md:text-left">
-              <h3 className="font-bold text-xl mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                {siteName}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Gerçek insanların gerçek başarı hikayeleri
-              </p>
-            </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="/hakkimizda" className="hover:text-foreground transition-colors">Hakkımızda</Link>
-              <Link href="/iletisim" className="hover:text-foreground transition-colors">İletişim</Link>
-              <Link href="/gizlilik" className="hover:text-foreground transition-colors">Gizlilik</Link>
-            </div>
-          </div>
-          <div className="text-center mt-8 text-sm text-muted-foreground">
-            <p>© 2024 {siteName}. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

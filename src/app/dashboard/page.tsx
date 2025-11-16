@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navbar'
+import { Footer } from '@/components/layout/footer'
 import { GamificationWidget } from '@/components/gamification-widget'
 import Link from 'next/link'
 import { formatDistanceToNow, startOfWeek, endOfWeek, subDays } from 'date-fns'
@@ -740,6 +741,8 @@ export default async function DashboardPage() {
         </div>
 
       </main>
+
+      <Footer />
     </div>
   )
 }

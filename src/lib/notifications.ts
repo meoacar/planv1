@@ -1,107 +1,121 @@
-import { getSetting } from './settings'
+// Notification Helper Functions
+import { db } from '@/lib/db';
+import { sendPushNotificationBulk, PushNotificationPayload } from '@/lib/push';
 
-interface EmailNotification {
-  to: string
-  subject: string
-  body: string
-}
-
-export async function sendAdminNotification(
-  type: 'new_plan' | 'new_comment' | 'new_user',
-  data: any
-) {
-  try {
-    // Bildirimler aktif mi kontrol et
-    const emailNotifications = await getSetting('emailNotifications', 'true')
-    if (emailNotifications !== 'true') {
-      return
-    }
-
-    // Bu tip bildirim aktif mi kontrol et
-    const notifyKey = `notify${type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}`
-    const isEnabled = await getSetting(notifyKey, 'false')
-    if (isEnabled !== 'true') {
-      return
-    }
-
-    // Admin email adresini al
-    const adminEmail = await getSetting('notifyAdminEmail', '')
-    if (!adminEmail) {
-      return
-    }
-
-    // Email içeriğini hazırla
-    let subject = ''
-    let body = ''
-
-    switch (type) {
-      case 'new_plan':
-        subject = `Yeni Plan: ${data.title}`
-        body = `
-          Yeni bir plan oluşturuldu:
-          
-          Başlık: ${data.title}
-          Yazar: ${data.author}
-          Durum: ${data.status}
-          
-          Planı görüntüle: ${await getSetting('siteUrl', '')}/plan/${data.slug}
-        `
-        break
-
-      case 'new_comment':
-        subject = `Yeni Yorum: ${data.planTitle}`
-        body = `
-          Yeni bir yorum yapıldı:
-          
-          Plan: ${data.planTitle}
-          Yazar: ${data.author}
-          Yorum: ${data.body}
-          
-          Yorumu görüntüle: ${await getSetting('siteUrl', '')}/plan/${data.planSlug}
-        `
-        break
-
-      case 'new_user':
-        subject = `Yeni Kullanıcı: ${data.name}`
-        body = `
-          Yeni bir kullanıcı kaydoldu:
-          
-          İsim: ${data.name}
-          Email: ${data.email}
-          Tarih: ${new Date().toLocaleString('tr-TR')}
-        `
-        break
-    }
-
-    // Email gönder (Resend veya başka bir servis kullanılabilir)
-    // Şimdilik console'a log at
-    console.log('Admin Notification:', { to: adminEmail, subject, body })
-
-    // TODO: Gerçek email gönderimi için Resend entegrasyonu
-    // await sendEmail({ to: adminEmail, subject, body })
-
-  } catch (error) {
-    console.error('Notification error:', error)
-  }
-}
-
-export async function sendUserNotification(
+/**
+ * Send notification to a user (in-app + push)
+ */
+export async function sendNotificationToUser(
   userId: string,
-  type: string,
-  data: any
+  notification: {
+    type: string;
+    title: string;
+    body: string;
+    targetType?: string;
+    targetId?: string;
+  }
 ) {
-  // Kullanıcıya bildirim gönder
-  // Database'e notification kaydı ekle
-  const { db } = await import('./db')
-  
+  // Create in-app notification
   await db.notification.create({
     data: {
       userId,
-      type: type as any,
-      title: data.title,
-      body: data.body,
-      targetType: data.targetType,
-      targetId: data.targetId,
+      type: notification.type as any,
+      title: notification.title,
+      body: notification.body,
+      targetType: notification.targetType as any,
+      targetId: notification.targetId,
     },
-  })
+  });
+
+  // Send push notification if user has subscriptions
+  const subscriptions = await (db as any).pushSubscription.findMany({
+    where: { userId },
+    select: {
+      endpoint: true,
+      p256dh: true,
+      auth: true,
+    },
+  });
+
+  if (subscriptions.length > 0) {
+    const pushPayload: PushNotificationPayload = {
+      title: notification.title,
+      body: notification.body,
+      icon: '/maskot/maskot-192.png',
+      badge: '/maskot/maskot-192.png',
+      data: {
+        url: notification.targetId ? `/${notification.targetType}/${notification.targetId}` : '/',
+      },
+    };
+
+    await sendPushNotificationBulk(
+      subscriptions.map((sub: any) => ({
+        endpoint: sub.endpoint,
+        keys: {
+          p256dh: sub.p256dh,
+          auth: sub.auth,
+        },
+      })),
+      pushPayload
+    );
+  }
+}
+
+/**
+ * Send notification to multiple users
+ */
+export async function sendNotificationToUsers(
+  userIds: string[],
+  notification: {
+    type: string;
+    title: string;
+    body: string;
+    targetType?: string;
+    targetId?: string;
+  }
+) {
+  // Create in-app notifications
+  await db.notification.createMany({
+    data: userIds.map(userId => ({
+      userId,
+      type: notification.type as any,
+      title: notification.title,
+      body: notification.body,
+      targetType: notification.targetType as any,
+      targetId: notification.targetId,
+    })),
+  });
+
+  // Get all push subscriptions for these users
+  const subscriptions = await (db as any).pushSubscription.findMany({
+    where: { userId: { in: userIds } },
+    select: {
+      endpoint: true,
+      p256dh: true,
+      auth: true,
+    },
+  });
+
+  if (subscriptions.length > 0) {
+    const pushPayload: PushNotificationPayload = {
+      title: notification.title,
+      body: notification.body,
+      icon: '/maskot/maskot-192.png',
+      badge: '/maskot/maskot-192.png',
+      data: {
+        url: notification.targetId ? `/${notification.targetType}/${notification.targetId}` : '/',
+      },
+    };
+
+    await sendPushNotificationBulk(
+      subscriptions.map((sub: any) => ({
+        endpoint: sub.endpoint,
+        keys: {
+          p256dh: sub.p256dh,
+          auth: sub.auth,
+        },
+      })),
+      pushPayload
+    );
+  }
 }

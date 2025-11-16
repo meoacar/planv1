@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { LogoutButton } from '@/components/logout-button'
+import { NotificationBell } from '@/components/notification-bell'
 import { 
   LayoutDashboard, 
   FileText, 
@@ -175,6 +176,9 @@ export function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Notifications */}
+              <NotificationBell userId={user.id} />
 
               {/* Coins & Level Display */}
               <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full border border-amber-500/20 shadow-sm">

@@ -51,10 +51,12 @@
     "react-hook-form": "7.53.2",
     "recharts": "2.13.3",
     "redis": "4.7.0",
+    "resend": "^6.4.2",
     "slugify": "1.6.6",
     "sonner": "^2.0.7",
     "tailwind-merge": "2.5.5",
     "tailwindcss-animate": "1.0.7",
+    "web-push": "^3.6.7",
     "zod": "3.23.8"
   },
   "devDependencies": {
@@ -63,6 +65,7 @@
     "@types/node": "22.9.0",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "10.4.20",
     "eslint": "8.57.1",
     "eslint-config-next": "15.0.3",

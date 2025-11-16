@@ -16,7 +16,7 @@ export async function POST(
       );
     }
 
-    const group = await prisma.group.findUnique({
+    const group = await db.group.findUnique({
       where: { slug: params.slug },
       include: {
         _count: {
@@ -99,7 +99,7 @@ export async function DELETE(
       );
     }
 
-    const group = await prisma.group.findUnique({
+    const group = await db.group.findUnique({
       where: { slug: params.slug },
     });
 

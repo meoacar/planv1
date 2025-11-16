@@ -123,13 +123,14 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <Tabs defaultValue="general" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-7">
+      <TabsList className="grid w-full grid-cols-8">
         <TabsTrigger value="general">Genel</TabsTrigger>
         <TabsTrigger value="appearance">Görünüm</TabsTrigger>
         <TabsTrigger value="social">Sosyal Medya</TabsTrigger>
         <TabsTrigger value="seo">SEO</TabsTrigger>
         <TabsTrigger value="moderation">Moderasyon</TabsTrigger>
         <TabsTrigger value="email">Email</TabsTrigger>
+        <TabsTrigger value="notifications">Bildirimler</TabsTrigger>
         <TabsTrigger value="security">Güvenlik</TabsTrigger>
       </TabsList>
 
@@ -616,6 +617,38 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 </div>
                 <p className="text-xs text-muted-foreground ml-6">
                   Kullanıcılara tarayıcı bildirimleri gönderir (Service Worker gerektirir)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch('/api/admin/push/test', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          title: 'Test Bildirimi',
+                          body: 'Bu bir test bildirimidir. Push notification sistemi çalışıyor! 🎉'
+                        })
+                      });
+                      const data = await res.json();
+                      if (res.ok) {
+                        alert(`✅ Başarılı! ${data.sent} bildirim gönderildi.`);
+                      } else {
+                        alert(`❌ Hata: ${data.error}`);
+                      }
+                    } catch (error) {
+                      alert('❌ Bildirim gönderilemedi');
+                    }
+                  }}
+                >
+                  Test Bildirimi Gönder
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Tüm aktif abonelere test bildirimi gönderir
                 </p>
               </div>
             </div>

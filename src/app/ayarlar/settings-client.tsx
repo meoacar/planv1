@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Loader2, Upload, X } from 'lucide-react'
 import { MaskotSelector } from '@/components/ui/maskot-selector'
+import { PushNotificationManager } from '@/components/push-notification-manager'
 
 interface SettingsClientProps {
   user: {
@@ -286,6 +287,21 @@ export function SettingsClient({ user }: SettingsClientProps) {
               {loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Kaydediliyor...</> : 'Kaydet'}
             </Button>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Push Notifications */}
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🔔 Bildirimler
+          </CardTitle>
+          <CardDescription>
+            Tarayıcı bildirimlerini yönet
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PushNotificationManager />
         </CardContent>
       </Card>
 

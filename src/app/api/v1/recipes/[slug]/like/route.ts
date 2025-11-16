@@ -2,6 +2,44 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { RecipeService } from '@/services/recipe.service'
 
+// GET /api/v1/recipes/[slug]/like - Check if user liked
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const session = await auth()
+
+    if (!session?.user) {
+      return NextResponse.json({
+        success: true,
+        data: { liked: false },
+      })
+    }
+
+    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const liked = await RecipeService.isLiked(recipe.id, session.user.id)
+
+    return NextResponse.json({
+      success: true,
+      data: { liked },
+    })
+  } catch (error: any) {
+    console.error('Check like error:', error)
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'CHECK_LIKE_ERROR',
+          message: error.message || 'Beğeni kontrolü başarısız',
+        },
+      },
+      { status: 500 }
+    )
+  }
+}
+
 // POST /api/v1/recipes/[slug]/like - Toggle like
 export async function POST(
   req: NextRequest,

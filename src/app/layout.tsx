@@ -92,6 +92,9 @@ export async function generateMetadata(): Promise<Metadata> {
     apple: siteFavicon,
   }
 
+  // PWA Manifest
+  metadata.manifest = '/manifest.json'
+
   return metadata
 }
 

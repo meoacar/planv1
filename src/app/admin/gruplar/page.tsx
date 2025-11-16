@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { GroupActions } from "@/components/admin/group-actions";
 
 export const metadata: Metadata = {
   title: "Gruplar | Admin Panel",
@@ -184,30 +184,7 @@ export default async function AdminGroupsPage() {
                         <span>{new Date(group.createdAt).toLocaleDateString("tr-TR")}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {group.status === "pending" && (
-                        <>
-                          <form action={`/api/admin/groups/${group.id}/approve`} method="POST">
-                            <Button variant="default" size="sm" type="submit">
-                              ✅ Onayla
-                            </Button>
-                          </form>
-                          <Button variant="destructive" size="sm">
-                            ❌ Reddet
-                          </Button>
-                        </>
-                      )}
-                      {group.status === "published" && (
-                        <Button variant="outline" size="sm" asChild>
-                          <Link href={`/gruplar/${group.slug}`} target="_blank">
-                            Görüntüle
-                          </Link>
-                        </Button>
-                      )}
-                      <Button variant="ghost" size="sm">
-                        🗑️
-                      </Button>
-                    </div>
+                    <GroupActions group={group} />
                   </div>
                 ))}
               </div>

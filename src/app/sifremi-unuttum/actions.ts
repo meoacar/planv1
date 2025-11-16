@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { sendPasswordResetEmail } from '@/lib/email'
 import crypto from 'crypto'
 
 export async function sendPasswordResetEmail(formData: FormData) {
@@ -26,30 +27,40 @@ export async function sendPasswordResetEmail(formData: FormData) {
 
   // Generate reset token
   const resetToken = crypto.randomBytes(32).toString('hex')
-  const resetTokenExpiry = new Date(Date.now() + 3600000) // 1 hour
+  const expiresAt = new Date(Date.now() + 3600000) // 1 hour
 
-  // Save token to database
-  await db.user.update({
-    where: { id: user.id },
-    data: {
-      // We'll need to add these fields to the schema
-      // For now, we'll use a workaround
-      // resetToken: resetToken,
-      // resetTokenExpiry: resetTokenExpiry,
+  // Delete old unused tokens for this user
+  await db.passwordReset.deleteMany({
+    where: {
+      userId: user.id,
+      used: false,
     },
   })
 
-  // TODO: Send email with reset link
-  // const resetUrl = `${process.env.NEXTAUTH_URL}/sifre-sifirla?token=${resetToken}`
-  // await sendEmail({
-  //   to: email,
-  //   subject: 'Şifre Sıfırlama',
-  //   html: `Şifrenizi sıfırlamak için <a href="${resetUrl}">buraya tıklayın</a>`
-  // })
+  // Save token to database
+  await db.passwordReset.create({
+    data: {
+      userId: user.id,
+      token: resetToken,
+      expiresAt,
+    },
+  })
 
-  console.log('Password reset requested for:', email)
-  console.log('Reset token:', resetToken)
-  console.log('Reset URL would be:', `http://localhost:3000/sifre-sifirla?token=${resetToken}`)
+  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/sifre-sifirla?token=${resetToken}`
+
+  // Send email with reset link
+  const emailResult = await sendPasswordResetEmail(email, resetUrl)
+
+  if (!emailResult.success) {
+    console.error('Failed to send password reset email')
+    // Don't reveal email sending failure to prevent enumeration
+  }
+
+  // Log for development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Password reset requested for:', email)
+    console.log('Reset URL:', resetUrl)
+  }
 
   return { 
     success: true, 
