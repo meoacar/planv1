@@ -48,6 +48,15 @@ export async function toggleLike(planId: string) {
         data: { likesCount: { increment: 1 } },
       }),
     ])
+
+    // Gamification: Update quest progress for likes
+    try {
+      const { updateQuestProgress } = await import('@/services/gamification.service')
+      await updateQuestProgress(session.user.id, 'daily_like', 1)
+      console.log('✅ Quest progress updated: daily_like')
+    } catch (error) {
+      console.error('❌ Gamification error:', error)
+    }
   }
 
   revalidatePath(`/plan/[slug]`, 'page')
@@ -75,6 +84,15 @@ export async function addComment(planId: string, body: string) {
       status: 'pending', // Yorumlar admin onayı bekler
     },
   })
+
+  // Gamification: Update quest progress for comments
+  try {
+    const { updateQuestProgress } = await import('@/services/gamification.service')
+    await updateQuestProgress(session.user.id, 'daily_comment', 1)
+    console.log('✅ Quest progress updated: daily_comment')
+  } catch (error) {
+    console.error('❌ Gamification error:', error)
+  }
 
   // Note: commentsCount is NOT incremented until comment is approved
   // This will be done by admin when approving the comment
@@ -185,4 +203,140 @@ export async function incrementViews(planId: string, userId?: string, ip?: strin
     // If everything fails, log but don't increment (better than spam)
     console.error('Error in incrementViews:', error)
   }
+}
+
+export async function savePlan(planId: string) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    throw new Error('Giriş yapmalısınız')
+  }
+
+  // Check if already saved
+  const existingSave = await db.favorite.findUnique({
+    where: {
+      userId_targetType_targetId: {
+        userId: session.user.id,
+        targetType: 'plan',
+        targetId: planId,
+      },
+    },
+  })
+
+  if (existingSave) {
+    // Remove from favorites
+    await db.favorite.delete({
+      where: { id: existingSave.id },
+    })
+  } else {
+    // Add to favorites
+    await db.favorite.create({
+      data: {
+        userId: session.user.id,
+        targetType: 'plan',
+        targetId: planId,
+      },
+    })
+  }
+
+  revalidatePath(`/plan/[slug]`, 'page')
+  return { success: true }
+}
+
+export async function ratePlan(planId: string, rating: number) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    throw new Error('Giriş yapmalısınız')
+  }
+
+  if (rating < 1 || rating > 5) {
+    throw new Error('Geçersiz puan')
+  }
+
+  // Check if already rated
+  const existingRating = await db.planRating.findUnique({
+    where: {
+      userId_planId: {
+        userId: session.user.id,
+        planId: planId,
+      },
+    },
+  })
+
+  if (existingRating) {
+    // Update rating
+    await db.planRating.update({
+      where: { id: existingRating.id },
+      data: { rating },
+    })
+  } else {
+    // Create new rating
+    await db.planRating.create({
+      data: {
+        userId: session.user.id,
+        planId: planId,
+        rating,
+      },
+    })
+  }
+
+  // Recalculate average rating
+  const ratings = await db.planRating.findMany({
+    where: { planId },
+  })
+
+  const averageRating = ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length
+
+  await db.plan.update({
+    where: { id: planId },
+    data: {
+      averageRating,
+      ratingCount: ratings.length,
+    },
+  })
+
+  revalidatePath(`/plan/[slug]`, 'page')
+  return { success: true }
+}
+
+export async function trackProgress(planId: string, day: number) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    throw new Error('Giriş yapmalısınız')
+  }
+
+  // Check if progress exists
+  const existingProgress = await db.planProgress.findUnique({
+    where: {
+      userId_planId: {
+        userId: session.user.id,
+        planId: planId,
+      },
+    },
+  })
+
+  if (existingProgress) {
+    // Update progress
+    await db.planProgress.update({
+      where: { id: existingProgress.id },
+      data: {
+        currentDay: day,
+        lastUpdated: new Date(),
+      },
+    })
+  } else {
+    // Create new progress
+    await db.planProgress.create({
+      data: {
+        userId: session.user.id,
+        planId: planId,
+        currentDay: day,
+      },
+    })
+  }
+
+  revalidatePath(`/plan/[slug]`, 'page')
+  return { success: true }
 }

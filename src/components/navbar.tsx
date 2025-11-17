@@ -43,15 +43,32 @@ export function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [siteName, setSiteName] = useState('ZayiflamaPlan')
   const [loading, setLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/auth/session')
+        const response = await fetch('/api/auth/session', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        })
         const data = await response.json()
         
+
         if (data.user) {
-          setUser(data.user)
+          // Force new object to trigger re-render
+          setUser({
+            id: data.user.id,
+            name: data.user.name,
+            username: data.user.username,
+            image: data.user.image,
+            role: data.user.role,
+            coins: data.user.coins ?? 0,
+            xp: data.user.xp ?? 0,
+            level: data.user.level ?? 1,
+          })
         }
         
         if (data.siteName) {
@@ -65,7 +82,30 @@ export function Navbar() {
     }
 
     fetchUserData()
-  }, [])
+    
+    // Listen for storage events to refresh user data
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'quest-claimed') {
+        setRefreshKey(prev => prev + 1)
+        fetchUserData()
+      }
+    }
+    
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Also listen for custom event
+    const handleQuestClaimed = () => {
+      setRefreshKey(prev => prev + 1)
+      fetchUserData()
+    }
+    
+    window.addEventListener('quest-claimed', handleQuestClaimed)
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('quest-claimed', handleQuestClaimed)
+    }
+  }, [refreshKey])
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 shadow-sm">
@@ -123,6 +163,20 @@ export function Navbar() {
                     <span className="ml-2">Görevler</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/check-in" className="cursor-pointer">
+                    ✅
+                    <span className="ml-2">Günlük Check-in</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/su-takibi" className="cursor-pointer">
+                    💧
+                    <span className="ml-2">Su Takibi</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/magaza" className="cursor-pointer">
                     🛒
@@ -181,15 +235,19 @@ export function Navbar() {
               <NotificationBell userId={user.id} />
 
               {/* Coins & Level Display */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full border border-amber-500/20 shadow-sm">
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full border border-amber-500/20 shadow-sm" key={`stats-${refreshKey}`}>
                 <div className="flex items-center gap-1">
                   <Coins className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" />
-                  <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 min-w-[24px]">{user.coins || 0}</span>
+                  <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 min-w-[24px]">
+                    {typeof user.coins === 'number' ? user.coins : 0}
+                  </span>
                 </div>
                 <div className="w-px h-3.5 bg-amber-500/30" />
                 <div className="flex items-center gap-1">
                   <Trophy className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-primary min-w-[20px]">{user.level || 1}</span>
+                  <span className="text-xs font-semibold text-primary min-w-[20px]">
+                    {typeof user.level === 'number' ? user.level : 1}
+                  </span>
                 </div>
               </div>
 
@@ -301,6 +359,18 @@ export function Navbar() {
                       Ayarlar
                     </Link>
                   </DropdownMenuItem>
+                  
+                  {user?.role === 'ADMIN' && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href="/profil/admin" className="cursor-pointer bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+                          <Shield className="mr-2 h-4 w-4 text-purple-600" />
+                          <span className="font-semibold text-purple-600">Admin Profil</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   
                   <DropdownMenuSeparator />
                   

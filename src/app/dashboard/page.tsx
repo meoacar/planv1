@@ -176,7 +176,8 @@ export default async function DashboardPage() {
 
   const totalViews = userPlans.reduce((sum, plan) => sum + plan.views, 0)
   const totalLikes = userPlans.reduce((sum, plan) => sum + plan.likesCount, 0)
-  const totalComments = userPlans.reduce((sum, plan) => sum + plan.commentsCount, 0)
+  const totalCommentsReceived = userPlans.reduce((sum, plan) => sum + plan.commentsCount, 0)
+  const totalCommentsGiven = userComments.length
 
   // Kilo değişimi (son 7 gün)
   const weightChange = weightLogs.length >= 2 
@@ -197,196 +198,173 @@ export default async function DashboardPage() {
   const bmiCategory = bmi ? getBMICategory(bmi) : null
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-pink-50/30 dark:from-slate-950 dark:via-purple-950/20 dark:to-pink-950/20">
       <Navbar />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Welcome Section */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Merhaba, {user?.name || 'Kullanıcı'}! 👋
-            </h1>
-            <p className="text-muted-foreground flex items-center gap-2">
-              <Flame className="h-4 w-4 text-orange-500" />
-              {streak > 0 ? `${streak} günlük seri devam ediyor!` : 'Bugün hedeflerine bir adım daha yaklaş!'}
-            </p>
-          </div>
-          <div className="hidden md:flex items-center gap-3">
-            <Button asChild size="lg" className="shadow-lg">
+      <main className="container mx-auto px-4 py-6 md:py-8 max-w-7xl">
+        {/* Hero Welcome Section */}
+        <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 p-8 md:p-10 shadow-2xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.05),transparent_70%)]" />
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <Link href={`/profil/${user?.username}`} className="group">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl md:text-5xl border-2 border-white/30 group-hover:border-white/60 transition-all group-hover:scale-105 cursor-pointer">
+                  {user?.image ? (
+                    <img src={user.image} alt="" className="w-full h-full rounded-2xl object-cover" />
+                  ) : (
+                    '👤'
+                  )}
+                </div>
+              </Link>
+              <div>
+                <Link href={`/profil/${user?.username}`} className="group">
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-1 group-hover:text-white/90 transition-colors">
+                    Hoş geldin, {user?.name || 'Kullanıcı'}! 👋
+                  </h1>
+                </Link>
+                <p className="text-white/90 flex items-center gap-2 text-sm md:text-base">
+                  {streak > 0 ? (
+                    <>
+                      <Flame className="h-5 w-5" />
+                      <span className="font-semibold">{streak} günlük</span> seri devam ediyor! 🔥
+                    </>
+                  ) : (
+                    'Bugün hedeflerine bir adım daha yaklaş! 💪'
+                  )}
+                </p>
+              </div>
+            </div>
+            <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-white/90 shadow-xl hover:shadow-2xl transition-all hover:scale-105 font-semibold">
               <Link href="/plan-ekle">
-                <Award className="h-4 w-4 mr-2" />
+                <Award className="h-5 w-5 mr-2" />
                 Yeni Plan Oluştur
               </Link>
             </Button>
           </div>
         </div>
 
-        {/* Hero Stats - Kilo Takibi */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Ana Kilo Kartı */}
-          <Card className="lg:col-span-2 border-2 shadow-lg bg-gradient-to-br from-card to-muted/20">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardDescription className="flex items-center gap-2">
-                    <Target className="h-4 w-4" />
-                    Kilo Takibi
-                  </CardDescription>
-                  <CardTitle className="text-5xl mt-2">
-                    {user?.currentWeight ? `${user.currentWeight} kg` : '--'}
-                  </CardTitle>
+        {/* Stats Overview - Modern Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* Kilo Kartı */}
+          <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-emerald-500 to-green-600">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_50%)]" />
+            <CardContent className="pt-6 pb-6 relative">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+                  <Target className="h-6 w-6 text-white" />
                 </div>
-                <Button asChild variant="outline" size="sm">
+                <Button asChild size="sm" variant="ghost" className="text-white hover:bg-white/20 h-8">
                   <Link href="/kilo-takibi">Güncelle</Link>
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Hedef</p>
-                  <p className="text-2xl font-bold">
-                    {user?.targetWeight ? `${user.targetWeight} kg` : '--'}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Kalan</p>
-                  <p className="text-2xl font-bold text-orange-600 flex items-center gap-1">
-                    {weightDiff && weightDiff > 0 ? (
-                      <>
-                        <TrendingDown className="h-5 w-5" />
-                        {weightDiff.toFixed(1)} kg
-                      </>
-                    ) : '--'}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Bu Hafta</p>
-                  <p className={`text-2xl font-bold flex items-center gap-1 ${
-                    weightChange && weightChange < 0 ? 'text-green-600' : 
-                    weightChange && weightChange > 0 ? 'text-red-600' : ''
-                  }`}>
-                    {weightChange ? (
-                      <>
-                        {weightChange < 0 ? <TrendingDown className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}
-                        {Math.abs(weightChange).toFixed(1)} kg
-                      </>
-                    ) : '--'}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Progress Bar */}
-              {user?.currentWeight && user?.targetWeight && (
-                <div className="mt-6">
-                  <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="text-muted-foreground">İlerleme</span>
-                    <span className="font-medium">
-                      {weightDiff && weightDiff > 0 
-                        ? `%${Math.max(0, Math.min(100, ((1 - (weightDiff / (user.currentWeight - user.targetWeight))) * 100))).toFixed(0)}`
-                        : '100%'}
-                    </span>
-                  </div>
-                  <div className="h-3 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-500"
-                      style={{ 
-                        width: weightDiff && weightDiff > 0 
-                          ? `${Math.max(0, Math.min(100, ((1 - (weightDiff / (user.currentWeight - user.targetWeight))) * 100)))}%`
-                          : '100%'
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
+              <p className="text-white/80 text-xs font-medium mb-1">Mevcut Kilo</p>
+              <p className="text-4xl font-black text-white mb-1">
+                {user?.currentWeight || '--'}
+                <span className="text-xl ml-1">kg</span>
+              </p>
+              <p className="text-white/70 text-xs">
+                Hedef: {user?.targetWeight || '--'} kg
+              </p>
             </CardContent>
           </Card>
 
           {/* BMI Kartı */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardDescription className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Vücut Kitle İndeksi
-              </CardDescription>
-              <CardTitle className="text-4xl">
+          <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-blue-500 to-cyan-600">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_50%)]" />
+            <CardContent className="pt-6 pb-6 relative">
+              <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm mb-4 w-fit">
+                <Activity className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-white/80 text-xs font-medium mb-1">BMI</p>
+              <p className="text-4xl font-black text-white mb-2">
                 {bmi ? bmi.toFixed(1) : '--'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </p>
               {bmiCategory && (
-                <div className="space-y-4">
-                  <div>
-                    <Badge className={bmiCategory.color}>
-                      {bmiCategory.label}
-                    </Badge>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Boy</p>
-                    <p className="text-lg font-semibold">
-                      {user?.height ? `${user.height} cm` : '--'}
-                    </p>
-                  </div>
-                  <Button asChild variant="outline" size="sm" className="w-full">
-                    <Link href="/ayarlar">Bilgileri Güncelle</Link>
-                  </Button>
-                </div>
+                <Badge className="bg-white/20 text-white border-0 hover:bg-white/30">
+                  {bmiCategory.label}
+                </Badge>
               )}
+            </CardContent>
+          </Card>
+
+          {/* İlerleme Kartı */}
+          <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-purple-500 to-pink-600">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_50%)]" />
+            <CardContent className="pt-6 pb-6 relative">
+              <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm mb-4 w-fit">
+                <TrendingDown className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-white/80 text-xs font-medium mb-1">Kalan</p>
+              <p className="text-4xl font-black text-white mb-1">
+                {weightDiff && weightDiff > 0 ? weightDiff.toFixed(1) : '--'}
+                <span className="text-xl ml-1">kg</span>
+              </p>
+              <p className="text-white/70 text-xs">
+                Hedefe ulaşmak için
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Streak Kartı */}
+          <Card className="relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-0 bg-gradient-to-br from-orange-500 to-red-600">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_50%)]" />
+            <CardContent className="pt-6 pb-6 relative">
+              <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm mb-4 w-fit">
+                <Flame className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-white/80 text-xs font-medium mb-1">Streak</p>
+              <p className="text-4xl font-black text-white mb-1">
+                {streak}
+                <span className="text-xl ml-1">gün</span>
+              </p>
+              <p className="text-white/70 text-xs">
+                Devam ediyor! 🔥
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* İstatistik Kartları */}
+        {/* Quick Stats - Glassmorphism */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2 text-xs">
-                <Eye className="h-3 w-3" />
-                Toplam Görüntülenme
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{totalViews.toLocaleString('tr-TR')}</p>
-            </CardContent>
-          </Card>
+          <div className="group relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-5 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400 mb-3" />
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{totalViews.toLocaleString('tr-TR')}</p>
+              <p className="text-xs text-muted-foreground font-medium">Görüntülenme</p>
+            </div>
+          </div>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2 text-xs">
-                <Heart className="h-3 w-3" />
-                Toplam Beğeni
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-red-600">{totalLikes}</p>
-            </CardContent>
-          </Card>
+          <div className="group relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-5 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <Heart className="h-5 w-5 text-red-600 dark:text-red-400 mb-3" />
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{totalLikes}</p>
+              <p className="text-xs text-muted-foreground font-medium">Beğeni</p>
+            </div>
+          </div>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2 text-xs">
-                <MessageSquare className="h-3 w-3" />
-                Toplam Yorum
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-blue-600">{totalComments}</p>
-            </CardContent>
-          </Card>
+          <div className="group relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-5 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <MessageSquare className="h-5 w-5 text-blue-600 dark:text-blue-400 mb-3" />
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{totalCommentsReceived + totalCommentsGiven}</p>
+              <p className="text-xs text-muted-foreground font-medium">Yorum</p>
+              <p className="text-[10px] text-muted-foreground mt-1">↓{totalCommentsReceived} ↑{totalCommentsGiven}</p>
+            </div>
+          </div>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2 text-xs">
-                <Users className="h-3 w-3" />
-                Takipçi
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-purple-600">{user?._count.followers || 0}</p>
-            </CardContent>
-          </Card>
+          <div className="group relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-5 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative">
+              <Users className="h-5 w-5 text-pink-600 dark:text-pink-400 mb-3" />
+              <p className="text-3xl font-bold text-slate-900 dark:text-white mb-1">{user?._count.followers || 0}</p>
+              <p className="text-xs text-muted-foreground font-medium">Takipçi</p>
+              <p className="text-[10px] text-muted-foreground mt-1">{user?._count.following || 0} takip</p>
+            </div>
+          </div>
         </div>
 
         {/* Ana İçerik Grid */}
@@ -394,88 +372,88 @@ export default async function DashboardPage() {
           {/* Sol Kolon - Planlarım ve Aktiviteler */}
           <div className="lg:col-span-2 space-y-6">
             {/* Planlarım */}
-            <Card className="shadow-lg">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      Planlarım
-                    </CardTitle>
-                    <CardDescription>Son oluşturduğun planlar</CardDescription>
+            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-6 shadow-xl">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
+                    <Calendar className="h-5 w-5 text-white" />
                   </div>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href="/planlarim">Tümünü Gör</Link>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Planlarım</h3>
+                    <p className="text-xs text-muted-foreground">Son oluşturduğun planlar</p>
+                  </div>
+                </div>
+                <Button asChild variant="outline" size="sm" className="rounded-xl">
+                  <Link href="/planlarim">Tümünü Gör</Link>
+                </Button>
+              </div>
+              {userPlans.length > 0 ? (
+                <div className="space-y-3">
+                  {userPlans.map((plan) => (
+                    <Link
+                      key={plan.id}
+                      href={`/plan/${plan.slug}`}
+                      className="block p-4 rounded-xl bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border border-white/20 dark:border-slate-700/50 hover:bg-white/60 dark:hover:bg-slate-800/60 hover:shadow-lg transition-all group"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-1">
+                          {plan.title}
+                        </h4>
+                        <Badge variant={
+                          plan.status === 'published' ? 'default' :
+                          plan.status === 'pending' ? 'secondary' :
+                          'outline'
+                        } className="shrink-0">
+                          {plan.status === 'published' ? '✓ Yayında' :
+                           plan.status === 'pending' ? '⏳ Bekliyor' :
+                           plan.status === 'draft' ? '📝 Taslak' : '✗ Reddedildi'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          {plan.views}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-3 w-3" />
+                          {plan.likesCount}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageSquare className="h-3 w-3" />
+                          {plan.commentsCount}
+                        </span>
+                        <span className="ml-auto">
+                          {formatDistanceToNow(new Date(plan.createdAt), { addSuffix: true, locale: tr })}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                    <Calendar className="h-8 w-8 text-white" />
+                  </div>
+                  <p className="text-muted-foreground mb-4">Henüz plan oluşturmadın</p>
+                  <Button asChild className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                    <Link href="/plan-ekle">İlk Planını Oluştur</Link>
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {userPlans.length > 0 ? (
-                  <div className="space-y-3">
-                    {userPlans.map((plan) => (
-                      <Link
-                        key={plan.id}
-                        href={`/plan/${plan.slug}`}
-                        className="block p-4 rounded-lg border hover:border-primary hover:shadow-md transition-all group"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="font-semibold group-hover:text-primary transition-colors line-clamp-1">
-                            {plan.title}
-                          </h4>
-                          <Badge variant={
-                            plan.status === 'published' ? 'default' :
-                            plan.status === 'pending' ? 'secondary' :
-                            'outline'
-                          }>
-                            {plan.status === 'published' ? 'Yayında' :
-                             plan.status === 'pending' ? 'Bekliyor' :
-                             plan.status === 'draft' ? 'Taslak' : 'Reddedildi'}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Eye className="h-3 w-3" />
-                            {plan.views}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Heart className="h-3 w-3" />
-                            {plan.likesCount}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageSquare className="h-3 w-3" />
-                            {plan.commentsCount}
-                          </span>
-                          <span className="ml-auto">
-                            {formatDistanceToNow(new Date(plan.createdAt), { addSuffix: true, locale: tr })}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground mb-4">Henüz plan oluşturmadın</p>
-                    <Button asChild>
-                      <Link href="/plan-ekle">İlk Planını Oluştur</Link>
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              )}
+            </div>
 
             {/* Topluluk Akışı */}
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Topluluk Akışı
-                </CardTitle>
-                <CardDescription>
-                  Takip ettiğin kişilerin son aktiviteleri
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recentActivity.length > 0 ? (
+            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-6 shadow-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Topluluk Akışı</h3>
+                  <p className="text-xs text-muted-foreground">Takip ettiğin kişilerin son aktiviteleri</p>
+                </div>
+              </div>
+              {recentActivity.length > 0 ? (
                   <div className="space-y-4">
                     {recentActivity.map((activity) => (
                       <div key={activity.id} className="flex items-start gap-4 pb-4 border-b last:border-0">
@@ -543,203 +521,166 @@ export default async function DashboardPage() {
                     </Button>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+            </div>
           </div>
 
           {/* Sağ Kolon - Hızlı İşlemler ve Son Aktiviteler */}
           <div className="space-y-6">
             {/* Gamification Widget */}
-            <GamificationWidget />
+            <div className="relative overflow-hidden rounded-2xl">
+              <GamificationWidget />
+            </div>
             
             {/* İlerleme Fotoğrafları */}
-            <Card className="shadow-lg">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Camera className="h-5 w-5" />
-                      İlerleme Fotoğrafları
-                    </CardTitle>
-                    <CardDescription>
-                      Değişimini görselleştir
-                    </CardDescription>
+            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-6 shadow-xl">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600">
+                    <Camera className="h-5 w-5 text-white" />
                   </div>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href="/fotograflar">Tümü</Link>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Fotoğraflar</h3>
+                    <p className="text-xs text-muted-foreground">Değişimini görselleştir</p>
+                  </div>
+                </div>
+                <Button asChild variant="outline" size="sm" className="rounded-xl">
+                  <Link href="/fotograflar">Tümü</Link>
+                </Button>
+              </div>
+              {progressPhotos.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {progressPhotos.map((photo) => (
+                    <Link
+                      key={photo.id}
+                      href="/fotograflar"
+                      className="relative aspect-square rounded-xl overflow-hidden group"
+                    >
+                      <img
+                        src={photo.photoUrl}
+                        alt="İlerleme fotoğrafı"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {photo.weight && (
+                        <div className="absolute bottom-2 right-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-slate-900 dark:text-white px-2 py-1 rounded-lg text-xs font-semibold">
+                          {photo.weight}kg
+                        </div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+                    <Camera className="h-8 w-8 text-white" />
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Henüz fotoğraf yok
+                  </p>
+                  <Button asChild size="sm" className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700">
+                    <Link href="/fotograflar">
+                      <Camera className="h-4 w-4 mr-2" />
+                      İlk Fotoğrafı Yükle
+                    </Link>
                   </Button>
                 </div>
-              </CardHeader>
-              <CardContent>
-                {progressPhotos.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    {progressPhotos.map((photo) => (
-                      <Link
-                        key={photo.id}
-                        href="/fotograflar"
-                        className="relative aspect-square rounded-lg overflow-hidden group"
-                      >
-                        <img
-                          src={photo.photoUrl}
-                          alt="İlerleme fotoğrafı"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                        {photo.weight && (
-                          <div className="absolute bottom-1 right-1 bg-black/70 text-white px-1.5 py-0.5 rounded text-xs">
-                            {photo.weight}kg
-                          </div>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Camera className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Henüz fotoğraf yok
-                    </p>
-                    <Button asChild size="sm">
-                      <Link href="/fotograflar">
-                        <Camera className="h-4 w-4 mr-2" />
-                        İlk Fotoğrafı Yükle
-                      </Link>
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              )}
+            </div>
 
             {/* Hızlı İşlemler */}
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>Hızlı İşlemler</CardTitle>
-                <CardDescription>
-                  Bugün ne yapmak istersin?
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/plan-ekle">
-                    <Award className="h-4 w-4 mr-2" />
-                    Yeni Plan Oluştur
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/kilo-takibi">
-                    <Target className="h-4 w-4 mr-2" />
-                    Kilo Kaydet
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/fotograflar">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Fotoğraf Yükle
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/kesfet">
-                    <Users className="h-4 w-4 mr-2" />
-                    Planları Keşfet
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/gruplar">
-                    👥
-                    <span className="ml-2">Gruplara Katıl</span>
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href={`/profil/${user?.username}`}>
-                    <Activity className="h-4 w-4 mr-2" />
-                    Profilimi Görüntüle
-                  </Link>
-                </Button>
-                <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/dashboard/itirazlarim">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    İtirazlarım
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-6 shadow-xl">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Hızlı İşlemler</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href={`/profil/${user?.username}`} className="group p-4 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 hover:shadow-lg transition-all hover:scale-105">
+                  <Activity className="h-6 w-6 text-white mb-2" />
+                  <p className="text-xs font-semibold text-white">Profilim</p>
+                </Link>
+                <Link href="/kilo-takibi" className="group p-4 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 hover:shadow-lg transition-all hover:scale-105">
+                  <Target className="h-6 w-6 text-white mb-2" />
+                  <p className="text-xs font-semibold text-white">Kilo Kaydet</p>
+                </Link>
+                <Link href="/fotograflar" className="group p-4 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 hover:shadow-lg transition-all hover:scale-105">
+                  <Camera className="h-6 w-6 text-white mb-2" />
+                  <p className="text-xs font-semibold text-white">Fotoğraf</p>
+                </Link>
+                <Link href="/kesfet" className="group p-4 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 hover:shadow-lg transition-all hover:scale-105">
+                  <Users className="h-6 w-6 text-white mb-2" />
+                  <p className="text-xs font-semibold text-white">Keşfet</p>
+                </Link>
+              </div>
+            </div>
 
             {/* Son Aktivitelerim */}
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>Son Aktivitelerim</CardTitle>
-                <CardDescription>
-                  Platformdaki son hareketlerin
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 text-sm">
-                  {userLikes.length > 0 && (
-                    <div>
-                      <p className="font-medium mb-2 flex items-center gap-2">
-                        <Heart className="h-4 w-4 text-red-500" />
-                        Son Beğeniler
-                      </p>
-                      <div className="space-y-2 pl-6">
-                        {userLikes.slice(0, 3).map((like, i) => (
-                          <Link
-                            key={i}
-                            href={`/plan/${like.plan.slug}`}
-                            className="block text-xs text-muted-foreground hover:text-primary line-clamp-1"
-                          >
-                            {like.plan.title}
-                          </Link>
-                        ))}
+            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 p-6 shadow-xl">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Son Aktivitelerim</h3>
+              <div className="space-y-4 text-sm">
+                {userLikes.length > 0 && (
+                  <div>
+                    <div className="font-semibold mb-3 flex items-center gap-2 text-slate-900 dark:text-white">
+                      <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30">
+                        <Heart className="h-4 w-4 text-red-600 dark:text-red-400" />
                       </div>
+                      Son Beğeniler
                     </div>
-                  )}
-                  
-                  {userComments.length > 0 && (
-                    <div>
-                      <p className="font-medium mb-2 flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-blue-500" />
-                        Son Yorumlar
-                      </p>
-                      <div className="space-y-2 pl-6">
-                        {userComments.slice(0, 3).map((comment, i) => (
-                          <Link
-                            key={i}
-                            href={`/plan/${comment.plan.slug}`}
-                            className="block text-xs text-muted-foreground hover:text-primary line-clamp-2"
-                          >
-                            "{comment.body}"
-                          </Link>
-                        ))}
+                    <div className="space-y-2">
+                      {userLikes.slice(0, 3).map((like, i) => (
+                        <Link
+                          key={i}
+                          href={`/plan/${like.plan.slug}`}
+                          className="block p-2 rounded-lg bg-white/40 dark:bg-slate-800/40 text-xs text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all line-clamp-1"
+                        >
+                          {like.plan.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {userComments.length > 0 && (
+                  <div>
+                    <div className="font-semibold mb-3 flex items-center gap-2 text-slate-900 dark:text-white">
+                      <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                        <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       </div>
+                      Son Yorumlar
                     </div>
-                  )}
+                    <div className="space-y-2">
+                      {userComments.slice(0, 3).map((comment, i) => (
+                        <Link
+                          key={i}
+                          href={`/plan/${comment.plan.slug}`}
+                          className="block p-2 rounded-lg bg-white/40 dark:bg-slate-800/40 text-xs text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all line-clamp-2"
+                        >
+                          "{comment.body}"
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-                  {userLikes.length === 0 && userComments.length === 0 && (
-                    <p className="text-center text-muted-foreground py-4">
-                      Henüz aktivite yok
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                {userLikes.length === 0 && userComments.length === 0 && (
+                  <div className="text-center text-muted-foreground py-8">
+                    Henüz aktivite yok
+                  </div>
+                )}
+              </div>
+            </div>
 
             {/* Motivasyon */}
-            <Card className="shadow-lg bg-gradient-to-br from-primary/10 to-purple-500/10 border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-lg">💪 Motivasyon</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm italic text-muted-foreground">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 p-6 shadow-xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
+              <div className="relative">
+                <p className="text-3xl mb-3">💪</p>
+                <p className="text-base italic text-white leading-relaxed mb-3 font-medium">
                   "Başarı, küçük çabaların günlük tekrarıdır."
                 </p>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-sm text-white/80">
                   Bugün de harika gidiyorsun! 🌟
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
-
       </main>
 
       <Footer />

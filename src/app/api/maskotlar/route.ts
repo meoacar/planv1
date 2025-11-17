@@ -7,9 +7,9 @@ export async function GET() {
     const maskotDir = join(process.cwd(), 'public', 'maskot')
     const files = await readdir(maskotDir)
     
-    // Filter only image files
+    // Filter only numbered maskot files (1.png, 2.png, etc.)
     const imageFiles = files.filter(file => 
-      /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
+      /^\d+\.(jpg|jpeg|png|gif|webp)$/i.test(file)
     )
     
     // Create URLs for each maskot

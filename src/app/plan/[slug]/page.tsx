@@ -6,7 +6,7 @@ import { db } from '@/lib/db'
 import { Button } from '@/components/ui/button'
 import { Navbar } from '@/components/navbar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { LikeButton, CommentForm, ShareButton, DailyMenuViewer } from './plan-client'
+import { PlanActions, LikeButton, CommentForm, ShareButton, DailyMenuViewer, ProgressTracker, StatsCard } from './plan-client'
 import { incrementViews } from './actions'
 import { formatDistanceToNow } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -46,6 +46,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     ? plan.description.substring(0, 157) + '...'
     : plan.description
 
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(plan.title)}&author=${encodeURIComponent(plan.author.username || '')}&result=${encodeURIComponent(resultText)}`
+  
   return {
     title: plan.title,
     description: `${description} ${resultText ? `| ${resultText}` : ''} | @${plan.author.username}`,
@@ -55,33 +57,39 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'article',
       locale: 'tr_TR',
       url: `${siteUrl}/plan/${slug}`,
-      title: plan.title,
+      title: `${plan.title} ${resultText ? `- ${resultText}` : ''}`,
       description: description,
-      siteName: 'ZayiflamaPlan',
+      siteName: 'ZayiflamaPlan - Gerçek İnsanların Gerçek Planları',
       publishedTime: plan.createdAt.toISOString(),
       modifiedTime: plan.updatedAt.toISOString(),
       authors: [plan.author.name || plan.author.username || 'Anonim'],
       tags: plan.tags?.split(',').map(t => t.trim()) || [],
       images: [
         {
-          url: `${siteUrl}/api/og?title=${encodeURIComponent(plan.title)}&author=${encodeURIComponent(plan.author.username || '')}&result=${encodeURIComponent(resultText)}`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: plan.title,
+          type: 'image/png',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: plan.title,
+      site: '@zayiflamaplan',
+      title: `${plan.title} ${resultText ? `- ${resultText}` : ''}`,
       description: description,
       creator: `@${plan.author.username}`,
-      images: [
-        `${siteUrl}/api/og?title=${encodeURIComponent(plan.title)}&author=${encodeURIComponent(plan.author.username || '')}&result=${encodeURIComponent(resultText)}`,
-      ],
+      images: [ogImageUrl],
     },
     alternates: {
       canonical: `/plan/${slug}`,
+    },
+    other: {
+      'article:author': plan.author.name || plan.author.username || 'Anonim',
+      'article:published_time': plan.createdAt.toISOString(),
+      'article:modified_time': plan.updatedAt.toISOString(),
+      'og:see_also': `${siteUrl}/profil/${plan.author.username}`,
     },
   }
 }
@@ -164,18 +172,61 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
 
   // Check if user liked this plan
   let isLiked = false
+  let isSaved = false
+  let userRating = undefined
+  let userProgress = 0
+  
   if (session?.user?.id) {
-    const like = await db.like.findUnique({
-      where: {
-        userId_targetType_targetId: {
-          userId: session.user.id,
-          targetType: 'plan',
-          targetId: plan.id,
+    const [like, favorite, rating, progress] = await Promise.all([
+      db.like.findUnique({
+        where: {
+          userId_targetType_targetId: {
+            userId: session.user.id,
+            targetType: 'plan',
+            targetId: plan.id,
+          },
         },
-      },
-    })
+      }),
+      db.favorite.findUnique({
+        where: {
+          userId_targetType_targetId: {
+            userId: session.user.id,
+            targetType: 'plan',
+            targetId: plan.id,
+          },
+        },
+      }),
+      db.planRating.findUnique({
+        where: {
+          userId_planId: {
+            userId: session.user.id,
+            planId: plan.id,
+          },
+        },
+      }),
+      db.planProgress.findUnique({
+        where: {
+          userId_planId: {
+            userId: session.user.id,
+            planId: plan.id,
+          },
+        },
+      }),
+    ])
+    
     isLiked = !!like
+    isSaved = !!favorite
+    userRating = rating?.rating
+    userProgress = progress?.currentDay || 0
   }
+
+  // Get total saves count
+  const savesCount = await db.favorite.count({
+    where: {
+      targetType: 'plan',
+      targetId: plan.id,
+    },
+  })
 
   const difficultyLabels = {
     easy: 'Kolay',
@@ -263,11 +314,22 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
                       </Button>
                     )}
                     {plan.status === 'rejected' && isAuthor && (
-                      <AppealButton
-                        contentType="plan"
-                        contentId={plan.id}
-                        isRejected={true}
-                      />
+                      <>
+                        <Button 
+                          size="sm" 
+                          asChild
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Link href={`/plan-ekle?edit=${plan.id}`}>
+                            ✏️ Düzenle ve Tekrar Gönder
+                          </Link>
+                        </Button>
+                        <AppealButton
+                          contentType="plan"
+                          contentId={plan.id}
+                          isRejected={true}
+                        />
+                      </>
                     )}
                   </div>
                 </div>
@@ -309,17 +371,52 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
             <span className="text-sm">👁️ {plan.views} görüntülenme</span>
           </div>
 
-          <div className="flex gap-2 mb-6">
+          {/* Stats Card */}
+          <div className="mb-6">
+            <StatsCard 
+              views={plan.views}
+              likes={plan.likesCount}
+              comments={plan.commentsCount}
+              saves={savesCount}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 mb-6 flex-wrap">
             {session?.user ? (
-              <LikeButton planId={plan.id} isLiked={isLiked} likesCount={plan.likesCount} />
+              <>
+                <PlanActions 
+                  planId={plan.id} 
+                  isLiked={isLiked} 
+                  likesCount={plan.likesCount}
+                  isSaved={isSaved}
+                  userRating={userRating}
+                  averageRating={plan.averageRating || 0}
+                  ratingCount={plan.ratingCount || 0}
+                />
+                <ShareButton title={plan.title} description={plan.description} />
+              </>
             ) : (
-              <Button asChild variant="outline">
-                <Link href="/giris">🤍 Beğen ({plan.likesCount})</Link>
-              </Button>
+              <>
+                <Button asChild variant="outline">
+                  <Link href="/giris">🤍 Beğen ({plan.likesCount})</Link>
+                </Button>
+                <ShareButton title={plan.title} description={plan.description} />
+              </>
             )}
-            <ShareButton title={plan.title} description={plan.description} />
           </div>
         </div>
+
+        {/* Progress Tracker - Only for logged in users */}
+        {session?.user && isPublished && (
+          <div className="mb-8">
+            <ProgressTracker 
+              planId={plan.id}
+              duration={plan.duration}
+              currentDay={userProgress}
+            />
+          </div>
+        )}
 
         {/* Author Story */}
         {plan.authorStory && (
@@ -395,7 +492,12 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
 
         {/* Daily Menus with Tabs */}
         {plan.days.length > 0 && (
-          <DailyMenuViewer days={plan.days} duration={plan.duration} />
+          <DailyMenuViewer 
+            days={plan.days} 
+            duration={plan.duration}
+            planId={plan.id}
+            userProgress={userProgress}
+          />
         )}
 
         {/* Comments */}

@@ -34,6 +34,38 @@ interface PlanActionsProps {
   status: string
 }
 
+// Şablon red mesajları
+const REJECTION_TEMPLATES = [
+  {
+    label: "Başlık Sorunlu",
+    message: "Plan başlığı çok kısa veya açıklayıcı değil. Lütfen daha detaylı bir başlık yazın (minimum 10 karakter)."
+  },
+  {
+    label: "İçerik Eksik",
+    message: "Plan detayları eksik. Lütfen günlük öğünleri, kalori bilgilerini ve önerilen egzersizleri ekleyin."
+  },
+  {
+    label: "Yazım Hataları",
+    message: "Planda çok fazla yazım hatası var. Lütfen metni kontrol edip düzeltin."
+  },
+  {
+    label: "Sağlık Riski",
+    message: "Plan çok düşük kalorili veya sağlık açısından riskli görünüyor. Lütfen daha dengeli bir plan oluşturun veya uzman görüşü ekleyin."
+  },
+  {
+    label: "Uygunsuz İçerik",
+    message: "Plan içeriği topluluk kurallarına uygun değil. Lütfen uygun olmayan ifadeleri kaldırın."
+  },
+  {
+    label: "Kopya İçerik",
+    message: "Bu plan başka bir kaynaktan kopyalanmış görünüyor. Lütfen kendi deneyiminizi paylaşın."
+  },
+  {
+    label: "Fotoğraf Sorunu",
+    message: "Eklenen fotoğraflar uygun değil veya kalitesiz. Lütfen daha net ve uygun fotoğraflar ekleyin."
+  },
+]
+
 export function PlanActions({ planId, planSlug, status }: PlanActionsProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -162,10 +194,28 @@ export function PlanActions({ planId, planSlug, status }: PlanActionsProps) {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
+              <Label>Hızlı Şablonlar</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {REJECTION_TEMPLATES.map((template, index) => (
+                  <Button
+                    key={index}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="justify-start text-left h-auto py-2"
+                    onClick={() => setRejectionReason(template.message)}
+                  >
+                    {template.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
               <Label htmlFor="reason">Red Sebebi (Opsiyonel)</Label>
               <Textarea
                 id="reason"
-                placeholder="Örn: İçerik topluluk kurallarına uygun değil..."
+                placeholder="Şablon seçin veya özel mesaj yazın..."
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={4}

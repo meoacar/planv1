@@ -138,13 +138,17 @@ export default function GuildsPage() {
                 XP kazan ve liderlik tablosunda yüksel! 🚀
               </p>
               <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                <Button size="lg" onClick={() => router.push('/lonca/olustur')}>
-                  <Plus className="w-5 h-5 mr-2" />
-                  Lonca Oluştur
+                <Button size="lg" asChild>
+                  <Link href="/lonca/olustur">
+                    <Plus className="w-5 h-5 mr-2" />
+                    Lonca Oluştur
+                  </Link>
                 </Button>
-                <Button size="lg" variant="outline" onClick={() => router.push('/lonca/liderlik')}>
-                  <TrendingUp className="w-5 h-5 mr-2" />
-                  Liderlik Tablosu
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/lonca/liderlik">
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    Liderlik Tablosu
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -215,9 +219,11 @@ export default function GuildsPage() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => router.push(`/lonca/${myGuild.guild?.slug}/duzenle`)}
+                        asChild
                       >
-                        Düzenle ve Tekrar Gönder
+                        <Link href={`/lonca/${myGuild.guild?.slug}/duzenle`}>
+                          Düzenle ve Tekrar Gönder
+                        </Link>
                       </Button>
                     )}
                   </div>
@@ -372,17 +378,21 @@ export default function GuildsPage() {
                   <Button
                     variant="outline"
                     className="flex-1"
-                    onClick={() => router.push(`/lonca/${guild.slug}`)}
+                    asChild
                   >
-                    Görüntüle
+                    <Link href={`/lonca/${guild.slug}`}>
+                      Görüntüle
+                    </Link>
                   </Button>
                   {isMyGuild ? (
                     <Button
                       className="flex-1"
                       variant="default"
-                      onClick={() => router.push(`/lonca/${guild.slug}`)}
+                      asChild
                     >
-                      {isLeader ? '👑 Loncan' : '✓ Üyesin'}
+                      <Link href={`/lonca/${guild.slug}`}>
+                        {isLeader ? '👑 Loncan' : '✓ Üyesin'}
+                      </Link>
                     </Button>
                   ) : (
                     <Button
@@ -418,9 +428,11 @@ export default function GuildsPage() {
               İlk loncayı sen oluştur ve lider ol! Arkadaşlarını davet et, 
               görevler tamamla ve XP kazan.
             </p>
-            <Button size="lg" onClick={() => router.push('/lonca/olustur')}>
-              <Plus className="w-5 h-5 mr-2" />
-              İlk Loncayı Oluştur
+            <Button size="lg" asChild>
+              <Link href="/lonca/olustur">
+                <Plus className="w-5 h-5 mr-2" />
+                İlk Loncayı Oluştur
+              </Link>
             </Button>
           </CardContent>
         </Card>

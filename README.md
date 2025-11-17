@@ -1,4 +1,4 @@
-# ZayiflamaPlan — MVP
+# ZayiflamaPlanim.com — MVP
 
 Gerçek insanların gerçek zayıflama planlarını paylaştığı, topluluk destekli platform.
 
@@ -35,7 +35,7 @@ Gerçek insanların gerçek zayıflama planlarını paylaştığı, topluluk des
 
 ```bash
 git clone <repo-url>
-cd zayiflama-plan
+cd zayiflamaplanim
 ```
 
 ### 2. Bağımlılıkları yükleyin
@@ -53,7 +53,7 @@ cp .env.example .env
 `.env` dosyasını düzenleyin:
 
 ```env
-DATABASE_URL="mysql://root:password@localhost:3306/zayiflamaplan"
+DATABASE_URL="mysql://root:password@localhost:3306/zayiflamaplanim"
 NEXTAUTH_SECRET="your-secret-key"
 NEXTAUTH_URL="http://localhost:3000"
 REDIS_HOST="127.0.0.1"
@@ -223,4 +223,4 @@ MIT
 
 ## 🙏 Credits
 
-Built with ❤️ by the ZayiflamaPlan team
+Built with ❤️ by the ZayiflamaPlanim.com team

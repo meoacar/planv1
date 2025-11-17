@@ -253,9 +253,13 @@ export function SettingsClient({ user }: SettingsClientProps) {
                 name="username"
                 defaultValue={user.username || ''}
                 placeholder="kullanici_adi"
+                disabled={!!user.username}
               />
               <p className="text-xs text-muted-foreground">
-                Profil URL'in: zayiflamaplan.com/profil/{user.username || 'kullanici_adi'}
+                {user.username 
+                  ? `Kullanıcı adı değiştirilemez. Profil URL'in: zayiflamaplan.com/profil/${user.username}`
+                  : 'Profil URL\'in: zayiflamaplan.com/profil/kullanici_adi'
+                }
               </p>
             </div>
 

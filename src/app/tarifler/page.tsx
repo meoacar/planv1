@@ -1,8 +1,11 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
+import { Plus } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { RecipeCard } from '@/components/recipe-card'
 import { RecipeFilters } from './recipe-filters'
 import { RecipeWithAuthor } from '@/types'
+import { Button } from '@/components/ui/button'
 
 async function getRecipes(searchParams: any) {
   const params = new URLSearchParams()
@@ -41,11 +44,19 @@ export default async function RecipesPage({
 
       <main className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Tarifler 🍳</h1>
-          <p className="text-muted-foreground text-lg">
-            Sağlıklı ve lezzetli tarifler keşfedin
-          </p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Tarifler 🍳</h1>
+            <p className="text-muted-foreground text-lg">
+              Sağlıklı ve lezzetli tarifler keşfedin
+            </p>
+          </div>
+          <Link href="/ekle/tarif">
+            <Button size="lg" className="gap-2">
+              <Plus className="h-5 w-5" />
+              Tarif Ekle
+            </Button>
+          </Link>
         </div>
 
         {/* Filters */}

@@ -3,6 +3,9 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { getSetting } from '@/lib/settings'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     const session = await auth()
@@ -12,6 +15,10 @@ export async function GET() {
       return NextResponse.json({ 
         user: null,
         siteName 
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
       })
     }
 
@@ -23,12 +30,19 @@ export async function GET() {
         username: true,
         image: true,
         role: true,
+        coins: true,
+        xp: true,
+        level: true,
       },
     })
 
     return NextResponse.json({ 
       user,
       siteName 
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+      },
     })
   } catch (error) {
     console.error('Error fetching session:', error)

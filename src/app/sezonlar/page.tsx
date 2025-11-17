@@ -135,10 +135,41 @@ export default function SeasonsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">🏆 Sezonlar & Ligler</h1>
-        <p className="text-muted-foreground">
-          Yarış, puan kazan ve ligde yüksel!
-        </p>
-      </div>
+          <p className="text-muted-foreground mb-4">Yarış, puan kazan ve ligde yüksel!</p>
+
+          {/* Info Card */}
+          <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+            <CardContent className="p-4">
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <span>ℹ️</span>
+                <span>Nasıl Çalışır?</span>
+              </h3>
+              <ul className="text-sm space-y-1 text-muted-foreground">
+                <li>
+                  • <strong>Görev tamamla</strong> ve <strong>günlük check-in yap</strong> → Lig
+                  puanı kazan
+                </li>
+                <li>
+                  • Yeterli puana ulaştığında <strong>otomatik olarak</strong> bir üst lige
+                  yükselirsin
+                </li>
+                <li>
+                  • Her lig yükseltmesinde <strong>100 coin bonus</strong> kazanırsın 🎁
+                </li>
+                <li>
+                  • Sezon sonunda en yüksek ligdeki oyuncular <strong>özel ödüller</strong>{' '}
+                  kazanır
+                </li>
+                <li>
+                  •{' '}
+                  {userLeague
+                    ? 'Şu anda yarışmadasın!'
+                    : 'İlk görevini tamamla ve yarışmaya katıl!'}
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
 
       {/* Current Season */}
       <Card className="mb-8">
@@ -155,13 +186,33 @@ export default function SeasonsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              Başlangıç: {new Date(season.startDate).toLocaleDateString('tr-TR')}
-            </span>
-            <span className="text-muted-foreground">
-              Bitiş: {new Date(season.endDate).toLocaleDateString('tr-TR')}
-            </span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                Başlangıç: {new Date(season.startDate).toLocaleDateString('tr-TR')}
+              </span>
+              <span className="text-muted-foreground">
+                Bitiş: {new Date(season.endDate).toLocaleDateString('tr-TR')}
+              </span>
+            </div>
+            <div className="text-sm bg-muted/50 p-3 rounded-lg">
+              <p className="text-muted-foreground">
+                {userLeague ? (
+                  <>
+                    <strong>Harika!</strong> Sezona katıldın ve şu anda{' '}
+                    <strong>{userLeague.points} puan</strong> ile{' '}
+                    <strong>{currentLeague?.name}</strong>'desin. Görev tamamlayarak ve günlük
+                    check-in yaparak puan kazanmaya devam et!
+                  </>
+                ) : (
+                  <>
+                    <strong>Sezona katılmak için</strong> herhangi bir görev tamamla veya günlük
+                    check-in yap. Otomatik olarak Bronz Ligi'nden başlayacaksın ve puan kazanmaya
+                    başlayacaksın!
+                  </>
+                )}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -221,7 +272,11 @@ export default function SeasonsPage() {
 
       {/* All Leagues */}
       <div>
-        <h2 className="text-xl font-bold mb-4">Tüm Ligler</h2>
+        <h2 className="text-xl font-bold mb-2">Tüm Ligler</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Puan kazandıkça otomatik olarak üst liglere yükselirsin. Her lig için gereken minimum
+          puanlar aşağıda gösterilmiştir.
+        </p>
         <div className="space-y-4">
           {season.leagues.map((league, index) => {
             const isCurrentLeague = league.id === currentLeague?.id;

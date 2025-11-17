@@ -31,6 +31,16 @@ model User {
   streak               Int                @default(0)
   lastCheckIn          DateTime?
   reputationScore      Int                @default(0)
+  // Cosmetic & Shop Items (Aktif Ürünler)
+  profileFrame         String?            // Profil çerçevesi key'i (örn: "gold", "silver")
+  nameColor            String?            // İsim rengi (örn: "rainbow", "gold")
+  profileBadge         String?            // Özel profil rozeti
+  activeTitle          String?            // Aktif unvan
+  xpBoostUntil         DateTime?          // XP boost bitiş tarihi
+  coinBoostUntil       DateTime?          // Coin boost bitiş tarihi
+  streakFreezeCount    Int                @default(0) // Kalan seri dondurma hakkı
+  customEmoji          String?            // Özel emoji
+  profileTheme         String?            // Profil teması
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
   accounts             Account[]
@@ -38,6 +48,7 @@ model User {
   followers            Follow[]           @relation("UserFollowers")
   following            Follow[]           @relation("UserFollowing")
   likes                Like[]
+  favorites            Favorite[]
   notifications        Notification[]
   plans                Plan[]
   photos               ProgressPhoto[]
@@ -117,39 +128,74 @@ model Session {
 }
 
 model Plan {
-  id               String     @id @default(cuid())
-  slug             String     @unique
+  id               String         @id @default(cuid())
+  slug             String         @unique
   title            String
-  description      String     @db.Text
+  description      String         @db.Text
   authorId         String
   duration         Int
   targetWeightLoss Float?
-  difficulty       Difficulty @default(medium)
-  tags             String?    @db.Text
-  authorStory      String?    @db.Text
+  difficulty       Difficulty     @default(medium)
+  tags             String?        @db.Text
+  authorStory      String?        @db.Text
   authorWeightLoss Float?
   authorDuration   Int?
   beforePhotoUrl   String?
   afterPhotoUrl    String?
-  status           PlanStatus @default(pending)
-  rejectionReason  String?    @db.Text
-  views            Int        @default(0)
-  likesCount       Int        @default(0)
-  commentsCount    Int        @default(0)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  status           PlanStatus     @default(pending)
+  rejectionReason  String?        @db.Text
+  views            Int            @default(0)
+  likesCount       Int            @default(0)
+  commentsCount    Int            @default(0)
+  averageRating    Float          @default(0)
+  ratingCount      Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   publishedAt      DateTime?
   comments         Comment[]
   likes            Like[]
   days             PlanDay[]
-  author           User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  ratings          PlanRating[]
+  progress         PlanProgress[]
+  author           User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([slug])
   @@index([authorId, createdAt])
   @@index([status, createdAt])
   @@index([publishedAt])
+  @@index([averageRating])
   @@fulltext([title, description])
   @@map("plans")
+}
+
+model PlanRating {
+  id        String   @id @default(cuid())
+  userId    String
+  planId    String
+  rating    Int // 1-5
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, planId])
+  @@index([planId])
+  @@index([userId])
+  @@map("plan_ratings")
+}
+
+model PlanProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  planId      String
+  currentDay  Int      @default(0)
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  plan        Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, planId])
+  @@index([planId])
+  @@index([userId])
+  @@map("plan_progress")
 }
 
 model PlanDay {
@@ -277,6 +323,20 @@ model Like {
   @@index([userId])
   @@index([targetId], map: "likes_targetId_fkey")
   @@map("likes")
+}
+
+model Favorite {
+  id         String     @id @default(cuid())
+  userId     String
+  targetType TargetType
+  targetId   String
+  createdAt  DateTime   @default(now())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+  @@index([userId])
+  @@map("favorites")
 }
 
 model Follow {
@@ -957,6 +1017,7 @@ enum CoinTransactionType {
   admin_grant
   level_up
   guild_reward
+  league_promotion
 }
 
 enum ShopCategory {

@@ -56,9 +56,10 @@ export async function POST(
       // Gamification: Update quest progress for likes
       try {
         const { updateQuestProgress } = await import('@/services/gamification.service')
-        await updateQuestProgress(session.user.id, 'daily_like', 1).catch(() => {})
+        await updateQuestProgress(session.user.id, 'daily_like', 1)
+        console.log('✅ Quest progress updated: daily_like')
       } catch (error) {
-        console.error('Gamification error:', error)
+        console.error('❌ Gamification error:', error)
       }
     }
 

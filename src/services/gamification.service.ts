@@ -66,8 +66,12 @@ export async function addXP(userId: string, amount: number, reason: string) {
     data: { xp: newXP, level: newLevel },
   });
 
-  // Clear cache
-  await redis.del(`user:stats:${userId}`);
+  // Clear cache (optional - skip if Redis not available)
+  try {
+    await redis?.del(`user:stats:${userId}`);
+  } catch (e) {
+    // Redis not available, skip cache clear
+  }
 
   // If leveled up, grant bonus coins
   if (leveledUp) {
@@ -105,7 +109,12 @@ export async function addCoins(
     }),
   ]);
 
-  await redis.del(`user:stats:${userId}`);
+  // Clear cache (optional)
+  try {
+    await redis?.del(`user:stats:${userId}`);
+  } catch (e) {
+    // Redis not available
+  }
   return { newBalance: user.coins, transaction };
 }
 
@@ -166,15 +175,24 @@ export async function awardBadge(userId: string, badgeKey: string) {
     await addCoins(userId, badge.coinReward, 'badge_reward', `Rozet kazandın: ${badge.name}`);
   }
 
-  // Clear cache
-  await redis.del(`user:badges:${userId}`);
+  // Clear cache (optional)
+  try {
+    await redis?.del(`user:badges:${userId}`);
+  } catch (e) {
+    // Redis not available
+  }
 
   return userBadge;
 }
 
 export async function getUserBadges(userId: string) {
-  const cached = await redis.get(`user:badges:${userId}`);
-  if (cached) return JSON.parse(cached);
+  // Try cache first (optional)
+  try {
+    const cached = await redis?.get(`user:badges:${userId}`);
+    if (cached) return JSON.parse(cached);
+  } catch (e) {
+    // Redis not available, skip cache
+  }
 
   const badges = await prisma.userBadge.findMany({
     where: { userId },
@@ -182,7 +200,13 @@ export async function getUserBadges(userId: string) {
     orderBy: { earnedAt: 'desc' },
   });
 
-  await redis.setex(`user:badges:${userId}`, 3600, JSON.stringify(badges));
+  // Try to cache (optional)
+  try {
+    await redis?.setEx(`user:badges:${userId}`, 3600, JSON.stringify(badges));
+  } catch (e) {
+    // Redis not available
+  }
+  
   return badges;
 }
 
@@ -196,6 +220,12 @@ export async function getAllBadges() {
 // ====================================================
 // QUEST SYSTEM
 // ====================================================
+
+export async function getQuestById(questId: string) {
+  return prisma.dailyQuest.findUnique({
+    where: { id: questId },
+  });
+}
 
 export async function getDailyQuests(userId: string, date: Date = new Date()) {
   const startOfDay = new Date(date);
@@ -254,9 +284,21 @@ export async function updateQuestProgress(
     },
   });
 
-  // Check if quest is completed
+  // Auto-complete quest if target reached (but don't grant rewards yet)
+  // completedAt will be set when user claims the reward
   if (!userQuest.completed && userQuest.progress >= quest.target) {
-    await completeQuest(userId, quest.id);
+    await prisma.userDailyQuest.updateMany({
+      where: {
+        userId,
+        questId: quest.id,
+        date: { gte: today },
+        completed: false,
+      },
+      data: {
+        completed: true,
+        // Don't set completedAt here - it will be set when rewards are claimed
+      },
+    });
   }
 
   return userQuest;
@@ -269,20 +311,30 @@ export async function completeQuest(userId: string, questId: string) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const userQuest = await prisma.userDailyQuest.updateMany({
+  const userQuest = await prisma.userDailyQuest.findFirst({
     where: {
       userId,
       questId,
       date: { gte: today },
-      completed: false,
+    },
+  });
+
+  if (!userQuest) throw new Error('Quest progress not found');
+  if (userQuest.progress < quest.target) throw new Error('Quest not completed yet');
+  if (userQuest.completedAt) return null; // Already claimed
+
+  // Mark as completed and set completedAt
+  await prisma.userDailyQuest.updateMany({
+    where: {
+      userId,
+      questId,
+      date: { gte: today },
     },
     data: {
       completed: true,
       completedAt: new Date(),
     },
   });
-
-  if (userQuest.count === 0) return null; // Already completed
 
   // Grant rewards
   if (quest.xpReward > 0) {
@@ -292,7 +344,12 @@ export async function completeQuest(userId: string, questId: string) {
     await addCoins(userId, quest.coinReward, 'quest_reward', `Görev tamamlandı: ${quest.title}`);
   }
 
-  return userQuest;
+  // Grant league points (XP reward = league points)
+  if (quest.xpReward > 0) {
+    await addLeaguePoints(userId, quest.xpReward);
+  }
+
+  return { quest, userQuest };
 }
 
 // ====================================================
@@ -340,6 +397,9 @@ export async function updateStreak(userId: string) {
     if (newStreak === 7) await awardBadge(userId, 'streak_7');
     if (newStreak === 30) await awardBadge(userId, 'streak_30');
     if (newStreak === 100) await awardBadge(userId, 'streak_100');
+
+    // Grant league points for daily check-in
+    await addLeaguePoints(userId, 10); // 10 puan günlük check-in için
 
     return { streak: newStreak, continued: true };
   } else {
@@ -428,7 +488,116 @@ export async function purchaseItem(userId: string, itemKey: string, quantity: nu
     });
   }
 
+  // Apply item effects to user profile
+  await applyItemEffect(userId, itemKey, quantity);
+
   return purchase;
+}
+
+// Ürün efektlerini kullanıcıya uygula
+async function applyItemEffect(userId: string, itemKey: string, quantity: number = 1) {
+  const updateData: any = {};
+
+  // Profil çerçeveleri
+  if (itemKey === 'profile_frame_gold') {
+    updateData.profileFrame = 'gold';
+  } else if (itemKey === 'profile_frame_silver') {
+    updateData.profileFrame = 'silver';
+  } else if (itemKey === 'profile_frame_diamond') {
+    updateData.profileFrame = 'diamond';
+  } else if (itemKey === 'profile_frame_rainbow') {
+    updateData.profileFrame = 'rainbow';
+  } else if (itemKey === 'profile_frame_fire') {
+    updateData.profileFrame = 'fire';
+  } else if (itemKey === 'profile_frame_ice') {
+    updateData.profileFrame = 'ice';
+  }
+
+  // İsim renkleri
+  else if (itemKey === 'name_color_rainbow') {
+    updateData.nameColor = 'rainbow';
+  } else if (itemKey === 'name_color_gold') {
+    updateData.nameColor = 'gold';
+  } else if (itemKey === 'name_color_red') {
+    updateData.nameColor = 'red';
+  } else if (itemKey === 'name_color_blue') {
+    updateData.nameColor = 'blue';
+  } else if (itemKey === 'name_color_purple') {
+    updateData.nameColor = 'purple';
+  }
+
+  // XP Boost
+  else if (itemKey === 'xp_boost_2x') {
+    const boostEnd = new Date();
+    boostEnd.setHours(boostEnd.getHours() + 24 * quantity);
+    updateData.xpBoostUntil = boostEnd;
+  } else if (itemKey === 'xp_boost_3x') {
+    const boostEnd = new Date();
+    boostEnd.setHours(boostEnd.getHours() + 12 * quantity);
+    updateData.xpBoostUntil = boostEnd;
+  }
+
+  // Coin Boost
+  else if (itemKey === 'coin_boost_2x') {
+    const boostEnd = new Date();
+    boostEnd.setHours(boostEnd.getHours() + 24 * quantity);
+    updateData.coinBoostUntil = boostEnd;
+  }
+
+  // Seri Dondurma
+  else if (itemKey === 'streak_freeze' || itemKey === 'streak_freeze_3') {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (user) {
+      const freezeCount = itemKey === 'streak_freeze_3' ? 3 : 1;
+      await prisma.user.update({
+        where: { id: userId },
+        data: { streakFreezeCount: { increment: freezeCount * quantity } },
+      });
+    }
+  }
+
+  // Özel Rozet
+  else if (itemKey === 'custom_badge') {
+    updateData.profileBadge = 'custom';
+  }
+
+  // Unvanlar
+  else if (itemKey === 'title_champion') {
+    updateData.activeTitle = 'Şampiyon';
+  } else if (itemKey === 'title_legend') {
+    updateData.activeTitle = 'Efsane';
+  } else if (itemKey === 'title_master') {
+    updateData.activeTitle = 'Usta';
+  } else if (itemKey === 'title_warrior') {
+    updateData.activeTitle = 'Savaşçı';
+  }
+
+  // Özel Emoji
+  else if (itemKey === 'custom_emoji') {
+    updateData.customEmoji = '⭐';
+  }
+
+  // Profil Temaları
+  else if (itemKey === 'theme_dark') {
+    updateData.profileTheme = 'dark';
+  } else if (itemKey === 'theme_ocean') {
+    updateData.profileTheme = 'ocean';
+  } else if (itemKey === 'theme_sunset') {
+    updateData.profileTheme = 'sunset';
+  } else if (itemKey === 'theme_forest') {
+    updateData.profileTheme = 'forest';
+  }
+
+  // Eğer güncelleme varsa uygula
+  if (Object.keys(updateData).length > 0) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+  }
 }
 
 export async function getUserPurchases(userId: string) {
@@ -466,35 +635,60 @@ export async function addLeaguePoints(userId: string, points: number) {
   const season = await getCurrentSeason();
   if (!season) return null;
 
-  const userLeague = await prisma.userLeague.upsert({
+  // Önce kullanıcının mevcut lig bilgisini al
+  let userLeague = await prisma.userLeague.findUnique({
     where: { userId_seasonId: { userId, seasonId: season.id } },
-    create: {
-      userId,
-      seasonId: season.id,
-      leagueId: season.leagues[0].id, // Start in lowest league
-      points,
+  });
+
+  // Eğer yoksa, başlangıç ligine yerleştir
+  if (!userLeague) {
+    userLeague = await prisma.userLeague.create({
+      data: {
+        userId,
+        seasonId: season.id,
+        leagueId: season.leagues[0].id, // Bronz ligden başla
+        points: 0,
+      },
+    });
+  }
+
+  // Puanı güncelle
+  const newPoints = userLeague.points + points;
+  
+  // Kullanıcının hangi lige girmesi gerektiğini bul
+  const appropriateLeague = [...season.leagues]
+    .reverse() // En yüksek ligden başla
+    .find((league) => newPoints >= league.minPoints);
+
+  if (!appropriateLeague) return null;
+
+  // Lig değişti mi kontrol et
+  const promoted = appropriateLeague.id !== userLeague.leagueId;
+
+  // Güncelle
+  const updatedUserLeague = await prisma.userLeague.update({
+    where: { id: userLeague.id },
+    data: {
+      points: newPoints,
+      leagueId: appropriateLeague.id,
     },
-    update: {
-      points: { increment: points },
+    include: {
+      league: true,
     },
   });
 
-  // Check for league promotion
-  const currentLeague = season.leagues.find((l) => l.id === userLeague.leagueId);
-  if (currentLeague) {
-    const nextLeague = season.leagues.find(
-      (l) => l.minPoints > currentLeague.minPoints && userLeague.points >= l.minPoints
+  // Eğer lig yükseldiyse bonus ver
+  if (promoted) {
+    const bonusCoins = 100;
+    await addCoins(
+      userId,
+      bonusCoins,
+      'league_promotion',
+      `${appropriateLeague.name}'e yükseldin! 🎉`
     );
-
-    if (nextLeague) {
-      await prisma.userLeague.update({
-        where: { id: userLeague.id },
-        data: { leagueId: nextLeague.id },
-      });
-    }
   }
 
-  return userLeague;
+  return { ...updatedUserLeague, promoted };
 }
 
 export async function getLeagueLeaderboard(leagueId: string, limit: number = 100) {

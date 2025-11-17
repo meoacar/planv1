@@ -86,3 +86,134 @@ export async function getRecentActivity() {
 
   return recentPlans
 }
+
+export async function getPopularPlans() {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== 'ADMIN') {
+    return []
+  }
+
+  const popularPlans = await db.plan.findMany({
+    where: { status: 'published' },
+    take: 3,
+    orderBy: { views: 'desc' },
+    include: {
+      author: {
+        select: {
+          username: true,
+          name: true,
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+          likes: true,
+        },
+      },
+    },
+  })
+
+  return popularPlans
+}
+
+export async function getGrowthStats() {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== 'ADMIN') {
+    return {
+      userGrowth: 0,
+      planGrowth: 0,
+      engagementGrowth: 0,
+    }
+  }
+
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  const sixtyDaysAgo = new Date()
+  sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60)
+
+  // Get counts for last 30 days
+  const [usersLast30, plansLast30, commentsLast30, likesLast30] = await Promise.all([
+    db.user.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgo },
+      },
+    }),
+    db.plan.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgo },
+      },
+    }),
+    db.comment.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgo },
+      },
+    }),
+    db.like.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgo },
+      },
+    }),
+  ])
+
+  // Get counts for previous 30 days (30-60 days ago)
+  const [usersPrevious30, plansPrevious30, commentsPrevious30, likesPrevious30] = await Promise.all([
+    db.user.count({
+      where: {
+        createdAt: {
+          gte: sixtyDaysAgo,
+          lt: thirtyDaysAgo,
+        },
+      },
+    }),
+    db.plan.count({
+      where: {
+        createdAt: {
+          gte: sixtyDaysAgo,
+          lt: thirtyDaysAgo,
+        },
+      },
+    }),
+    db.comment.count({
+      where: {
+        createdAt: {
+          gte: sixtyDaysAgo,
+          lt: thirtyDaysAgo,
+        },
+      },
+    }),
+    db.like.count({
+      where: {
+        createdAt: {
+          gte: sixtyDaysAgo,
+          lt: thirtyDaysAgo,
+        },
+      },
+    }),
+  ])
+
+  // Calculate growth percentages
+  const calculateGrowth = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0
+    return Math.round(((current - previous) / previous) * 100)
+  }
+
+  const userGrowth = calculateGrowth(usersLast30, usersPrevious30)
+  const planGrowth = calculateGrowth(plansLast30, plansPrevious30)
+  
+  // Engagement = comments + likes
+  const engagementLast30 = commentsLast30 + likesLast30
+  const engagementPrevious30 = commentsPrevious30 + likesPrevious30
+  const engagementGrowth = calculateGrowth(engagementLast30, engagementPrevious30)
+
+  return {
+    userGrowth,
+    planGrowth,
+    engagementGrowth,
+    usersLast30,
+    plansLast30,
+    engagementLast30,
+  }
+}

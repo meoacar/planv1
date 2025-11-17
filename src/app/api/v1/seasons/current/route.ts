@@ -1,18 +1,37 @@
-import { NextRequest } from 'next/server';
-import { apiResponse } from '@/lib/api-response';
-import * as gamificationService from '@/services/gamification.service';
+import { NextResponse } from 'next/server';
+import { db as prisma } from '@/lib/db';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const season = await gamificationService.getCurrentSeason();
-    
-    if (!season) {
-      return apiResponse.error('No active season found', 404);
+    const currentSeason = await prisma.season.findFirst({
+      where: {
+        isActive: true,
+      },
+      include: {
+        leagues: {
+          orderBy: {
+            minPoints: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!currentSeason) {
+      return NextResponse.json(
+        { success: false, message: 'Aktif sezon bulunamadı' },
+        { status: 404 }
+      );
     }
 
-    return apiResponse.success(season);
-  } catch (error: any) {
-    console.error('GET /api/v1/seasons/current error:', error);
-    return apiResponse.error(error.message || 'Failed to fetch current season', 500);
+    return NextResponse.json({
+      success: true,
+      data: currentSeason,
+    });
+  } catch (error) {
+    console.error('Error fetching current season:', error);
+    return NextResponse.json(
+      { success: false, message: 'Sezon bilgisi alınamadı' },
+      { status: 500 }
+    );
   }
 }

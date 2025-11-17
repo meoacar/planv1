@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
     const difficulty = searchParams.get('difficulty')
     const duration = searchParams.get('duration')
     const tag = searchParams.get('tag')
+    const sort = searchParams.get('sort') || 'popular'
+    const filter = searchParams.get('filter') || 'all'
 
     const skip = (page - 1) * limit
 
@@ -50,6 +52,39 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Apply filter-based ordering
+    let orderBy: any = { createdAt: 'desc' }
+    
+    if (filter === 'trending') {
+      // Trending: combination of recent activity and engagement
+      orderBy = [
+        { likesCount: 'desc' },
+        { views: 'desc' },
+        { createdAt: 'desc' },
+      ]
+    } else if (filter === 'popular') {
+      orderBy = [
+        { likesCount: 'desc' },
+        { commentsCount: 'desc' },
+      ]
+    } else if (filter === 'new') {
+      orderBy = { createdAt: 'desc' }
+    } else {
+      // Default sorting based on sort parameter
+      if (sort === 'popular') {
+        orderBy = [
+          { likesCount: 'desc' },
+          { views: 'desc' },
+        ]
+      } else if (sort === 'newest') {
+        orderBy = { createdAt: 'desc' }
+      } else if (sort === 'likes') {
+        orderBy = { likesCount: 'desc' }
+      } else if (sort === 'views') {
+        orderBy = { views: 'desc' }
+      }
+    }
+
     // Fetch plans
     const [plansData, total] = await Promise.all([
       db.plan.findMany({
@@ -63,13 +98,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: query 
-          ? [
-              { likesCount: 'desc' },
-              { views: 'desc' },
-              { createdAt: 'desc' },
-            ]
-          : { createdAt: 'desc' },
+        orderBy,
         skip,
         take: limit,
       }),

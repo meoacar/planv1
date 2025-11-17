@@ -64,6 +64,17 @@ export async function POST(
     const recipe = await RecipeService.getRecipeBySlug(params.slug)
     const result = await RecipeService.likeRecipe(recipe.id, session.user.id)
 
+    // Gamification: Update quest progress for likes
+    if (result.liked) {
+      try {
+        const { updateQuestProgress } = await import('@/services/gamification.service')
+        await updateQuestProgress(session.user.id, 'daily_like', 1)
+        console.log('✅ Quest progress updated: daily_like')
+      } catch (error) {
+        console.error('❌ Gamification error:', error)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: result,

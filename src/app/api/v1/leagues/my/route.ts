@@ -1,29 +1,97 @@
-import { NextRequest } from 'next/server';
-import { auth } from '@/lib/auth';
-import { apiResponse } from '@/lib/api-response';
-import * as gamificationService from '@/services/gamification.service';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { db as prisma } from '@/lib/db';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
+
     if (!session?.user?.id) {
-      return apiResponse.error('Unauthorized', 401);
+      return NextResponse.json(
+        { success: false, message: 'Oturum açmanız gerekiyor' },
+        { status: 401 }
+      );
     }
 
-    const season = await gamificationService.getCurrentSeason();
-    if (!season) {
-      return apiResponse.error('No active season', 404);
+    // Aktif sezonu bul
+    const currentSeason = await prisma.season.findFirst({
+      where: {
+        isActive: true,
+      },
+    });
+
+    if (!currentSeason) {
+      return NextResponse.json(
+        { success: false, message: 'Aktif sezon bulunamadı' },
+        { status: 404 }
+      );
     }
 
-    const userLeague = await gamificationService.getUserLeague(session.user.id, season.id);
-    
+    // Kullanıcının lig bilgisini bul veya oluştur
+    let userLeague = await prisma.userLeague.findUnique({
+      where: {
+        userId_seasonId: {
+          userId: session.user.id,
+          seasonId: currentSeason.id,
+        },
+      },
+      include: {
+        league: true,
+      },
+    });
+
+    // Eğer kullanıcının lig kaydı yoksa, başlangıç ligine yerleştir
     if (!userLeague) {
-      return apiResponse.success(null);
+      const bronzeLeague = await prisma.league.findFirst({
+        where: {
+          seasonId: currentSeason.id,
+          tier: 'bronze',
+        },
+      });
+
+      if (!bronzeLeague) {
+        return NextResponse.json(
+          { success: false, message: 'Başlangıç ligi bulunamadı' },
+          { status: 404 }
+        );
+      }
+
+      userLeague = await prisma.userLeague.create({
+        data: {
+          userId: session.user.id,
+          leagueId: bronzeLeague.id,
+          seasonId: currentSeason.id,
+          points: 0,
+        },
+        include: {
+          league: true,
+        },
+      });
     }
 
-    return apiResponse.success(userLeague);
-  } catch (error: any) {
-    console.error('GET /api/v1/leagues/my error:', error);
-    return apiResponse.error(error.message || 'Failed to fetch user league', 500);
+    // Kullanıcının sıralamasını hesapla
+    const rank = await prisma.userLeague.count({
+      where: {
+        leagueId: userLeague.leagueId,
+        points: {
+          gt: userLeague.points,
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...userLeague,
+        rank: rank + 1,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching user league:', error);
+    return NextResponse.json(
+      { success: false, message: 'Lig bilgisi alınamadı' },
+      { status: 500 }
+    );
   }
 }

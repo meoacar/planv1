@@ -19,12 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
     googleSiteVerification,
     siteFavicon,
   ] = await Promise.all([
-    getSetting('seoTitle', 'ZayiflamaPlan - Gerçek İnsanların Gerçek Planları'),
+    getSetting('seoTitle', 'ZayiflamaPlanim.com - Gerçek İnsanların Gerçek Planları'),
     getSetting('seoDescription', 'Gerçek insanların gerçek zayıflama planlarını paylaştığı, topluluk destekli platform.'),
     getSetting('seoKeywords', 'zayıflama, diyet, kilo verme, sağlıklı yaşam, fitness'),
     getSetting('ogImage', '/og-image.jpg'),
-    getSetting('twitterHandle', '@zayiflamaplan'),
-    getSetting('siteUrl', 'https://zayiflamaplan.com'),
+    getSetting('twitterHandle', '@zayiflamaplanim'),
+    getSetting('siteUrl', 'https://zayiflamaplanim.com'),
     getSetting('googleSiteVerification', ''),
     getSetting('siteFavicon', '/favicon.ico'),
   ])
@@ -36,9 +36,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: seoDescription,
     keywords: seoKeywords.split(',').map(k => k.trim()),
-    authors: [{ name: 'ZayiflamaPlan' }],
-    creator: 'ZayiflamaPlan',
-    publisher: 'ZayiflamaPlan',
+    authors: [{ name: 'ZayiflamaPlanim.com' }],
+    creator: 'ZayiflamaPlanim.com',
+    publisher: 'ZayiflamaPlanim.com',
     metadataBase: new URL(siteUrl),
     alternates: {
       canonical: '/',

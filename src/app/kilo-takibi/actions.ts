@@ -56,6 +56,15 @@ export async function addWeightLog(formData: FormData) {
           note: note || null,
         },
       })
+
+      // Gamification: Update quest progress for weight logging
+      try {
+        const { updateQuestProgress } = await import('@/services/gamification.service')
+        await updateQuestProgress(session.user.id, 'daily_weigh_in', 1)
+        console.log('✅ Quest progress updated: daily_weigh_in')
+      } catch (error) {
+        console.error('❌ Gamification error:', error)
+      }
     }
 
     // Kullanıcının mevcut kilosunu güncelle

@@ -70,8 +70,13 @@ const menuItems = [
     icon: Trophy,
   },
   {
-    title: "Gamification",
+    title: "Rozetler",
     href: "/admin/gamification/badges",
+    icon: Trophy,
+  },
+  {
+    title: "Görevler",
+    href: "/admin/gamification/quests",
     icon: Gamepad2,
   },
   {
