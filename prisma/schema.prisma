@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextIndex", "fullTextSearch"]
 }
 
 datasource db {
@@ -9,82 +9,79 @@ datasource db {
 }
 
 model User {
-  id                   String             @id @default(cuid())
-  email                String             @unique
-  username             String?            @unique
+  id                   String              @id @default(cuid())
+  email                String              @unique
+  username             String?             @unique
   passwordHash         String?
   name                 String?
-  bio                  String?            @db.Text
-  image                String?            @db.Text
-  role                 Role               @default(USER)
-  isBanned             Boolean            @default(false)
-  bannedUntil          DateTime?
-  banReason            String?            @db.Text
+  bio                  String?             @db.Text
+  image                String?             @db.Text
+  role                 Role                @default(USER)
   currentWeight        Float?
   targetWeight         Float?
   height               Float?
   emailVerified        DateTime?
-  // Gamification fields
-  xp                   Int                @default(0)
-  level                Int                @default(1)
-  coins                Int                @default(0)
-  streak               Int                @default(0)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  isBanned             Boolean             @default(false)
+  coins                Int                 @default(0)
   lastCheckIn          DateTime?
-  reputationScore      Int                @default(0)
-  // Cosmetic & Shop Items (Aktif Ürünler)
-  profileFrame         String?            // Profil çerçevesi key'i (örn: "gold", "silver")
-  nameColor            String?            // İsim rengi (örn: "rainbow", "gold")
-  profileBadge         String?            // Özel profil rozeti
-  activeTitle          String?            // Aktif unvan
-  xpBoostUntil         DateTime?          // XP boost bitiş tarihi
-  coinBoostUntil       DateTime?          // Coin boost bitiş tarihi
-  streakFreezeCount    Int                @default(0) // Kalan seri dondurma hakkı
-  customEmoji          String?            // Özel emoji
-  profileTheme         String?            // Profil teması
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
+  level                Int                 @default(1)
+  reputationScore      Int                 @default(0)
+  streak               Int                 @default(0)
+  xp                   Int                 @default(0)
+  banReason            String?             @db.Text
+  bannedUntil          DateTime?
+  activeTitle          String?
+  coinBoostUntil       DateTime?
+  customEmoji          String?
+  nameColor            String?
+  profileBadge         String?
+  profileFrame         String?
+  profileTheme         String?
+  streakFreezeCount    Int                 @default(0)
+  xpBoostUntil         DateTime?
   accounts             Account[]
-  comments             Comment[]
-  followers            Follow[]           @relation("UserFollowers")
-  following            Follow[]           @relation("UserFollowing")
-  likes                Like[]
-  favorites            Favorite[]
-  notifications        Notification[]
-  plans                Plan[]
-  photos               ProgressPhoto[]
-  sessions             Session[]
-  weightLogs           WeightLog[]
-  sentMessages         Message[]          @relation("SentMessages")
-  receivedMessages     Message[]          @relation("ReceivedMessages")
-  conversations        Conversation[]     @relation("ConversationParticipants")
-  recipes              Recipe[]
-  recipeComments       RecipeComment[]
-  recipeLikes          RecipeLike[]
-  // Gamification relations
-  badges               UserBadge[]
-  quests               UserDailyQuest[]
   coinTransactions     CoinTransaction[]
-  purchases            UserPurchase[]
-  guildMemberships     GuildMember[]
-  guildJoinRequests    GuildJoinRequest[]
-  leagueParticipations UserLeague[]
-  battlePasses         UserBattlePass[]
-  streakRecoveries     StreakRecovery[]
-  referralsMade        Referral[]         @relation("ReferrerUser")
-  referralsReceived    Referral[]         @relation("ReferredUser")
-  referralCode         ReferralCode?
-  ledGuilds            Guild[]            @relation("GuildLeader")
-  // Group relations
+  comments             Comment[]
+  confessionEmpathies  ConfessionEmpathy[]
+  confessionReports    ConfessionReport[]
+  confessions          Confession[]
+  resolvedAppeals      ContentAppeal[]     @relation("AppealResolver")
+  appeals              ContentAppeal[]
+  favorites            Favorite[]
+  followers            Follow[]            @relation("UserFollowers")
+  following            Follow[]            @relation("UserFollowing")
   groupMemberships     GroupMember[]
   groupPosts           GroupPost[]
-  createdGroups        Group[]            @relation("GroupCreator")
-  // Appeal relations
-  appeals              ContentAppeal[]
-  resolvedAppeals      ContentAppeal[]    @relation("AppealResolver")
-  // Cohort relations
-  cohorts              UserCohort[]       @relation("UserCohorts")
+  createdGroups        Group[]             @relation("GroupCreator")
+  guildJoinRequests    GuildJoinRequest[]
+  guildMemberships     GuildMember[]
+  ledGuilds            Guild[]             @relation("GuildLeader")
+  likes                Like[]
+  receivedMessages     Message[]           @relation("ReceivedMessages")
+  sentMessages         Message[]           @relation("SentMessages")
+  notifications        Notification[]
   passwordResets       PasswordReset[]
+  plans                Plan[]
+  photos               ProgressPhoto[]
   pushSubscriptions    PushSubscription[]
+  recipeComments       RecipeComment[]
+  recipeLikes          RecipeLike[]
+  recipes              Recipe[]
+  referralCode         ReferralCode?
+  referralsReceived    Referral[]          @relation("ReferredUser")
+  referralsMade        Referral[]          @relation("ReferrerUser")
+  sessions             Session[]
+  streakRecoveries     StreakRecovery[]
+  badges               UserBadge[]
+  battlePasses         UserBattlePass[]
+  cohorts              UserCohort[]        @relation("UserCohorts")
+  quests               UserDailyQuest[]
+  leagueParticipations UserLeague[]
+  purchases            UserPurchase[]
+  weightLogs           WeightLog[]
+  conversations        Conversation[]      @relation("conversationparticipants")
 
   @@index([email])
   @@index([username])
@@ -143,20 +140,20 @@ model Plan {
   beforePhotoUrl   String?
   afterPhotoUrl    String?
   status           PlanStatus     @default(pending)
-  rejectionReason  String?        @db.Text
   views            Int            @default(0)
   likesCount       Int            @default(0)
   commentsCount    Int            @default(0)
-  averageRating    Float          @default(0)
-  ratingCount      Int            @default(0)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   publishedAt      DateTime?
+  rejectionReason  String?        @db.Text
+  averageRating    Float          @default(0)
+  ratingCount      Int            @default(0)
   comments         Comment[]
   likes            Like[]
   days             PlanDay[]
-  ratings          PlanRating[]
   progress         PlanProgress[]
+  ratings          PlanRating[]
   author           User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([slug])
@@ -172,7 +169,7 @@ model PlanRating {
   id        String   @id @default(cuid())
   userId    String
   planId    String
-  rating    Int // 1-5
+  rating    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
@@ -221,10 +218,10 @@ model Recipe {
   title           String
   description     String          @db.Text
   authorId        String
-  ingredients     String          @db.Text // JSON array
+  ingredients     String          @db.Text
   instructions    String          @db.Text
-  prepTime        Int? // minutes
-  cookTime        Int? // minutes
+  prepTime        Int?
+  cookTime        Int?
   servings        Int             @default(1)
   calories        Float?
   protein         Float?
@@ -233,12 +230,10 @@ model Recipe {
   fiber           Float?
   category        RecipeCategory  @default(main)
   mealType        MealType?
-  tags            String?         @db.Text // JSON array
-  images          String?         @db.Text // JSON array of image URLs (max 4)
+  tags            String?         @db.Text
   videoUrl        String?
   difficulty      Difficulty      @default(medium)
   status          PlanStatus      @default(pending)
-  rejectionReason String?         @db.Text
   views           Int             @default(0)
   likesCount      Int             @default(0)
   commentsCount   Int             @default(0)
@@ -246,9 +241,11 @@ model Recipe {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   publishedAt     DateTime?
-  author          User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  images          String?         @db.Text
+  rejectionReason String?         @db.Text
   comments        RecipeComment[]
   likes           RecipeLike[]
+  author          User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([slug])
   @@index([authorId, createdAt])
@@ -267,8 +264,8 @@ model RecipeComment {
   status    CommentStatus @default(visible)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  recipe    Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  recipe    Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@index([recipeId, createdAt])
   @@index([authorId])
@@ -398,6 +395,791 @@ model Notification {
   @@map("notifications")
 }
 
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("settings")
+}
+
+model RolePermission {
+  id          String   @id @default(cuid())
+  role        String
+  resource    String
+  action      String
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([role, resource, action])
+  @@index([role])
+  @@map("role_permissions")
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  name        String
+  key         String    @unique
+  permissions String    @db.Text
+  isActive    Boolean   @default(true)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([key])
+  @@index([isActive])
+  @@map("api_keys")
+}
+
+model PlanView {
+  id        String   @id @default(cuid())
+  planId    String
+  userId    String?
+  ipAddress String?
+  viewedAt  DateTime @default(now())
+
+  @@index([planId, userId, viewedAt])
+  @@index([planId, ipAddress, viewedAt])
+  @@map("plan_views")
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  lastMessageAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  messages      Message[]
+  users         User[]    @relation("conversationparticipants")
+
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  body           String       @db.Text
+  read           Boolean      @default(false)
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([read])
+  @@map("messages")
+}
+
+model Badge {
+  id          String        @id @default(cuid())
+  key         String        @unique
+  name        String
+  description String        @db.Text
+  icon        String
+  category    BadgeCategory @default(achievement)
+  rarity      BadgeRarity   @default(common)
+  xpReward    Int           @default(0)
+  coinReward  Int           @default(0)
+  isActive    Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  users       UserBadge[]
+
+  @@index([category])
+  @@index([rarity])
+  @@index([isActive])
+  @@map("badges")
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId, earnedAt])
+  @@index([badgeId])
+  @@map("user_badges")
+}
+
+model DailyQuest {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  title       String
+  description String           @db.Text
+  icon        String
+  xpReward    Int              @default(10)
+  coinReward  Int              @default(5)
+  type        QuestType        @default(daily)
+  target      Int              @default(1)
+  isActive    Boolean          @default(true)
+  sortOrder   Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  userQuests  UserDailyQuest[]
+
+  @@index([type])
+  @@index([isActive])
+  @@map("daily_quests")
+}
+
+model UserDailyQuest {
+  id          String     @id @default(cuid())
+  userId      String
+  questId     String
+  progress    Int        @default(0)
+  completed   Boolean    @default(false)
+  completedAt DateTime?
+  date        DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+  quest       DailyQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId, date])
+  @@index([userId, date])
+  @@index([questId])
+  @@index([completed])
+  @@map("user_daily_quests")
+}
+
+model CoinTransaction {
+  id          String              @id @default(cuid())
+  userId      String
+  amount      Int
+  type        CoinTransactionType
+  description String
+  metadata    String?             @db.Text
+  createdAt   DateTime            @default(now())
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@map("coin_transactions")
+}
+
+model ShopItem {
+  id          String         @id @default(cuid())
+  key         String         @unique
+  name        String
+  description String         @db.Text
+  icon        String
+  category    ShopCategory   @default(cosmetic)
+  price       Int
+  stock       Int?
+  isActive    Boolean        @default(true)
+  sortOrder   Int            @default(0)
+  metadata    String?        @db.Text
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  purchases   UserPurchase[]
+
+  @@index([category])
+  @@index([isActive])
+  @@map("shop_items")
+}
+
+model UserPurchase {
+  id          String   @id @default(cuid())
+  userId      String
+  itemId      String
+  quantity    Int      @default(1)
+  totalPrice  Int
+  purchasedAt DateTime @default(now())
+  item        ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purchasedAt])
+  @@index([itemId])
+  @@map("user_purchases")
+}
+
+model Season {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?      @db.Text
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  battlePasses BattlePass[]
+  leagues      League[]
+  userLeagues  UserLeague[]
+
+  @@index([isActive])
+  @@index([startDate, endDate])
+  @@map("seasons")
+}
+
+model League {
+  id          String       @id @default(cuid())
+  seasonId    String
+  tier        LeagueTier
+  name        String
+  description String?      @db.Text
+  minPoints   Int          @default(0)
+  maxPoints   Int?
+  icon        String?
+  rewards     String?      @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  season      Season       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  users       UserLeague[]
+
+  @@unique([seasonId, tier])
+  @@index([seasonId])
+  @@map("leagues")
+}
+
+model UserLeague {
+  id        String   @id @default(cuid())
+  userId    String
+  leagueId  String
+  seasonId  String
+  points    Int      @default(0)
+  rank      Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  league    League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, seasonId])
+  @@index([seasonId, points])
+  @@index([leagueId, points])
+  @@map("user_leagues")
+}
+
+model Guild {
+  id              String             @id @default(cuid())
+  name            String             @unique
+  slug            String             @unique
+  description     String?            @db.Text
+  icon            String?
+  leaderId        String
+  memberCount     Int                @default(1)
+  totalXP         Int                @default(0)
+  level           Int                @default(1)
+  isPublic        Boolean            @default(true)
+  maxMembers      Int                @default(50)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  publishedAt     DateTime?
+  rejectionReason String?            @db.Text
+  status          GroupStatus        @default(pending)
+  category        String?
+  color           String?
+  monthlyGoal     String?
+  rules           String?            @db.Text
+  joinRequests    GuildJoinRequest[]
+  members         GuildMember[]
+  leader          User               @relation("GuildLeader", fields: [leaderId], references: [id])
+
+  @@index([slug])
+  @@index([leaderId])
+  @@index([totalXP])
+  @@index([status, createdAt])
+  @@index([category])
+  @@map("guilds")
+}
+
+model GuildMember {
+  id       String          @id @default(cuid())
+  guildId  String
+  userId   String
+  role     GuildMemberRole @default(member)
+  xpEarned Int             @default(0)
+  joinedAt DateTime        @default(now())
+  guild    Guild           @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([userId])
+  @@index([guildId, xpEarned])
+  @@map("guild_members")
+}
+
+model GuildJoinRequest {
+  id        String                 @id @default(cuid())
+  guildId   String
+  userId    String
+  message   String?                @db.Text
+  status    GuildJoinRequestStatus @default(pending)
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  guild     Guild                  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([guildId, status])
+  @@index([userId])
+  @@map("guild_join_requests")
+}
+
+model BattlePass {
+  id          String             @id @default(cuid())
+  seasonId    String
+  tier        BattlePassTier     @default(free)
+  name        String
+  description String?            @db.Text
+  price       Int                @default(0)
+  maxLevel    Int                @default(50)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  rewards     BattlePassReward[]
+  season      Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  users       UserBattlePass[]
+
+  @@unique([seasonId, tier])
+  @@index([seasonId])
+  @@map("battle_passes")
+}
+
+model BattlePassReward {
+  id          String     @id @default(cuid())
+  passId      String
+  level       Int
+  rewardType  RewardType
+  rewardId    String?
+  rewardValue Int?
+  description String
+  icon        String?
+  createdAt   DateTime   @default(now())
+  pass        BattlePass @relation(fields: [passId], references: [id], onDelete: Cascade)
+
+  @@unique([passId, level])
+  @@index([passId])
+  @@map("battle_pass_rewards")
+}
+
+model UserBattlePass {
+  id           String     @id @default(cuid())
+  userId       String
+  passId       String
+  currentLevel Int        @default(1)
+  xpEarned     Int        @default(0)
+  isPremium    Boolean    @default(false)
+  purchasedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  pass         BattlePass @relation(fields: [passId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, passId])
+  @@index([passId, currentLevel])
+  @@map("user_battle_passes")
+}
+
+model StreakRecovery {
+  id          String   @id @default(cuid())
+  userId      String
+  streakLost  Int
+  coinsCost   Int
+  recoveredAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, recoveredAt])
+  @@map("streak_recoveries")
+}
+
+model ReferralCode {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  code      String   @unique
+  usedCount Int      @default(0)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+  @@map("referral_codes")
+}
+
+model Referral {
+  id          String         @id @default(cuid())
+  referrerId  String
+  referredId  String
+  bonusCoins  Int            @default(50)
+  status      ReferralStatus @default(pending)
+  createdAt   DateTime       @default(now())
+  completedAt DateTime?
+  referred    User           @relation("ReferredUser", fields: [referredId], references: [id], onDelete: Cascade)
+  referrer    User           @relation("ReferrerUser", fields: [referrerId], references: [id], onDelete: Cascade)
+
+  @@unique([referrerId, referredId])
+  @@index([referrerId])
+  @@index([referredId])
+  @@index([status])
+  @@map("referrals")
+}
+
+model Group {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  description     String?       @db.Text
+  image           String?
+  category        GroupCategory @default(general)
+  creatorId       String
+  memberCount     Int           @default(1)
+  postCount       Int           @default(0)
+  isPublic        Boolean       @default(true)
+  maxMembers      Int?
+  tags            String?       @db.Text
+  rules           String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  publishedAt     DateTime?
+  rejectionReason String?       @db.Text
+  status          GroupStatus   @default(pending)
+  members         GroupMember[]
+  posts           GroupPost[]
+  creator         User          @relation("GroupCreator", fields: [creatorId], references: [id])
+
+  @@index([slug])
+  @@index([creatorId])
+  @@index([category])
+  @@index([isPublic])
+  @@index([status, createdAt])
+  @@fulltext([name, description])
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String          @id @default(cuid())
+  groupId  String
+  userId   String
+  role     GroupMemberRole @default(member)
+  joinedAt DateTime        @default(now())
+  group    Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId, joinedAt])
+  @@map("group_members")
+}
+
+model GroupPost {
+  id         String        @id @default(cuid())
+  groupId    String
+  authorId   String
+  title      String?
+  body       String        @db.Text
+  images     String?       @db.Text
+  likesCount Int           @default(0)
+  status     CommentStatus @default(visible)
+  isPinned   Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  group      Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+  @@index([authorId])
+  @@index([status])
+  @@index([isPinned, createdAt])
+  @@map("group_posts")
+}
+
+model ContentAppeal {
+  id          String        @id @default(cuid())
+  userId      String
+  contentType AppealContent
+  contentId   String
+  reason      String        @db.Text
+  status      AppealStatus  @default(pending)
+  priority    Int           @default(0)
+  adminNote   String?       @db.Text
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  resolver    User?         @relation("AppealResolver", fields: [resolvedBy], references: [id])
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, priority])
+  @@index([contentType, contentId])
+  @@index([createdAt])
+  @@index([resolvedBy], map: "content_appeals_resolvedBy_fkey")
+  @@map("content_appeals")
+}
+
+model CohortDefinition {
+  id          String            @id @default(cuid())
+  name        String
+  description String?           @db.Text
+  filters     String            @db.LongText
+  isActive    Boolean           @default(true)
+  createdBy   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  metrics     RetentionMetric[]
+  users       UserCohort[]
+
+  @@index([isActive, createdAt])
+  @@index([createdAt])
+  @@map("cohort_definitions")
+}
+
+model UserCohort {
+  id       String           @id @default(cuid())
+  cohortId String
+  userId   String
+  addedAt  DateTime         @default(now())
+  cohort   CohortDefinition @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  user     User             @relation("UserCohorts", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, userId])
+  @@index([userId])
+  @@index([cohortId, addedAt])
+  @@map("user_cohorts")
+}
+
+model RetentionMetric {
+  id        String           @id @default(cuid())
+  cohortId  String
+  date      DateTime
+  dayNumber Int
+  retained  Int
+  total     Int
+  rate      Float
+  createdAt DateTime         @default(now())
+  cohort    CohortDefinition @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+
+  @@unique([cohortId, date, dayNumber])
+  @@index([cohortId, dayNumber])
+  @@index([date])
+  @@map("retention_metrics")
+}
+
+model ABTest {
+  id          String             @id @default(cuid())
+  name        String
+  description String?            @db.Text
+  variants    String             @db.LongText
+  isActive    Boolean            @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  assignments ABTestAssignment[]
+
+  @@index([isActive, startDate])
+  @@map("ab_tests")
+}
+
+model ABTestAssignment {
+  id        String   @id @default(cuid())
+  testId    String
+  userId    String
+  variant   String
+  createdAt DateTime @default(now())
+  test      ABTest   @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+  @@unique([testId, userId])
+  @@index([userId])
+  @@index([testId, variant])
+  @@map("ab_test_assignments")
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_resets")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @db.VarChar(500)
+  p256dh    String   @db.Text
+  auth      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+model Page {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  content     String     @db.LongText
+  metaTitle   String?
+  metaDesc    String?    @db.Text
+  status      PageStatus @default(draft)
+  isPublished Boolean    @default(false)
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  publishedAt DateTime?
+
+  @@index([slug])
+  @@index([status])
+  @@index([isPublished])
+  @@map("pages")
+}
+
+model FooterLink {
+  id        String       @id @default(cuid())
+  title     String
+  url       String
+  column    FooterColumn @default(company)
+  sortOrder Int          @default(0)
+  isActive  Boolean      @default(true)
+  openInNew Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([column, sortOrder])
+  @@index([isActive])
+  @@map("footer_links")
+}
+
+model FooterSocial {
+  id        String   @id @default(cuid())
+  platform  String
+  url       String
+  icon      String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("footer_socials")
+}
+
+model FooterSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("footer_settings")
+}
+
+model ContactMessage {
+  id          String               @id @default(cuid())
+  name        String
+  email       String
+  subject     String
+  message     String               @db.Text
+  status      ContactMessageStatus @default(new)
+  response    String?              @db.Text
+  respondedBy String?
+  respondedAt DateTime?
+  ipAddress   String?
+  userAgent   String?              @db.Text
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@map("contact_messages")
+}
+
+model Confession {
+  id              String              @id @default(cuid())
+  userId          String
+  content         String              @db.Text
+  category        ConfessionCategory
+  aiResponse      String?             @db.Text
+  aiTone          AITone?
+  telafiBudget    String?             @db.Text
+  empathyCount    Int                 @default(0)
+  status          ConfessionStatus    @default(pending)
+  rejectionReason String?             @db.Text
+  isPopular       Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  publishedAt     DateTime?
+  empathies       ConfessionEmpathy[]
+  reports         ConfessionReport[]
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@index([category, publishedAt])
+  @@index([isPopular, empathyCount])
+  @@map("confessions")
+}
+
+model ConfessionEmpathy {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId])
+  @@index([userId, createdAt])
+  @@index([confessionId])
+  @@map("confession_empathies")
+}
+
+model ConfessionReport {
+  id           String     @id @default(cuid())
+  confessionId String
+  userId       String
+  reason       String     @db.Text
+  createdAt    DateTime   @default(now())
+  confession   Confession @relation(fields: [confessionId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([confessionId, userId])
+  @@index([confessionId, createdAt])
+  @@index([userId], map: "confession_reports_userId_fkey")
+  @@map("confession_reports")
+}
+
+model SeasonalTheme {
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  icon      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([isActive, startDate, endDate])
+  @@map("seasonal_themes")
+}
+
 enum Role {
   USER
   ADMIN
@@ -463,536 +1245,11 @@ enum MealType {
   snack
 }
 
-model Setting {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  value     String   @db.Text
-  category  String // general, moderation, email, security
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([category])
-  @@map("settings")
-}
-
-model RolePermission {
-  id          String   @id @default(cuid())
-  role        String // USER, ADMIN, MODERATOR, etc.
-  resource    String // plan, user, comment, setting, etc.
-  action      String // create, read, update, delete, approve, moderate
-  description String?  @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([role, resource, action])
-  @@index([role])
-  @@map("role_permissions")
-}
-
-model ApiKey {
-  id          String    @id @default(cuid())
-  name        String
-  key         String    @unique
-  permissions String    @db.Text // JSON array of permissions
-  isActive    Boolean   @default(true)
-  lastUsedAt  DateTime?
-  expiresAt   DateTime?
-  createdBy   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@index([key])
-  @@index([isActive])
-  @@map("api_keys")
-}
-
-model PlanView {
-  id        String   @id @default(cuid())
-  planId    String
-  userId    String?
-  ipAddress String?
-  viewedAt  DateTime @default(now())
-
-  @@index([planId, userId, viewedAt])
-  @@index([planId, ipAddress, viewedAt])
-  @@map("plan_views")
-}
-
-model Conversation {
-  id            String    @id @default(cuid())
-  participants  User[]    @relation("ConversationParticipants")
-  messages      Message[]
-  lastMessageAt DateTime  @default(now())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([lastMessageAt])
-  @@map("conversations")
-}
-
-model Message {
-  id             String       @id @default(cuid())
-  conversationId String
-  senderId       String
-  receiverId     String
-  body           String       @db.Text
-  read           Boolean      @default(false)
-  readAt         DateTime?
-  createdAt      DateTime     @default(now())
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
-
-  @@index([conversationId, createdAt])
-  @@index([senderId])
-  @@index([receiverId])
-  @@index([read])
-  @@map("messages")
-}
-
-// ====================================================
-// GAMIFICATION MODELS
-// ====================================================
-
-// Badges (Rozetler)
-model Badge {
-  id          String        @id @default(cuid())
-  key         String        @unique // e.g., "first_plan", "weight_loss_5kg"
-  name        String // "İlk Plan"
-  description String        @db.Text
-  icon        String // emoji or icon name
-  category    BadgeCategory @default(achievement)
-  rarity      BadgeRarity   @default(common)
-  xpReward    Int           @default(0)
-  coinReward  Int           @default(0)
-  isActive    Boolean       @default(true)
-  sortOrder   Int           @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  users       UserBadge[]
-
-  @@index([category])
-  @@index([rarity])
-  @@index([isActive])
-  @@map("badges")
-}
-
-model UserBadge {
-  id       String   @id @default(cuid())
-  userId   String
-  badgeId  String
-  earnedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, badgeId])
-  @@index([userId, earnedAt])
-  @@index([badgeId])
-  @@map("user_badges")
-}
-
-// Daily Quests (Günlük Görevler)
-model DailyQuest {
-  id          String           @id @default(cuid())
-  key         String           @unique // e.g., "daily_weigh_in"
-  title       String // "Bugün Tartıl"
-  description String           @db.Text
-  icon        String
-  xpReward    Int              @default(10)
-  coinReward  Int              @default(5)
-  type        QuestType        @default(daily)
-  target      Int              @default(1) // how many times to complete
-  isActive    Boolean          @default(true)
-  sortOrder   Int              @default(0)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  userQuests  UserDailyQuest[]
-
-  @@index([type])
-  @@index([isActive])
-  @@map("daily_quests")
-}
-
-model UserDailyQuest {
-  id          String     @id @default(cuid())
-  userId      String
-  questId     String
-  progress    Int        @default(0)
-  completed   Boolean    @default(false)
-  completedAt DateTime?
-  date        DateTime   @default(now()) // which day this quest is for
-  createdAt   DateTime   @default(now())
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quest       DailyQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, questId, date])
-  @@index([userId, date])
-  @@index([questId])
-  @@index([completed])
-  @@map("user_daily_quests")
-}
-
-// Coin Transactions (Coin İşlemleri)
-model CoinTransaction {
-  id          String              @id @default(cuid())
-  userId      String
-  amount      Int // positive for earn, negative for spend
-  type        CoinTransactionType
-  description String
-  metadata    String?             @db.Text // JSON for extra data
-  createdAt   DateTime            @default(now())
-  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([type])
-  @@map("coin_transactions")
-}
-
-// Shop Items (Mağaza Ürünleri)
-model ShopItem {
-  id          String         @id @default(cuid())
-  key         String         @unique
-  name        String
-  description String         @db.Text
-  icon        String
-  category    ShopCategory   @default(cosmetic)
-  price       Int // in coins
-  stock       Int? // null = unlimited
-  isActive    Boolean        @default(true)
-  sortOrder   Int            @default(0)
-  metadata    String?        @db.Text // JSON for item properties
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  purchases   UserPurchase[]
-
-  @@index([category])
-  @@index([isActive])
-  @@map("shop_items")
-}
-
-model UserPurchase {
-  id          String   @id @default(cuid())
-  userId      String
-  itemId      String
-  quantity    Int      @default(1)
-  totalPrice  Int
-  purchasedAt DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  item        ShopItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  @@index([userId, purchasedAt])
-  @@index([itemId])
-  @@map("user_purchases")
-}
-
-// Seasons & Leagues (Sezonlar & Ligler)
-model Season {
-  id           String       @id @default(cuid())
-  name         String // "Kış 2024"
-  description  String?      @db.Text
-  startDate    DateTime
-  endDate      DateTime
-  isActive     Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  leagues      League[]
-  battlePasses BattlePass[]
-  userLeagues  UserLeague[]
-
-  @@index([isActive])
-  @@index([startDate, endDate])
-  @@map("seasons")
-}
-
-model League {
-  id          String       @id @default(cuid())
-  seasonId    String
-  tier        LeagueTier
-  name        String // "Bronz Ligi"
-  description String?      @db.Text
-  minPoints   Int          @default(0)
-  maxPoints   Int? // null for highest tier
-  icon        String?
-  rewards     String?      @db.Text // JSON array of rewards
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  season      Season       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  users       UserLeague[]
-
-  @@unique([seasonId, tier])
-  @@index([seasonId])
-  @@map("leagues")
-}
-
-model UserLeague {
-  id        String   @id @default(cuid())
-  userId    String
-  leagueId  String
-  seasonId  String
-  points    Int      @default(0)
-  rank      Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  league    League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
-  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, seasonId])
-  @@index([seasonId, points])
-  @@index([leagueId, points])
-  @@map("user_leagues")
-}
-
-// Guilds (Loncalar)
-model Guild {
-  id              String             @id @default(cuid())
-  name            String             @unique
-  slug            String             @unique
-  description     String?            @db.Text
-  icon            String?
-  color           String? // Lonca renk teması
-  category        String? // fitness, diet, motivation, etc.
-  leaderId        String
-  memberCount     Int                @default(1)
-  totalXP         Int                @default(0)
-  level           Int                @default(1)
-  isPublic        Boolean            @default(true)
-  maxMembers      Int                @default(50)
-  rules           String?            @db.Text // Lonca kuralları
-  monthlyGoal     String? // Aylık hedef
-  status          GroupStatus        @default(pending)
-  rejectionReason String?            @db.Text
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  publishedAt     DateTime?
-  leader          User               @relation("GuildLeader", fields: [leaderId], references: [id], onDelete: Restrict)
-  members         GuildMember[]
-  joinRequests    GuildJoinRequest[]
-
-  @@index([slug])
-  @@index([leaderId])
-  @@index([totalXP])
-  @@index([status, createdAt])
-  @@index([category])
-  @@map("guilds")
-}
-
-model GuildMember {
-  id       String          @id @default(cuid())
-  guildId  String
-  userId   String
-  role     GuildMemberRole @default(member)
-  xpEarned Int             @default(0)
-  joinedAt DateTime        @default(now())
-  guild    Guild           @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([guildId, userId])
-  @@index([userId])
-  @@index([guildId, xpEarned])
-  @@map("guild_members")
-}
-
-// Guild Join Requests (Lonca Katılma İstekleri)
-model GuildJoinRequest {
-  id        String                 @id @default(cuid())
-  guildId   String
-  userId    String
-  message   String?                @db.Text
-  status    GuildJoinRequestStatus @default(pending)
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
-  guild     Guild                  @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([guildId, userId])
-  @@index([guildId, status])
-  @@index([userId])
-  @@map("guild_join_requests")
-}
-
-// Battle Pass (Sezonluk Geçiş)
-model BattlePass {
-  id          String             @id @default(cuid())
-  seasonId    String
-  tier        BattlePassTier     @default(free)
-  name        String // "Ücretsiz Geçiş" / "Premium Geçiş"
-  description String?            @db.Text
-  price       Int                @default(0) // in coins, 0 for free
-  maxLevel    Int                @default(50)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  season      Season             @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  rewards     BattlePassReward[]
-  users       UserBattlePass[]
-
-  @@unique([seasonId, tier])
-  @@index([seasonId])
-  @@map("battle_passes")
-}
-
-model BattlePassReward {
-  id          String     @id @default(cuid())
-  passId      String
-  level       Int
-  rewardType  RewardType
-  rewardId    String? // badge/item ID
-  rewardValue Int? // coins/xp amount
-  description String
-  icon        String?
-  createdAt   DateTime   @default(now())
-  pass        BattlePass @relation(fields: [passId], references: [id], onDelete: Cascade)
-
-  @@unique([passId, level])
-  @@index([passId])
-  @@map("battle_pass_rewards")
-}
-
-model UserBattlePass {
-  id           String     @id @default(cuid())
-  userId       String
-  passId       String
-  currentLevel Int        @default(1)
-  xpEarned     Int        @default(0)
-  isPremium    Boolean    @default(false)
-  purchasedAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pass         BattlePass @relation(fields: [passId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, passId])
-  @@index([passId, currentLevel])
-  @@map("user_battle_passes")
-}
-
-// Streak Recovery (Seri Kurtarma)
-model StreakRecovery {
-  id          String   @id @default(cuid())
-  userId      String
-  streakLost  Int // how many days were lost
-  coinsCost   Int // how much it cost to recover
-  recoveredAt DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, recoveredAt])
-  @@map("streak_recoveries")
-}
-
-// Referral System (Davet Sistemi)
-model ReferralCode {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  code      String   @unique
-  usedCount Int      @default(0)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([code])
-  @@map("referral_codes")
-}
-
-model Referral {
-  id          String         @id @default(cuid())
-  referrerId  String
-  referredId  String
-  bonusCoins  Int            @default(50)
-  status      ReferralStatus @default(pending)
-  createdAt   DateTime       @default(now())
-  completedAt DateTime?
-  referrer    User           @relation("ReferrerUser", fields: [referrerId], references: [id], onDelete: Cascade)
-  referred    User           @relation("ReferredUser", fields: [referredId], references: [id], onDelete: Cascade)
-
-  @@unique([referrerId, referredId])
-  @@index([referrerId])
-  @@index([referredId])
-  @@index([status])
-  @@map("referrals")
-}
-
-// ====================================================
-// GROUPS (SOSYAL GRUPLAR) - Guild'den bağımsız
-// ====================================================
-
-// Groups (Gruplar) - Sosyal destek grupları
-model Group {
-  id              String        @id @default(cuid())
-  name            String
-  slug            String        @unique
-  description     String?       @db.Text
-  image           String?
-  category        GroupCategory @default(general)
-  creatorId       String
-  memberCount     Int           @default(1)
-  postCount       Int           @default(0)
-  isPublic        Boolean       @default(true)
-  maxMembers      Int? // null = unlimited
-  tags            String?       @db.Text // JSON array
-  rules           String?       @db.Text
-  status          GroupStatus   @default(pending)
-  rejectionReason String?       @db.Text
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  publishedAt     DateTime?
-  creator         User          @relation("GroupCreator", fields: [creatorId], references: [id], onDelete: Restrict)
-  members         GroupMember[]
-  posts           GroupPost[]
-
-  @@index([slug])
-  @@index([creatorId])
-  @@index([category])
-  @@index([isPublic])
-  @@index([status, createdAt])
-  @@fulltext([name, description])
-  @@map("groups")
-}
-
-model GroupMember {
-  id       String          @id @default(cuid())
-  groupId  String
-  userId   String
-  role     GroupMemberRole @default(member)
-  joinedAt DateTime        @default(now())
-  group    Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId])
-  @@index([groupId, joinedAt])
-  @@map("group_members")
-}
-
-model GroupPost {
-  id         String        @id @default(cuid())
-  groupId    String
-  authorId   String
-  title      String?
-  body       String        @db.Text
-  images     String?       @db.Text // JSON array
-  likesCount Int           @default(0)
-  status     CommentStatus @default(visible)
-  isPinned   Boolean       @default(false)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  group      Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  @@index([groupId, createdAt])
-  @@index([authorId])
-  @@index([status])
-  @@index([isPinned, createdAt])
-  @@map("group_posts")
-}
-
-// ====================================================
-// GAMIFICATION ENUMS
-// ====================================================
-
 enum BadgeCategory {
-  achievement // Başarı
-  milestone // Kilometre Taşı
-  social // Sosyal
-  special // Özel
+  achievement
+  milestone
+  social
+  special
 }
 
 enum BadgeRarity {
@@ -1021,10 +1278,10 @@ enum CoinTransactionType {
 }
 
 enum ShopCategory {
-  cosmetic // Kozmetik
-  boost // Güçlendirme
-  recovery // Kurtarma
-  special // Özel
+  cosmetic
+  boost
+  recovery
+  special
 }
 
 enum LeagueTier {
@@ -1066,14 +1323,14 @@ enum ReferralStatus {
 }
 
 enum GroupCategory {
-  general // Genel
-  motivation // Motivasyon
-  recipes // Tarifler
-  exercise // Egzersiz
-  support // Destek
-  age_based // Yaş Grupları (20'ler, 30'lar, vb.)
-  goal_based // Hedef Bazlı (10kg, 20kg, vb.)
-  lifestyle // Yaşam Tarzı (Vegan, Keto, vb.)
+  general
+  motivation
+  recipes
+  exercise
+  support
+  age_based
+  goal_based
+  lifestyle
 }
 
 enum GroupMemberRole {
@@ -1087,34 +1344,6 @@ enum GroupStatus {
   pending
   published
   rejected
-}
-
-// ====================================================
-// APPEAL SYSTEM (İTİRAZ SİSTEMİ)
-// ====================================================
-
-// Content Appeals (İçerik İtirazları)
-model ContentAppeal {
-  id          String        @id @default(cuid())
-  userId      String
-  contentType AppealContent // plan, recipe, comment, etc.
-  contentId   String
-  reason      String        @db.Text
-  status      AppealStatus  @default(pending)
-  priority    Int           @default(0) // calculated from user reputation
-  adminNote   String?       @db.Text
-  resolvedBy  String?
-  resolvedAt  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resolver    User?         @relation("AppealResolver", fields: [resolvedBy], references: [id], onDelete: SetNull)
-
-  @@index([userId, createdAt])
-  @@index([status, priority])
-  @@index([contentType, contentId])
-  @@index([createdAt])
-  @@map("content_appeals")
 }
 
 enum AppealContent {
@@ -1132,202 +1361,6 @@ enum AppealStatus {
   rejected
 }
 
-// ====================================================
-// ANALYTICS & COHORT SYSTEM (ANALİTİK & KOHORT SİSTEMİ)
-// ====================================================
-
-// Cohort Definitions (Kullanıcı Segmentleri)
-model CohortDefinition {
-  id          String            @id @default(cuid())
-  name        String
-  description String?           @db.Text
-  filters     Json // { age: { min: 25, max: 35 }, recipesCount: { gte: 5 }, lastActive: "30d" }
-  isActive    Boolean           @default(true)
-  createdBy   String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  users       UserCohort[]
-  metrics     RetentionMetric[]
-
-  @@index([isActive, createdAt])
-  @@index([createdAt])
-  @@map("cohort_definitions")
-}
-
-// User Cohort Membership (Kullanıcı-Kohort İlişkisi)
-model UserCohort {
-  id       String           @id @default(cuid())
-  cohortId String
-  userId   String
-  addedAt  DateTime         @default(now())
-  cohort   CohortDefinition @relation(fields: [cohortId], references: [id], onDelete: Cascade)
-  user     User             @relation("UserCohorts", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([cohortId, userId])
-  @@index([userId])
-  @@index([cohortId, addedAt])
-  @@map("user_cohorts")
-}
-
-// Retention Metrics (Tutunma Metrikleri)
-model RetentionMetric {
-  id        String           @id @default(cuid())
-  cohortId  String
-  date      DateTime
-  dayNumber Int // 1, 7, 30, 90 (days since cohort creation)
-  retained  Int // number of users still active
-  total     Int // total users in cohort
-  rate      Float // retention rate (retained/total)
-  createdAt DateTime         @default(now())
-  cohort    CohortDefinition @relation(fields: [cohortId], references: [id], onDelete: Cascade)
-
-  @@unique([cohortId, date, dayNumber])
-  @@index([cohortId, dayNumber])
-  @@index([date])
-  @@map("retention_metrics")
-}
-
-// A/B Testing
-model ABTest {
-  id          String             @id @default(cuid())
-  name        String
-  description String?            @db.Text
-  variants    Json // [{ name: "control", weight: 50 }, { name: "variant_a", weight: 50 }]
-  isActive    Boolean            @default(true)
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  assignments ABTestAssignment[]
-
-  @@index([isActive, startDate])
-  @@map("ab_tests")
-}
-
-// A/B Test Assignments
-model ABTestAssignment {
-  id        String   @id @default(cuid())
-  testId    String
-  userId    String
-  variant   String // "control", "variant_a", etc.
-  createdAt DateTime @default(now())
-  test      ABTest   @relation(fields: [testId], references: [id], onDelete: Cascade)
-
-  @@unique([testId, userId])
-  @@index([userId])
-  @@index([testId, variant])
-  @@map("ab_test_assignments")
-}
-
-// Password Reset Tokens
-model PasswordReset {
-  id        String   @id @default(cuid())
-  userId    String
-  token     String   @unique
-  expiresAt DateTime
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([token])
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("password_resets")
-}
-
-// Push Subscriptions (Web Push Notifications)
-model PushSubscription {
-  id        String   @id @default(cuid())
-  userId    String
-  endpoint  String   @db.VarChar(500)
-  p256dh    String   @db.Text
-  auth      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, endpoint])
-  @@index([userId])
-  @@map("push_subscriptions")
-}
-
-
-// ====================================================
-// CONTENT MANAGEMENT SYSTEM (CMS)
-// ====================================================
-
-// Pages (Sayfalar) - Hakkımızda, Gizlilik, vb.
-model Page {
-  id          String      @id @default(cuid())
-  slug        String      @unique
-  title       String
-  content     String      @db.LongText
-  metaTitle   String?
-  metaDesc    String?     @db.Text
-  status      PageStatus  @default(draft)
-  isPublished Boolean     @default(false)
-  sortOrder   Int         @default(0)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  publishedAt DateTime?
-
-  @@index([slug])
-  @@index([status])
-  @@index([isPublished])
-  @@map("pages")
-}
-
-// Footer Links (Footer Linkleri)
-model FooterLink {
-  id        String           @id @default(cuid())
-  title     String
-  url       String
-  column    FooterColumn     @default(company)
-  sortOrder Int              @default(0)
-  isActive  Boolean          @default(true)
-  openInNew Boolean          @default(false)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  @@index([column, sortOrder])
-  @@index([isActive])
-  @@map("footer_links")
-}
-
-// Footer Social Links (Footer Sosyal Medya Linkleri)
-model FooterSocial {
-  id        String   @id @default(cuid())
-  platform  String   // facebook, twitter, instagram, youtube, linkedin
-  url       String
-  icon      String   // icon name or emoji
-  sortOrder Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([sortOrder])
-  @@index([isActive])
-  @@map("footer_socials")
-}
-
-// Footer Settings (Footer Ayarları)
-model FooterSetting {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  value       String   @db.Text
-  description String?  @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("footer_settings")
-}
-
-
-
-// ====================================================
-// CMS ENUMS
-// ====================================================
-
 enum PageStatus {
   draft
   published
@@ -1335,34 +1368,10 @@ enum PageStatus {
 }
 
 enum FooterColumn {
-  company      // Şirket
-  support      // Destek
-  legal        // Yasal
-  community    // Topluluk
-}
-
-// ====================================================
-// CONTACT SYSTEM (İletişim Sistemi)
-// ====================================================
-
-model ContactMessage {
-  id          String               @id @default(cuid())
-  name        String
-  email       String
-  subject     String
-  message     String               @db.Text
-  status      ContactMessageStatus @default(new)
-  response    String?              @db.Text
-  respondedBy String?
-  respondedAt DateTime?
-  ipAddress   String?
-  userAgent   String?              @db.Text
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-
-  @@index([status, createdAt])
-  @@index([email])
-  @@map("contact_messages")
+  company
+  support
+  legal
+  community
 }
 
 enum ContactMessageStatus {
@@ -1371,4 +1380,27 @@ enum ContactMessageStatus {
   responded
   archived
   spam
+}
+
+enum ConfessionCategory {
+  night_attack
+  special_occasion
+  stress_eating
+  social_pressure
+  no_regrets
+  seasonal
+}
+
+enum AITone {
+  empathetic
+  humorous
+  motivational
+  realistic
+}
+
+enum ConfessionStatus {
+  pending
+  published
+  rejected
+  hidden
 }

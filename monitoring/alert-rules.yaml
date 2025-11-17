@@ -1,0 +1,289 @@
+# Alert Rules Configuration
+# Bu dosya monitoring sisteminin alert kurallarını tanımlar
+
+# ========================================
+# CRITICAL ALERTS (Immediate Action Required)
+# ========================================
+
+critical_alerts:
+  # Database Down
+  - name: database_down
+    condition: database.status == "disconnected"
+    threshold: 1
+    duration: 1m
+    severity: critical
+    channels:
+      - pagerduty
+      - slack
+      - email
+    message: "🚨 CRITICAL: Database connection failed!"
+    actions:
+      - restart_database_connection
+      - notify_oncall
+    
+  # Redis Down
+  - name: redis_down
+    condition: redis.status == "disconnected"
+    threshold: 1
+    duration: 2m
+    severity: critical
+    channels:
+      - slack
+      - email
+    message: "🚨 CRITICAL: Redis connection failed! Graceful degradation active."
+    actions:
+      - check_redis_server
+      - notify_devops
+    
+  # OpenAI API Failure
+  - name: openai_api_failure
+    condition: ai.successRate < 50
+    threshold: 50
+    duration: 5m
+    severity: critical
+    channels:
+      - slack
+      - email
+    message: "🚨 CRITICAL: OpenAI API success rate below 50%!"
+    actions:
+      - check_api_key
+      - check_usage_limits
+      - verify_fallback_responses
+    
+  # High Error Rate
+  - name: high_error_rate
+    condition: errors.rate > 5
+    threshold: 5
+    duration: 5m
+    severity: critical
+    channels:
+      - sentry
+      - slack
+    message: "🚨 CRITICAL: Error rate above 5%!"
+    actions:
+      - check_sentry_dashboard
+      - investigate_errors
+    
+  # Queue Overflow
+  - name: queue_overflow
+    condition: queue.size > 1000
+    threshold: 1000
+    duration: 10m
+    severity: critical
+    channels:
+      - slack
+      - email
+    message: "🚨 CRITICAL: Queue size exceeded 1000 jobs!"
+    actions:
+      - scale_workers
+      - check_processing_time
+
+# ========================================
+# WARNING ALERTS (Monitor Closely)
+# ========================================
+
+warning_alerts:
+  # Slow Response Time
+  - name: slow_response_time
+    condition: api.p95_duration > 2000
+    threshold: 2000
+    duration: 10m
+    severity: warning
+    channels:
+      - slack
+    message: "⚠️ WARNING: P95 response time above 2 seconds"
+    actions:
+      - check_database_queries
+      - check_cache_hit_rate
+    
+  # High Memory Usage
+  - name: high_memory_usage
+    condition: system.memory.usage > 80
+    threshold: 80
+    duration: 15m
+    severity: warning
+    channels:
+      - slack
+    message: "⚠️ WARNING: Memory usage above 80%"
+    actions:
+      - check_memory_leaks
+      - consider_restart
+    
+  # Pending Moderation Queue
+  - name: pending_moderation_queue
+    condition: confession.pending > 50
+    threshold: 50
+    duration: 30m
+    severity: warning
+    channels:
+      - slack
+    message: "⚠️ WARNING: Moderation queue has 50+ pending confessions"
+    actions:
+      - notify_moderators
+    
+  # Low Cache Hit Rate
+  - name: low_cache_hit_rate
+    condition: cache.hit_rate < 70
+    threshold: 70
+    duration: 15m
+    severity: warning
+    channels:
+      - slack
+    message: "⚠️ WARNING: Cache hit rate below 70%"
+    actions:
+      - check_cache_configuration
+      - check_redis_memory
+    
+  # AI Response Timeout
+  - name: ai_response_timeout
+    condition: ai.timeout_rate > 10
+    threshold: 10
+    duration: 10m
+    severity: warning
+    channels:
+      - slack
+    message: "⚠️ WARNING: AI response timeout rate above 10%"
+    actions:
+      - check_openai_status
+      - check_network_latency
+
+# ========================================
+# INFO ALERTS (Informational)
+# ========================================
+
+info_alerts:
+  # High Confession Volume
+  - name: high_confession_volume
+    condition: confession.hourly_rate > 100
+    threshold: 100
+    duration: 1h
+    severity: info
+    channels:
+      - slack
+    message: "ℹ️ INFO: High confession volume detected (100+/hour)"
+    actions:
+      - monitor_system_resources
+    
+  # Popular Confession
+  - name: popular_confession
+    condition: confession.empathy_count > 100
+    threshold: 100
+    duration: instant
+    severity: info
+    channels:
+      - slack
+    message: "🎉 INFO: A confession reached 100+ empathy!"
+    actions:
+      - celebrate
+    
+  # Daily Backup Success
+  - name: daily_backup_success
+    condition: backup.status == "success"
+    threshold: 1
+    duration: instant
+    severity: info
+    channels:
+      - slack
+    message: "✅ INFO: Daily database backup completed successfully"
+    actions:
+      - log_backup_info
+
+# ========================================
+# NOTIFICATION CHANNELS
+# ========================================
+
+channels:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#alerts"
+    username: "Monitoring Bot"
+    icon_emoji: ":robot_face:"
+  
+  email:
+    smtp_host: "${SMTP_HOST}"
+    smtp_port: 587
+    from: "alerts@zayiflamaplan.com"
+    to:
+      - "devops@zayiflamaplan.com"
+      - "backend@zayiflamaplan.com"
+  
+  pagerduty:
+    integration_key: "${PAGERDUTY_INTEGRATION_KEY}"
+    severity_mapping:
+      critical: "critical"
+      warning: "warning"
+      info: "info"
+  
+  sentry:
+    dsn: "${NEXT_PUBLIC_SENTRY_DSN}"
+    environment: "${NODE_ENV}"
+
+# ========================================
+# ESCALATION POLICY
+# ========================================
+
+escalation:
+  # Critical alerts escalation
+  critical:
+    - delay: 0m
+      notify:
+        - oncall_engineer
+    - delay: 5m
+      notify:
+        - oncall_engineer
+        - team_lead
+    - delay: 15m
+      notify:
+        - oncall_engineer
+        - team_lead
+        - engineering_manager
+  
+  # Warning alerts escalation
+  warning:
+    - delay: 0m
+      notify:
+        - team_slack
+    - delay: 30m
+      notify:
+        - team_slack
+        - team_lead
+
+# ========================================
+# MAINTENANCE WINDOWS
+# ========================================
+
+maintenance_windows:
+  # Suppress alerts during maintenance
+  - name: weekly_maintenance
+    schedule: "0 2 * * 0"  # Every Sunday at 2 AM
+    duration: 2h
+    suppress_alerts:
+      - database_down
+      - redis_down
+  
+  - name: deployment_window
+    # Manually triggered
+    manual: true
+    duration: 30m
+    suppress_alerts:
+      - slow_response_time
+      - high_error_rate
+
+# ========================================
+# ALERT AGGREGATION
+# ========================================
+
+aggregation:
+  # Group similar alerts
+  group_by:
+    - alert_name
+    - severity
+  
+  # Wait before sending grouped alerts
+  group_wait: 30s
+  
+  # Send grouped alerts every
+  group_interval: 5m
+  
+  # Repeat alerts every
+  repeat_interval: 4h

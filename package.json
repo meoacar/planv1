@@ -12,7 +12,9 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "worker:ai": "tsx src/workers/ai-response.worker.ts",
+    "worker:cron": "tsx src/workers/cron-jobs.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -35,7 +37,10 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "1.1.1",
     "@radix-ui/react-toast": "1.2.2",
+    "@types/bull": "^4.10.4",
+    "@types/node-cron": "^3.0.11",
     "bcryptjs": "2.4.3",
+    "bull": "^4.16.5",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "date-fns": "4.1.0",
@@ -46,6 +51,7 @@
     "next": "15.0.3",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.4.6",
+    "node-cron": "^4.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "7.53.2",

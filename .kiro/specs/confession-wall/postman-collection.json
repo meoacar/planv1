@@ -1,0 +1,490 @@
+{
+  "info": {
+    "name": "İtiraf Duvarı API",
+    "description": "Yeme Günahı İtiraf Duvarı API collection. Kullanıcılar anonim itiraflar paylaşabilir, AI destekli yanıtlar alabilir ve topluluktan empati gösterebilir.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "next-auth.session-token",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{session_token}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "session_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "confession_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Confessions",
+      "item": [
+        {
+          "name": "İtiraf Listesi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["confessions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Sayfa numarası"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Sayfa başına kayıt"
+                },
+                {
+                  "key": "category",
+                  "value": "night_attack",
+                  "description": "Kategori filtresi",
+                  "disabled": true
+                },
+                {
+                  "key": "popular",
+                  "value": "true",
+                  "description": "Sadece popüler itiraflar",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "İtirafları listeler, filtreleme ve sayfalama destekler."
+          },
+          "response": []
+        },
+        {
+          "name": "Yeni İtiraf Oluştur",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('confession_id', response.data.confession.id);",
+                  "    pm.test('İtiraf başarıyla oluşturuldu', function() {",
+                  "        pm.expect(response.success).to.be.true;",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Dün gece buzdolabına gittim ve yarım kilo dondurma bitirdim. Pişman değilim ama biraz suçluluk hissediyorum.\",\n  \"category\": \"night_attack\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/confessions",
+              "host": ["{{base_url}}"],
+              "path": ["confessions"]
+            },
+            "description": "Yeni bir itiraf oluşturur. AI otomatik olarak yanıt üretir."
+          },
+          "response": [
+            {
+              "name": "Başarılı Yanıt",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"content\": \"Dün gece buzdolabına gittim ve yarım kilo dondurma bitirdim.\",\n  \"category\": \"night_attack\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/confessions",
+                  "host": ["{{base_url}}"],
+                  "path": ["confessions"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"confession\": {\n      \"id\": \"clx123abc\",\n      \"content\": \"Dün gece buzdolabına gittim ve yarım kilo dondurma bitirdim.\",\n      \"category\": \"night_attack\",\n      \"aiResponse\": \"Gece saldırıları hepimizin başına gelir! Önemli olan bunun bir alışkanlık haline gelmemesi. Yarın yeni bir gün! 💪\",\n      \"aiTone\": \"empathetic\",\n      \"telafiBudget\": {\n        \"action\": \"Bugün 30 dakika tempolu yürüyüş yap\",\n        \"xpReward\": 15\n      },\n      \"empathyCount\": 0,\n      \"isPopular\": false,\n      \"status\": \"published\",\n      \"createdAt\": \"2025-11-17T23:45:00Z\"\n    },\n    \"rewards\": {\n      \"xp\": 10,\n      \"coins\": 5,\n      \"badges\": [\"confession_first\"]\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tekil İtiraf Detayı",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions/{{confession_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "{{confession_id}}"]
+            },
+            "description": "Belirli bir itirafın detaylarını getirir."
+          },
+          "response": []
+        },
+        {
+          "name": "Kullanıcının İtirafları",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions/my?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "my"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Giriş yapan kullanıcının kendi itiraflarını listeler."
+          },
+          "response": []
+        },
+        {
+          "name": "Genel İstatistikler",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions/stats",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "stats"]
+            },
+            "description": "İtiraf sistemi hakkında genel istatistikler."
+          },
+          "response": []
+        },
+        {
+          "name": "İtiraf Raporla",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Uygunsuz dil kullanımı\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/confessions/{{confession_id}}/report",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "{{confession_id}}", "report"]
+            },
+            "description": "Uygunsuz içerik içeren bir itirafı raporlar."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Empathy",
+      "item": [
+        {
+          "name": "Empati Göster",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions/{{confession_id}}/empathy",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "{{confession_id}}", "empathy"]
+            },
+            "description": "Bir itirafa \"Benimki de vardı\" diyerek empati gösterir."
+          },
+          "response": [
+            {
+              "name": "Başarılı Yanıt",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/confessions/{{confession_id}}/empathy",
+                  "host": ["{{base_url}}"],
+                  "path": ["confessions", "{{confession_id}}", "empathy"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"empathyCount\": 43,\n    \"xpEarned\": 2,\n    \"badges\": []\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Empatiyi Geri Al",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions/{{confession_id}}/empathy",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "{{confession_id}}", "empathy"]
+            },
+            "description": "Daha önce gösterilen empatiyi geri alır."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Telafi",
+      "item": [
+        {
+          "name": "Telafi Planını Kabul Et",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/confessions/{{confession_id}}/telafi/accept",
+              "host": ["{{base_url}}"],
+              "path": ["confessions", "{{confession_id}}", "telafi", "accept"]
+            },
+            "description": "AI'ın önerdiği telafi planını kabul eder ve günlük görevlere ekler."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Moderasyon Kuyruğu",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/../admin/confessions/moderation?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "confessions", "moderation"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Onay bekleyen itirafları listeler (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "İtirafı Onayla",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/../admin/confessions/{{confession_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "confessions", "{{confession_id}}", "approve"]
+            },
+            "description": "Pending durumundaki bir itirafı onaylar (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "İtirafı Reddet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Uygunsuz içerik - Topluluk kurallarına aykırı\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/../admin/confessions/{{confession_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "confessions", "{{confession_id}}", "reject"]
+            },
+            "description": "Pending durumundaki bir itirafı reddeder (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Rapor Edilen İtiraflar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/../admin/confessions/reports",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "confessions", "reports"]
+            },
+            "description": "Kullanıcılar tarafından rapor edilen itirafları listeler (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Analitik Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/../admin/confessions/analytics?startDate=2025-11-01T00:00:00Z&endDate=2025-11-17T23:59:59Z",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "confessions", "analytics"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2025-11-01T00:00:00Z",
+                  "description": "Başlangıç tarihi"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-11-17T23:59:59Z",
+                  "description": "Bitiş tarihi"
+                }
+              ]
+            },
+            "description": "Detaylı analitik veriler (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Sezonluk Tema Oluştur",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ramazan 2026\",\n  \"category\": \"seasonal\",\n  \"icon\": \"🌙\",\n  \"startDate\": \"2026-03-01T00:00:00Z\",\n  \"endDate\": \"2026-03-30T23:59:59Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/../admin/seasonal-themes",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "seasonal-themes"]
+            },
+            "description": "Yeni bir sezonluk tema oluşturur (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Sezonluk Tema Güncelle",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ramazan 2026 (Güncellenmiş)\",\n  \"isActive\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/../admin/seasonal-themes/theme001",
+              "host": ["{{base_url}}"],
+              "path": ["..", "admin", "seasonal-themes", "theme001"]
+            },
+            "description": "Mevcut bir sezonluk temayı günceller (Admin only)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Session token'ı otomatik olarak header'a ekle",
+          "if (pm.collectionVariables.get('session_token')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Cookie',",
+          "        value: 'next-auth.session-token=' + pm.collectionVariables.get('session_token')",
+          "    });",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Genel test: Response time kontrolü",
+          "pm.test('Response time < 2000ms', function() {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "// Genel test: Content-Type kontrolü",
+          "pm.test('Content-Type is application/json', function() {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});"
+        ]
+      }
+    }
+  ]
+}

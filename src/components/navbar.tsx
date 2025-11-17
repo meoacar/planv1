@@ -142,6 +142,15 @@ export function Navbar() {
           </Link>
           
           {user && (
+            <Link 
+              href="/confessions" 
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20"
+            >
+              🎭 İtiraf Duvarı
+            </Link>
+          )}
+          
+          {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1.5 h-9">
@@ -348,6 +357,15 @@ export function Navbar() {
                     <Link href="/mesajlar" className="cursor-pointer">
                       💬
                       <span className="ml-2">Mesajlar</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem asChild>
+                    <Link href="/confessions" className="cursor-pointer bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+                      🎭
+                      <span className="ml-2 font-semibold text-purple-600 dark:text-purple-400">İtiraf Duvarı</span>
                     </Link>
                   </DropdownMenuItem>
                   

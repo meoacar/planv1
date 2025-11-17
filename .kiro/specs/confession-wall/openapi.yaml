@@ -1,0 +1,1046 @@
+openapi: 3.0.3
+info:
+  title: İtiraf Duvarı API
+  description: |
+    Yeme Günahı İtiraf Duvarı API dokümantasyonu.
+    
+    Kullanıcılar anonim itiraflar paylaşabilir, AI destekli yanıtlar alabilir ve topluluktan empati gösterebilir.
+    
+    ## Authentication
+    API, NextAuth session-based authentication kullanır. Tüm endpoint'ler için geçerli bir session cookie gereklidir.
+    
+    ## Rate Limiting
+    - İtiraf oluşturma: 3/gün per user
+    - Empati gösterme: 100/saat per user
+    - Rapor etme: 10/gün per user
+    - Genel API: 100 req/dakika per IP
+  version: 1.0.0
+  contact:
+    email: api-support@yourdomain.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://yourdomain.com/api/v1
+    description: Production server
+  - url: http://localhost:3000/api/v1
+    description: Development server
+
+tags:
+  - name: Confessions
+    description: İtiraf yönetimi endpoint'leri
+  - name: Empathy
+    description: Empati gösterme endpoint'leri
+  - name: Admin
+    description: Admin yönetim endpoint'leri
+
+paths:
+  /confessions:
+    get:
+      tags:
+        - Confessions
+      summary: İtiraf listesi
+      description: İtirafları listeler, filtreleme ve sayfalama destekler
+      operationId: getConfessions
+      parameters:
+        - name: page
+          in: query
+          description: Sayfa numarası
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Sayfa başına kayıt sayısı
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 50
+        - name: category
+          in: query
+          description: Kategori filtresi
+          schema:
+            $ref: '#/components/schemas/ConfessionCategory'
+        - name: popular
+          in: query
+          description: Sadece popüler itirafları göster
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Confession'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - sessionAuth: []
+
+    post:
+      tags:
+        - Confessions
+      summary: Yeni itiraf oluştur
+      description: Yeni bir itiraf oluşturur. AI otomatik olarak yanıt üretir.
+      operationId: createConfession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  minLength: 10
+                  maxLength: 500
+                  description: İtiraf metni
+                  example: "Dün gece buzdolabına gittim ve yarım kilo dondurma bitirdim..."
+                category:
+                  $ref: '#/components/schemas/ConfessionCategory'
+      responses:
+        '201':
+          description: İtiraf başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      confession:
+                        $ref: '#/components/schemas/Confession'
+                      rewards:
+                        type: object
+                        properties:
+                          xp:
+                            type: integer
+                            example: 10
+                          coins:
+                            type: integer
+                            example: 5
+                          badges:
+                            type: array
+                            items:
+                              type: string
+                            example: ["confession_first"]
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+      security:
+        - sessionAuth: []
+
+  /confessions/{id}:
+    get:
+      tags:
+        - Confessions
+      summary: Tekil itiraf detayı
+      description: Belirli bir itirafın detaylarını getirir
+      operationId: getConfessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: İtiraf ID'si
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Confession'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - sessionAuth: []
+
+  /confessions/{id}/empathy:
+    post:
+      tags:
+        - Empathy
+      summary: Empati göster
+      description: Bir itirafa "Benimki de vardı" diyerek empati gösterir
+      operationId: addEmpathy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: İtiraf ID'si
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empati başarıyla eklendi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      empathyCount:
+                        type: integer
+                        example: 43
+                      xpEarned:
+                        type: integer
+                        example: 2
+                      badges:
+                        type: array
+                        items:
+                          type: string
+        '400':
+          description: Zaten empati gösterilmiş
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  code: "ALREADY_EMPATHIZED"
+                  message: "Bu itirafa zaten empati gösterdiniz"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+    delete:
+      tags:
+        - Empathy
+      summary: Empatiyi geri al
+      description: Daha önce gösterilen empatiyi geri alır
+      operationId: removeEmpathy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: İtiraf ID'si
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Empati başarıyla kaldırıldı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      empathyCount:
+                        type: integer
+                        example: 42
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+  /confessions/{id}/report:
+    post:
+      tags:
+        - Confessions
+      summary: İtiraf raporla
+      description: Uygunsuz içerik içeren bir itirafı raporlar
+      operationId: reportConfession
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: İtiraf ID'si
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: Rapor nedeni
+                  example: "Uygunsuz dil kullanımı"
+      responses:
+        '200':
+          description: Rapor alındı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Rapor alındı, inceleme yapılacak"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+  /confessions/my:
+    get:
+      tags:
+        - Confessions
+      summary: Kullanıcının itirafları
+      description: Giriş yapan kullanıcının kendi itiraflarını listeler
+      operationId: getMyConfessions
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Confession'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+                      stats:
+                        type: object
+                        properties:
+                          totalConfessions:
+                            type: integer
+                          totalEmpathy:
+                            type: integer
+                          mostPopular:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              empathyCount:
+                                type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - sessionAuth: []
+
+  /confessions/{id}/telafi/accept:
+    post:
+      tags:
+        - Confessions
+      summary: Telafi planını kabul et
+      description: AI'ın önerdiği telafi planını kabul eder ve günlük görevlere ekler
+      operationId: acceptTelafi
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: İtiraf ID'si
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Telafi planı kabul edildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      questAdded:
+                        type: boolean
+                        example: true
+                      quest:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          title:
+                            type: string
+                          xpReward:
+                            type: integer
+                          type:
+                            type: string
+                            example: "telafi"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+  /confessions/stats:
+    get:
+      tags:
+        - Confessions
+      summary: Genel istatistikler
+      description: İtiraf sistemi hakkında genel istatistikler
+      operationId: getConfessionStats
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      totalConfessions:
+                        type: integer
+                        example: 1547
+                      categoryBreakdown:
+                        type: object
+                        additionalProperties:
+                          type: integer
+                      averageEmpathy:
+                        type: number
+                        format: float
+                        example: 23.4
+                      popularConfessions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Confession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - sessionAuth: []
+
+  /admin/confessions/moderation:
+    get:
+      tags:
+        - Admin
+      summary: Moderasyon kuyruğu
+      description: Onay bekleyen itirafları listeler (Admin only)
+      operationId: getModerationQueue
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/Confession'
+                            - type: object
+                              properties:
+                                user:
+                                  type: object
+                                  properties:
+                                    username:
+                                      type: string
+                                    email:
+                                      type: string
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - sessionAuth: []
+
+  /admin/confessions/{id}/approve:
+    post:
+      tags:
+        - Admin
+      summary: İtirafı onayla
+      description: Pending durumundaki bir itirafı onaylar (Admin only)
+      operationId: approveConfession
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: İtiraf onaylandı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "İtiraf onaylandı ve yayınlandı"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+  /admin/confessions/{id}/reject:
+    post:
+      tags:
+        - Admin
+      summary: İtirafı reddet
+      description: Pending durumundaki bir itirafı reddeder (Admin only)
+      operationId: rejectConfession
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                  description: Reddetme nedeni
+                  example: "Uygunsuz içerik - Topluluk kurallarına aykırı"
+      responses:
+        '200':
+          description: İtiraf reddedildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "İtiraf reddedildi, kullanıcıya bildirim gönderildi"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+  /admin/confessions/reports:
+    get:
+      tags:
+        - Admin
+      summary: Rapor edilen itiraflar
+      description: Kullanıcılar tarafından rapor edilen itirafları listeler (Admin only)
+      operationId: getReportedConfessions
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        confession:
+                          $ref: '#/components/schemas/Confession'
+                        reportCount:
+                          type: integer
+                        reports:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              userId:
+                                type: string
+                              reason:
+                                type: string
+                              createdAt:
+                                type: string
+                                format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - sessionAuth: []
+
+  /admin/confessions/analytics:
+    get:
+      tags:
+        - Admin
+      summary: Analitik dashboard
+      description: Detaylı analitik veriler (Admin only)
+      operationId: getAnalytics
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      dailyStats:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            date:
+                              type: string
+                              format: date
+                            count:
+                              type: integer
+                            empathyCount:
+                              type: integer
+                      categoryDistribution:
+                        type: object
+                        additionalProperties:
+                          type: integer
+                      aiResponseSuccessRate:
+                        type: number
+                        format: float
+                      averageResponseTime:
+                        type: number
+                        format: float
+                      telafiAcceptanceRate:
+                        type: number
+                        format: float
+                      topConfessions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Confession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - sessionAuth: []
+
+  /admin/seasonal-themes:
+    post:
+      tags:
+        - Admin
+      summary: Sezonluk tema oluştur
+      description: Yeni bir sezonluk tema oluşturur (Admin only)
+      operationId: createSeasonalTheme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - category
+                - icon
+                - startDate
+                - endDate
+              properties:
+                name:
+                  type: string
+                  example: "Ramazan 2026"
+                category:
+                  type: string
+                  example: "seasonal"
+                icon:
+                  type: string
+                  example: "🌙"
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Tema oluşturuldu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/SeasonalTheme'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - sessionAuth: []
+
+  /admin/seasonal-themes/{id}:
+    put:
+      tags:
+        - Admin
+      summary: Sezonluk tema güncelle
+      description: Mevcut bir sezonluk temayı günceller (Admin only)
+      operationId: updateSeasonalTheme
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Tema güncellendi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/SeasonalTheme'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - sessionAuth: []
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+      description: NextAuth session cookie
+
+  schemas:
+    Confession:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "clx123abc"
+        content:
+          type: string
+          example: "Dün gece buzdolabına gittim ve yarım kilo dondurma bitirdim..."
+        category:
+          $ref: '#/components/schemas/ConfessionCategory'
+        aiResponse:
+          type: string
+          nullable: true
+          example: "Gece saldırıları hepimizin başına gelir! Önemli olan bunun bir alışkanlık haline gelmemesi."
+        aiTone:
+          $ref: '#/components/schemas/AITone'
+        telafiBudget:
+          type: object
+          nullable: true
+          properties:
+            action:
+              type: string
+            xpReward:
+              type: integer
+        empathyCount:
+          type: integer
+          example: 42
+        isPopular:
+          type: boolean
+          example: false
+        status:
+          $ref: '#/components/schemas/ConfessionStatus'
+        createdAt:
+          type: string
+          format: date-time
+        hasEmpathized:
+          type: boolean
+          description: Kullanıcının bu itirafa empati gösterip göstermediği
+          example: false
+
+    ConfessionCategory:
+      type: string
+      enum:
+        - night_attack
+        - special_occasion
+        - stress_eating
+        - social_pressure
+        - no_regrets
+        - seasonal
+      example: night_attack
+
+    AITone:
+      type: string
+      enum:
+        - empathetic
+        - humorous
+        - motivational
+        - realistic
+      example: empathetic
+
+    ConfessionStatus:
+      type: string
+      enum:
+        - pending
+        - published
+        - rejected
+        - hidden
+      example: published
+
+    SeasonalTheme:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        icon:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 156
+        totalPages:
+          type: integer
+          example: 8
+        hasMore:
+          type: boolean
+          example: true
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+  responses:
+    Unauthorized:
+      description: Yetkisiz erişim
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: "UNAUTHORIZED"
+              message: "Bu işlem için giriş yapmalısınız"
+
+    Forbidden:
+      description: Erişim yasak (Admin gerekli)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: "FORBIDDEN"
+              message: "Bu işlem için admin yetkisi gereklidir"
+
+    NotFound:
+      description: Kaynak bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: "CONFESSION_NOT_FOUND"
+              message: "İtiraf bulunamadı"
+
+    ValidationError:
+      description: Validasyon hatası
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            tooShort:
+              value:
+                success: false
+                error:
+                  code: "CONTENT_TOO_SHORT"
+                  message: "İtiraf en az 10 karakter olmalı"
+            tooLong:
+              value:
+                success: false
+                error:
+                  code: "CONTENT_TOO_LONG"
+                  message: "İtiraf en fazla 500 karakter olabilir"
+
+    RateLimitExceeded:
+      description: Rate limit aşıldı
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: "DAILY_LIMIT_EXCEEDED"
+              message: "Günlük itiraf limitine ulaştınız (3/3). Yarın tekrar deneyin."

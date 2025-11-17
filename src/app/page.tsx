@@ -383,6 +383,144 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Confession Wall Feature - NEW! */}
+      <section className="relative py-16 md:py-24 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/20 dark:via-pink-950/20 dark:to-orange-950/20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <Card className="relative overflow-hidden border-2 border-purple-200 dark:border-purple-800 shadow-2xl">
+              {/* Gradient Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-500/10" />
+              
+              {/* NEW Badge */}
+              <div className="absolute top-6 right-6 z-20">
+                <Badge className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 shadow-lg animate-pulse">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  YENİ!
+                </Badge>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-8 relative z-10">
+                {/* Left Side - Content */}
+                <CardContent className="pt-12 pb-12 pl-8 pr-8 lg:pr-4">
+                  <div className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 mb-6">
+                    <span className="text-5xl">🎭</span>
+                  </div>
+                  
+                  <h3 className="text-3xl md:text-4xl font-black mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+                    İtiraf Duvarı
+                  </h3>
+                  
+                  <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                    Diyet sürecinde yaptığın "hataları" anonim paylaş, AI'dan esprili yanıtlar al, 
+                    topluluktan empati gör! 🤗
+                  </p>
+
+                  <div className="space-y-3 mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <span className="text-sm font-medium">🎭 Tamamen anonim itiraflar</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                      </div>
+                      <span className="text-sm font-medium">🤖 AI destekli esprili yanıtlar</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                      </div>
+                      <span className="text-sm font-medium">❤️ Topluluk empati sistemi</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <span className="text-sm font-medium">🏆 Özel rozetler ve ödüller</span>
+                    </div>
+                  </div>
+
+                  {session?.user ? (
+                    <Button asChild size="lg" className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 shadow-xl hover:shadow-2xl transition-all group">
+                      <Link href="/confessions">
+                        🎭 İtiraf Duvarını Keşfet
+                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button asChild size="lg" className="w-full h-14 text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 shadow-xl hover:shadow-2xl transition-all group">
+                      <Link href="/kayit">
+                        Kayıt Ol ve Keşfet
+                        <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
+                  )}
+                </CardContent>
+
+                {/* Right Side - Example Confession */}
+                <div className="relative pt-12 pb-12 pr-8 pl-8 lg:pl-4 flex items-center">
+                  <div className="w-full">
+                    {/* Example Confession Card */}
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-xl border-2 border-purple-200 dark:border-purple-800 mb-4">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
+                          ?
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-bold text-sm text-muted-foreground mb-1">Anonim • 2 saat önce</div>
+                          <p className="text-sm leading-relaxed">
+                            "Dün gece 23:00'te buzdolabını açtım ve yarım kutu dondurma bitirdim. 
+                            Sabah kalktığımda pişman oldum ama o an çok mutluydum 😅"
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4 mb-3">
+                        <div className="flex items-start gap-2 mb-2">
+                          <span className="text-2xl">🤖</span>
+                          <div className="flex-1">
+                            <div className="font-bold text-sm text-purple-600 dark:text-purple-400 mb-1">AI Yanıtı</div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              "Gece açlığı gerçekten zor! Kendinizi suçlamayın, yarın yeni bir gün. 🌟"
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                          <span className="font-semibold">127</span>
+                          <span>Benimki de vardı</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-xl p-3 text-center border border-purple-200 dark:border-purple-800">
+                        <div className="text-2xl font-black text-purple-600 dark:text-purple-400">2.5K+</div>
+                        <div className="text-xs text-muted-foreground font-medium">İtiraf</div>
+                      </div>
+                      <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-xl p-3 text-center border border-pink-200 dark:border-pink-800">
+                        <div className="text-2xl font-black text-pink-600 dark:text-pink-400">12K+</div>
+                        <div className="text-xs text-muted-foreground font-medium">Empati</div>
+                      </div>
+                      <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-xl p-3 text-center border border-orange-200 dark:border-orange-800">
+                        <div className="text-2xl font-black text-orange-600 dark:text-orange-400">95%</div>
+                        <div className="text-xs text-muted-foreground font-medium">Memnun</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section - Gamification Focus */}
       <section className="container mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-16">

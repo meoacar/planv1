@@ -1,4 +1,4 @@
-import { User, Plan, Comment, WeightLog, ProgressPhoto, Notification, Recipe, RecipeComment } from '@prisma/client'
+import { User, Plan, Comment, WeightLog, ProgressPhoto, Notification, Recipe, RecipeComment, Confession, ConfessionCategory } from '@prisma/client'
 
 // Extended types with relations
 export type PlanWithAuthor = Plan & {
@@ -103,4 +103,27 @@ export type AdminStats = {
   newUsersToday: number
   newPlansToday: number
   newRecipesToday: number
+}
+
+// Confession types
+export type ConfessionWithUser = Confession & {
+  user: Pick<User, 'id' | 'name' | 'username' | 'image'>
+  _count?: {
+    empathies: number
+  }
+  hasEmpathized?: boolean
+}
+
+export type ConfessionFilters = {
+  category?: ConfessionCategory
+  popular?: boolean
+  userId?: string
+}
+
+export type ConfessionStats = {
+  totalConfessions: number
+  totalEmpathy: number
+  averageEmpathy: number
+  categoryBreakdown: Record<string, number>
+  popularConfessions: ConfessionWithUser[]
 }
