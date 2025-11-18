@@ -25,6 +25,18 @@ export async function GET() {
       pendingGuilds = 0;
     }
 
+    let draftBlogs = 0;
+    try {
+      draftBlogs = await db.blogPost.count({ 
+        where: { 
+          status: "DRAFT",
+          deletedAt: null 
+        } 
+      });
+    } catch (error) {
+      draftBlogs = 0;
+    }
+
     const [
       pendingPlans,
       pendingRecipes,
@@ -44,6 +56,7 @@ export async function GET() {
       appeals: pendingAppeals,
       guilds: pendingGuilds,
       underReview: underReviewPlans,
+      blogs: draftBlogs,
     });
   } catch (error) {
     console.error("Error fetching admin counts:", error);

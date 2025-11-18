@@ -5,15 +5,16 @@ import { Footer } from '@/components/layout/footer'
 import { Metadata } from 'next'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
   const page = await db.page.findUnique({
     where: {
-      slug: params.slug,
+      slug,
       isPublished: true,
     },
   })
@@ -31,9 +32,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function DynamicPage({ params }: PageProps) {
+  const { slug } = await params
   const page = await db.page.findUnique({
     where: {
-      slug: params.slug,
+      slug,
       isPublished: true,
     },
   })

@@ -27,7 +27,8 @@ import {
   Shield,
   Smile,
   TrendingDown,
-  UserPlus
+  UserPlus,
+  BookOpen
 } from 'lucide-react'
 
 export default async function HomePage() {
@@ -517,6 +518,91 @@ export default async function HomePage() {
                 </div>
               </div>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Section - Modern Design */}
+      <section className="relative py-24 overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <Badge className="mb-4 px-6 py-2.5 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 text-white border-0 shadow-lg">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Blog & İçerikler
+            </Badge>
+            <h2 className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+              Sağlıklı Yaşam Rehberin 📚
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Beslenme, egzersiz, motivasyon ve daha fazlası... Uzman yazılarıyla hedefine ulaş!
+            </p>
+          </div>
+
+          {/* Blog Preview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-12">
+            {[
+              {
+                emoji: '🥗',
+                title: 'Beslenme Rehberi',
+                desc: 'Sağlıklı beslenme ipuçları, diyet önerileri ve lezzetli tarifler',
+                color: 'from-green-500 to-emerald-600',
+                posts: '25+ Yazı'
+              },
+              {
+                emoji: '💪',
+                title: 'Egzersiz & Fitness',
+                desc: 'Evde yapabileceğin antrenmanlar, form teknikleri ve spor tavsiyeleri',
+                color: 'from-orange-500 to-red-600',
+                posts: '18+ Yazı'
+              },
+              {
+                emoji: '🎯',
+                title: 'Motivasyon & Başarı',
+                desc: 'İlham verici hikayeler, hedef belirleme ve disiplin stratejileri',
+                color: 'from-purple-500 to-pink-600',
+                posts: '30+ Yazı'
+              }
+            ].map((item, i) => (
+              <Card key={i} className="group relative overflow-hidden border-2 hover:border-transparent hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                {/* Gradient Background on Hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                
+                {/* Content */}
+                <CardContent className="relative z-10 p-8 group-hover:text-white transition-colors duration-500">
+                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                    {item.emoji}
+                  </div>
+                  <h3 className="text-2xl font-bold mb-3 group-hover:text-white">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground group-hover:text-white/90 mb-4 leading-relaxed">
+                    {item.desc}
+                  </p>
+                  <Badge variant="secondary" className="group-hover:bg-white/20 group-hover:text-white group-hover:border-white/30">
+                    {item.posts}
+                  </Badge>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* CTA Button */}
+          <div className="text-center">
+            <Button asChild size="lg" className="h-14 px-8 text-lg font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 shadow-2xl hover:shadow-purple-500/50 transition-all group">
+              <Link href="/blog">
+                <BookOpen className="w-5 h-5 mr-2" />
+                Tüm Blog Yazılarını Keşfet
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </Button>
+            <p className="text-sm text-muted-foreground mt-4">
+              Her hafta yeni içerikler ekleniyor ✨
+            </p>
           </div>
         </div>
       </section>

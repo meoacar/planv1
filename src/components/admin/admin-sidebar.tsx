@@ -20,6 +20,7 @@ import {
   Trophy,
   Gamepad2,
   UsersRound,
+  BookOpen,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -38,6 +39,11 @@ const menuItems = [
     title: "Tarifler",
     href: "/admin/tarifler",
     icon: ChefHat,
+  },
+  {
+    title: "Blog",
+    href: "/admin/blog",
+    icon: BookOpen,
   },
   {
     title: "Kullanıcılar",
@@ -208,6 +214,7 @@ export function AdminSidebar() {
           let count = 0
           if (item.href === '/admin/planlar') count = counts.plans || 0
           if (item.href === '/admin/tarifler') count = counts.recipes || 0
+          if (item.href === '/admin/blog') count = counts.blogs || 0
           if (item.href === '/admin/yorumlar') count = counts.comments || 0
           if (item.href === '/admin/itirazlar') count = counts.appeals || 0
 

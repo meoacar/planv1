@@ -135,6 +135,13 @@ export function Navbar() {
           </Link>
           
           <Link 
+            href="/blog" 
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
+          >
+            📝 Blog
+          </Link>
+          
+          <Link 
             href="/gruplar" 
             className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
