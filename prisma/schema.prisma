@@ -42,6 +42,8 @@ model User {
   streakFreezeCount    Int                 @default(0)
   xpBoostUntil         DateTime?
   accounts             Account[]
+  blogComments         BlogComment[]
+  blogPosts            BlogPost[]
   coinTransactions     CoinTransaction[]
   comments             Comment[]
   confessionEmpathies  ConfessionEmpathy[]
@@ -82,6 +84,10 @@ model User {
   purchases            UserPurchase[]
   weightLogs           WeightLog[]
   conversations        Conversation[]      @relation("conversationparticipants")
+  foodSins             FoodSin[]
+  sinBadges            UserSinBadge[]
+  sinChallenges        UserSinChallenge[]
+  sinWeeklySummaries   SinWeeklySummary[]
 
   @@index([email])
   @@index([username])
@@ -1180,6 +1186,89 @@ model SeasonalTheme {
   @@map("seasonal_themes")
 }
 
+model BlogPost {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  content         String        @db.LongText
+  excerpt         String?       @db.VarChar(300)
+  coverImage      String?
+  coverImageAlt   String?
+  metaTitle       String?
+  metaDescription String?       @db.VarChar(160)
+  status          BlogStatus    @default(DRAFT)
+  featured        Boolean       @default(false)
+  featuredOrder   Int?
+  viewCount       Int           @default(0)
+  readingTime     Int
+  authorId        String
+  categoryId      String
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+  comments        BlogComment[]
+  author          User          @relation(fields: [authorId], references: [id])
+  category        BlogCategory  @relation(fields: [categoryId], references: [id])
+  blog_tags       BlogTag[]     @relation("blogposttoblogtag")
+
+  @@index([slug])
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([featured])
+  @@index([authorId])
+  @@index([createdAt])
+  @@fulltext([title, content])
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?    @db.Text
+  icon        String?
+  color       String?
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  posts       BlogPost[]
+
+  @@index([slug])
+  @@index([order])
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id         String     @id @default(cuid())
+  name       String     @unique
+  slug       String     @unique
+  createdAt  DateTime   @default(now())
+  blog_posts BlogPost[] @relation("blogposttoblogtag")
+
+  @@index([slug])
+  @@index([name])
+  @@map("blog_tags")
+}
+
+model BlogComment {
+  id        String            @id @default(cuid())
+  content   String            @db.Text
+  status    BlogCommentStatus @default(PENDING)
+  postId    String
+  userId    String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  post      BlogPost          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User              @relation(fields: [userId], references: [id])
+
+  @@index([postId, status])
+  @@index([userId])
+  @@index([status, createdAt])
+  @@index([createdAt])
+  @@map("blog_comments")
+}
+
 enum Role {
   USER
   ADMIN
@@ -1403,4 +1492,151 @@ enum ConfessionStatus {
   published
   rejected
   hidden
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BlogCommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+// ============================================
+// YEMEK GÜNAH SAYACI (FOOD SIN TRACKER) SYSTEM
+// ============================================
+
+model FoodSin {
+  id           String      @id @default(cuid())
+  userId       String
+  sinType      SinType
+  note         String?     @db.Text
+  emoji        String      @db.VarChar(10)
+  sinDate      DateTime    @default(now())
+  reactionText String?     @db.Text
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sinDate])
+  @@index([sinType, sinDate])
+  @@index([userId, createdAt])
+  @@map("food_sins")
+}
+
+model SinReaction {
+  id          String   @id @default(cuid())
+  sinType     SinType
+  reactionText String  @db.Text
+  isActive    Boolean  @default(true)
+  usageCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sinType, isActive])
+  @@map("sin_reactions")
+}
+
+model SinBadge {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String   @db.Text
+  icon        String
+  sinType     SinType?
+  requirement String   @db.Text
+  xpReward    Int      @default(0)
+  coinReward  Int      @default(0)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       UserSinBadge[]
+
+  @@index([isActive])
+  @@index([sinType])
+  @@map("sin_badges")
+}
+
+model UserSinBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  badge    SinBadge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId, earnedAt])
+  @@index([badgeId])
+  @@map("user_sin_badges")
+}
+
+model SinChallenge {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  sinType     SinType?
+  targetDays  Int
+  maxSins     Int
+  xpReward    Int      @default(0)
+  coinReward  Int      @default(0)
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  participants UserSinChallenge[]
+
+  @@index([isActive, startDate, endDate])
+  @@map("sin_challenges")
+}
+
+model UserSinChallenge {
+  id          String       @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Int          @default(0)
+  completed   Boolean      @default(false)
+  completedAt DateTime?
+  joinedAt    DateTime     @default(now())
+  challenge   SinChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([userId, completed])
+  @@index([challengeId])
+  @@map("user_sin_challenges")
+}
+
+model SinWeeklySummary {
+  id           String   @id @default(cuid())
+  userId       String
+  weekStart    DateTime
+  weekEnd      DateTime
+  totalSins    Int      @default(0)
+  cleanDays    Int      @default(0)
+  mostCommonSin SinType?
+  sinBreakdown String?  @db.Text
+  aiSummary    String?  @db.Text
+  motivationBar Int     @default(0)
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+  @@map("sin_weekly_summaries")
+}
+
+enum SinType {
+  tatli
+  fastfood
+  gazli
+  alkol
+  diger
 }
