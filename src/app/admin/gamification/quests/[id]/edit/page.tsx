@@ -20,9 +20,10 @@ async function getQuest(id: string) {
 export default async function EditQuestPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
-  const quest = await getQuest(params.id)
+  const { id } = await params
+  const quest = await getQuest(id)
 
   if (!quest) {
     notFound()
