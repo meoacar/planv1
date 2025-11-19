@@ -11,9 +11,9 @@ import type { Metadata } from 'next'
 import { ConfessionWithUser, ConfessionCategory } from '@/types/confession'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 async function getConfession(id: string) {
@@ -61,7 +61,8 @@ async function getSimilarConfessions(category: ConfessionCategory, excludeId: st
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const confession = await getConfession(params.id)
+  const { id } = await params
+  const confession = await getConfession(id)
 
   if (!confession) {
     return {
@@ -91,7 +92,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ConfessionDetailPage({ params }: PageProps) {
-  const confession = await getConfession(params.id)
+  const { id } = await params
+  const confession = await getConfession(id)
 
   if (!confession) {
     notFound()
