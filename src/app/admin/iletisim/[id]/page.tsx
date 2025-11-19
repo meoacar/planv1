@@ -6,7 +6,7 @@ import { ContactMessageDetail } from '@/components/admin/contact-message-detail'
 export default async function AdminContactDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const session = await auth()
 
@@ -14,8 +14,9 @@ export default async function AdminContactDetailPage({
     redirect('/giris')
   }
 
+  const { id } = await params
   const message = await db.contactMessage.findUnique({
-    where: { id: params.id },
+    where: { id },
   })
 
   if (!message) {
@@ -25,7 +26,7 @@ export default async function AdminContactDetailPage({
   // Mesajı okundu olarak işaretle
   if (message.status === 'new') {
     await db.contactMessage.update({
-      where: { id: params.id },
+      where: { id },
       data: { status: 'read' },
     })
   }

@@ -6,7 +6,7 @@ import { PageForm } from '@/components/admin/page-form'
 export default async function AdminPageEditPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const session = await auth()
 
@@ -14,9 +14,10 @@ export default async function AdminPageEditPage({
     redirect('/giris')
   }
 
+  const { id } = await params
   // Sayfa verilerini çek
   const page = await db.page.findUnique({
-    where: { id: params.id },
+    where: { id },
   })
 
   if (!page) {
