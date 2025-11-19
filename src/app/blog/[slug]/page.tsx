@@ -27,9 +27,9 @@ import { generateSEOMeta, generateStructuredData } from '@/lib/blog/blog-utils'
 import type { BlogPostDetailResponse } from '@/types/blog'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // ISR: Revalidate every 10 minutes
