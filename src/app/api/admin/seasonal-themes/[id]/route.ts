@@ -15,9 +15,11 @@ const updateThemeSchema = z.object({
 // GET /api/admin/seasonal-themes/[id] - Tekil tema detayı
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -72,9 +74,11 @@ export async function GET(
 // PUT /api/admin/seasonal-themes/[id] - Tema güncelle
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -190,9 +194,11 @@ export async function PUT(
 // DELETE /api/admin/seasonal-themes/[id] - Tema sil
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(

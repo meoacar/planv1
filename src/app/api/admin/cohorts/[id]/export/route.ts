@@ -5,9 +5,11 @@ import { db } from '@/lib/db';
 // GET /api/admin/cohorts/[id]/export - Export cohort users as CSV
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user || !['ADMIN', 'MODERATOR'].includes(session.user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -6,9 +6,11 @@ import { updateRecipeSchema } from '@/validations/recipe.schema'
 // GET /api/v1/recipes/[slug] - Get recipe by slug
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const recipe = await RecipeService.getRecipeBySlug(params.slug)
 
     return NextResponse.json({
@@ -34,9 +36,11 @@ export async function GET(
 // PATCH /api/v1/recipes/[slug] - Update recipe
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth()
 
     if (!session?.user) {
@@ -96,9 +100,11 @@ export async function PATCH(
 // DELETE /api/v1/recipes/[slug] - Delete recipe
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth()
 
     if (!session?.user) {

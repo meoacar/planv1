@@ -6,9 +6,11 @@ import { recipeCommentSchema } from '@/validations/recipe.schema'
 // GET /api/v1/recipes/[slug]/comments - Get comments
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
@@ -40,9 +42,11 @@ export async function GET(
 // POST /api/v1/recipes/[slug]/comments - Add comment
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth()
 
     if (!session?.user) {

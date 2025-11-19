@@ -10,9 +10,11 @@ const rejectSchema = z.object({
 // PATCH /api/v1/admin/groups/[id]/reject - Reject group
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth()
 
     if (!session?.user || session.user.role !== 'ADMIN') {

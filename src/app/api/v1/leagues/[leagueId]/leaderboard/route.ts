@@ -4,9 +4,11 @@ import * as gamificationService from '@/services/gamification.service';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { leagueId: string } }
+  { params }: { params: Promise<{ leagueId: string }> }
 ) {
   try {
+    const { leagueId } = await params;
+    
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get('limit') || '100');
 

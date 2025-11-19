@@ -5,9 +5,11 @@ import { db as prisma } from '@/lib/db';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string; requestId: string } }
+  { params }: { params: Promise<{ id: string; requestId: string }> }
 ) {
   try {
+    const { id, requestId } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return errorResponse('UNAUTHORIZED', 'Giriş yapmalısınız', 401);

@@ -5,9 +5,11 @@ import { RecipeService } from '@/services/recipe.service'
 // GET /api/v1/recipes/[slug]/like - Check if user liked
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth()
 
     if (!session?.user) {
@@ -43,9 +45,11 @@ export async function GET(
 // POST /api/v1/recipes/[slug]/like - Toggle like
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth()
 
     if (!session?.user) {

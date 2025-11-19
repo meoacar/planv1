@@ -5,9 +5,11 @@ import { db as prisma } from '@/lib/db';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Try to find by slug first, then by id
     const guild = await prisma.guild.findFirst({
       where: { 
@@ -59,9 +61,11 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return errorResponse('UNAUTHORIZED', 'Giriş yapmalısınız', 401);

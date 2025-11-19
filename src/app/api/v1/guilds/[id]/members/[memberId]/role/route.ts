@@ -5,9 +5,11 @@ import { db as prisma } from '@/lib/db';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string; memberId: string } }
+  { params }: { params: Promise<{ id: string; memberId: string }> }
 ) {
   try {
+    const { id, memberId } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return errorResponse('UNAUTHORIZED', 'Giriş yapmalısınız', 401);

@@ -6,9 +6,11 @@ import { moderateBlogCommentSchema } from '@/validations/blog.schema'
 // PUT /api/admin/blog/comments/[id] - Yorum durumunu güncelle (Onayla/Reddet/Spam)
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth()
 
     // Admin kontrolü

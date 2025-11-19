@@ -5,9 +5,11 @@ import { db } from '@/lib/db';
 // GET /api/admin/cohorts/[id] - Get cohort details
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user || !['ADMIN', 'MODERATOR'].includes(session.user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -51,9 +53,11 @@ export async function GET(
 // DELETE /api/admin/cohorts/[id] - Delete cohort
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -73,9 +77,11 @@ export async function DELETE(
 // PATCH /api/admin/cohorts/[id] - Update cohort
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

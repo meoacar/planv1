@@ -5,9 +5,11 @@ import { getConfessionById } from '@/services/confession.service';
 // GET /api/v1/confessions/[id] - Tekil itiraf detayı
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
 
     if (!session?.user) {

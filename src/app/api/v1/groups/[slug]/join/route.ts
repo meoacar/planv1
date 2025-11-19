@@ -5,9 +5,11 @@ import { db } from "@/lib/db";
 // POST /api/v1/groups/[slug]/join - Join group
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -88,9 +90,11 @@ export async function POST(
 // DELETE /api/v1/groups/[slug]/join - Leave group
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(

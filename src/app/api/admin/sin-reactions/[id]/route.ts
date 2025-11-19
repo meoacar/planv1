@@ -11,9 +11,11 @@ const updateSchema = z.object({
 // PUT - Reaction güncelle
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth()
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 403 })
@@ -40,9 +42,11 @@ export async function PUT(
 // DELETE - Reaction sil
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth()
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 403 })

@@ -12,9 +12,11 @@ const createPostSchema = z.object({
 // GET /api/v1/groups/[slug]/posts - List group posts
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
@@ -90,9 +92,11 @@ export async function GET(
 // POST /api/v1/groups/[slug]/posts - Create group post
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json(

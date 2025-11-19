@@ -5,9 +5,11 @@ import { db } from "@/lib/db";
 // GET /api/v1/groups/[slug] - Get group details
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth();
     const group = await db.group.findUnique({
       where: { slug: params.slug },
@@ -86,9 +88,11 @@ export async function GET(
 // DELETE /api/v1/groups/[slug] - Delete group (creator only)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
+    
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(

@@ -6,9 +6,11 @@ import { prisma } from '@/lib/db';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { badgeId: string } }
+  { params }: { params: Promise<{ badgeId: string }> }
 ) {
   try {
+    const { badgeId } = await params;
+    
     const session = await auth();
     if (!session?.user || session.user.role !== 'ADMIN') {
       return apiResponse.error('Unauthorized', 403);
@@ -34,9 +36,11 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { badgeId: string } }
+  { params }: { params: Promise<{ badgeId: string }> }
 ) {
   try {
+    const { badgeId } = await params;
+    
     const session = await auth();
     if (!session?.user || session.user.role !== 'ADMIN') {
       return apiResponse.error('Unauthorized', 403);

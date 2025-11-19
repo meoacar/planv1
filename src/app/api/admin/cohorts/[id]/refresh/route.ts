@@ -5,9 +5,11 @@ import { db } from '@/lib/db';
 // POST /api/admin/cohorts/[id]/refresh - Recalculate cohort users
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

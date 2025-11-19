@@ -7,9 +7,11 @@ import { generateSlug } from '@/lib/blog/slug-generator'
 // PUT /api/admin/blog/categories/[id] - Kategori güncelle
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth()
 
     // Admin kontrolü
@@ -118,9 +120,11 @@ export async function PUT(
 // DELETE /api/admin/blog/categories/[id] - Kategori sil
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth()
 
     // Admin kontrolü

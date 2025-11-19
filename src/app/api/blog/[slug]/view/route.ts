@@ -12,7 +12,7 @@ interface ViewCountResponse {
 // POST /api/blog/[slug]/view - View count artır
 export async function POST(
   _req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse<ViewCountResponse | BlogErrorResponse>> {
   try {
     const { slug } = params

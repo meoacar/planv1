@@ -100,7 +100,7 @@ function containsInappropriateContent(content: string): boolean {
 // GET /api/blog/[slug]/comments - Yorumları getir
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse<{ success: true; data: BlogComment[] } | BlogErrorResponse>> {
   try {
     const { slug } = params
@@ -175,7 +175,7 @@ export async function GET(
 // POST /api/blog/[slug]/comments - Yorum ekle
 export async function POST(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse<{ success: true; data: any } | BlogErrorResponse>> {
   try {
     // 1. Auth kontrolü

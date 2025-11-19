@@ -5,9 +5,11 @@ import { addEmpathy, removeEmpathy } from '@/services/confession.service';
 // POST /api/v1/confessions/[id]/empathy - Empati ekle
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
 
     if (!session?.user) {
@@ -78,9 +80,11 @@ export async function POST(
 // DELETE /api/v1/confessions/[id]/empathy - Empatiyi kaldır
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const session = await auth();
 
     if (!session?.user) {
