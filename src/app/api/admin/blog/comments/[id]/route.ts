@@ -9,7 +9,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await params
     
     const session = await auth()
 
@@ -17,8 +17,6 @@ export async function PUT(
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 })
     }
-
-    const { id } = params
 
     // Yorum var mı kontrol et
     const existingComment = await db.blogComment.findUnique({
