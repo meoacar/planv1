@@ -5,9 +5,10 @@ import { db } from '@/lib/db'
 // POST /api/admin/blog/[id]/publish - Blog yayınla
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth()
 
     // Admin kontrolü
