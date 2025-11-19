@@ -14,8 +14,6 @@ const categories = [
   { value: "lifestyle", label: "Yaşam Tarzı", icon: "🌱", description: "Vegan, Keto, vb." },
 ];
 
-export { categories };
-
 export default async function CreateGroupPage() {
   const session = await auth();
   
