@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { createGuildSchema } from '@/validations/gamification.schema';
 import { db as prisma } from '@/lib/db';
+import { notifyAdmins } from '@/lib/notifications';
 
 export async function GET(req: NextRequest) {
   try {
@@ -90,6 +91,23 @@ export async function POST(req: NextRequest) {
       where: { id: guild.id },
       data: { memberCount: 1 },
     });
+
+    // Admin'lere bildirim gönder
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true, username: true }
+    })
+    
+    await notifyAdmins({
+      type: 'guild_pending',
+      title: 'Yeni Lonca Onay Bekliyor',
+      message: `${user?.name || user?.username} tarafından "${guild.name}" loncası oluşturuldu`,
+      link: `/admin/loncalar`,
+      metadata: {
+        guildId: guild.id,
+        leaderId: session.user.id,
+      }
+    })
 
     return successResponse(guild);
   } catch (error: any) {

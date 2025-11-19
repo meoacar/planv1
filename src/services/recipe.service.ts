@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { createSlug } from '@/lib/utils'
 import { CreateRecipeInput, UpdateRecipeInput } from '@/validations/recipe.schema'
 import { RecipeFilters } from '@/types'
+import { notifyAdmins } from '@/lib/notifications'
 
 export class RecipeService {
   static async createRecipe(userId: string, data: CreateRecipeInput) {
@@ -38,6 +39,18 @@ export class RecipeService {
           },
         },
       },
+    })
+
+    // Admin'lere bildirim gönder
+    await notifyAdmins({
+      type: 'recipe_pending',
+      title: 'Yeni Tarif Onay Bekliyor',
+      message: `${recipe.author.name || recipe.author.username} tarafından "${recipe.title}" tarifi eklendi`,
+      link: `/admin/tarifler`,
+      metadata: {
+        recipeId: recipe.id,
+        authorId: userId,
+      }
     })
 
     return recipe
@@ -186,6 +199,18 @@ export class RecipeService {
           },
         },
       },
+    })
+
+    // Admin'lere bildirim gönder
+    await notifyAdmins({
+      type: 'recipe_pending',
+      title: 'Tarif Güncellendi - Onay Bekliyor',
+      message: `${updated.author.name || updated.author.username} tarafından "${updated.title}" tarifi güncellendi`,
+      link: `/admin/tarifler`,
+      metadata: {
+        recipeId: updated.id,
+        authorId: userId,
+      }
     })
 
     return updated

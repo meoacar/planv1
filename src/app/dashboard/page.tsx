@@ -607,6 +607,10 @@ export default async function DashboardPage() {
                   <Users className="h-6 w-6 text-white mb-2" />
                   <p className="text-xs font-semibold text-white">Keşfet</p>
                 </Link>
+                <Link href="/gunah-sayaci" className="group p-4 rounded-xl bg-gradient-to-br from-red-500 to-orange-600 hover:shadow-lg transition-all hover:scale-105">
+                  <span className="text-2xl mb-2 block">😈</span>
+                  <p className="text-xs font-semibold text-white">Günah Sayacı</p>
+                </Link>
               </div>
             </div>
 

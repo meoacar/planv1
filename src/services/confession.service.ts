@@ -3,6 +3,7 @@ import { redis, rateLimit } from '@/lib/redis';
 import type { Prisma } from '@prisma/client';
 import { addXP, addCoins, awardBadge } from './gamification.service';
 import { addAIResponseJob } from '@/lib/queue';
+import { notifyAdmins } from '@/lib/notifications';
 import {
   getFeedCache,
   setFeedCache,
@@ -176,6 +177,19 @@ export async function createConfession(input: CreateConfessionInput) {
   await clearFeedCache();
   await clearStatsCache();
   await clearUserConfessionsCache(userId);
+
+  // 13. Admin'lere bildirim gönder
+  await notifyAdmins({
+    type: 'confession_pending',
+    title: 'Yeni İtiraf Onay Bekliyor',
+    message: `${confession.user.name || confession.user.username} tarafından yeni bir itiraf paylaşıldı`,
+    link: `/admin/confessions`,
+    metadata: {
+      confessionId: confession.id,
+      userId,
+      category: detectedCategory,
+    }
+  })
 
   return confession;
 }

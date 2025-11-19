@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 import slugify from "slugify";
+import { notifyAdmins } from "@/lib/notifications";
 
 const createGroupSchema = z.object({
   name: z.string().min(3).max(100),
@@ -144,6 +145,18 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    // Admin'lere bildirim gönder
+    await notifyAdmins({
+      type: 'group_pending',
+      title: 'Yeni Grup Onay Bekliyor',
+      message: `${group.creator.name || group.creator.username} tarafından "${group.name}" grubu oluşturuldu`,
+      link: `/admin/gruplar`,
+      metadata: {
+        groupId: group.id,
+        creatorId: session.user.id,
+      }
+    })
 
     return NextResponse.json({
       success: true,

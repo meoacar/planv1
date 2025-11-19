@@ -119,51 +119,57 @@ export function Navbar() {
         </Link>
         
         {/* Main Navigation */}
-        <nav className="flex items-center gap-2 md:gap-4">
+        <nav className="flex items-center gap-1 md:gap-2">
           <Link 
             href="/kesfet" 
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
             Keşfet
           </Link>
           
           <Link 
             href="/tarifler" 
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
             Tarifler
           </Link>
           
           <Link 
             href="/blog" 
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
+            className="hidden xl:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
             📝 Blog
           </Link>
           
           <Link 
             href="/gruplar" 
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
+            className="hidden xl:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors"
           >
             👥 Gruplar
+          </Link>
+          
+          <Link 
+            href="/gunah-sayaci" 
+            className="flex items-center gap-1 px-2 md:px-3 py-2 text-sm font-medium bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 rounded-lg transition-colors border border-red-500/20"
+          >
+            😈 <span className="hidden sm:inline">Günah</span>
           </Link>
           
           {user && (
             <Link 
               href="/confessions" 
-              className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20"
+              className="hidden md:flex items-center gap-1 px-2 md:px-3 py-2 text-sm font-medium hover:bg-accent rounded-lg transition-colors bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20"
             >
-              🎭 İtiraf Duvarı
+              🎭 <span className="hidden lg:inline">İtiraf</span>
             </Link>
           )}
           
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1.5 h-9">
+                <Button variant="ghost" size="sm" className="h-9 px-2">
                   <Trophy className="h-4 w-4" />
-                  <span className="hidden lg:inline">Oyunlaştırma</span>
-                  <ChevronDown className="h-3 w-3 opacity-50" />
+                  <ChevronDown className="h-3 w-3 ml-1 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -219,10 +225,8 @@ export function Navbar() {
             <>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-1.5 h-9">
+                  <Button variant="ghost" size="sm" className="h-9 px-2">
                     <Plus className="h-4 w-4" />
-                    <span className="hidden lg:inline">Ekle</span>
-                    <ChevronDown className="h-3 w-3 opacity-50" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-44">
@@ -251,29 +255,24 @@ export function Navbar() {
               <NotificationBell userId={user.id} />
 
               {/* Coins & Level Display */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-orange-500/10 rounded-full border border-amber-500/20 shadow-sm" key={`stats-${refreshKey}`}>
-                <div className="flex items-center gap-1">
-                  <Coins className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" />
-                  <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 min-w-[24px]">
-                    {typeof user.coins === 'number' ? user.coins : 0}
-                  </span>
-                </div>
-                <div className="w-px h-3.5 bg-amber-500/30" />
-                <div className="flex items-center gap-1">
-                  <Trophy className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-primary min-w-[20px]">
-                    {typeof user.level === 'number' ? user.level : 1}
-                  </span>
-                </div>
+              <div className="hidden sm:flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-full border border-amber-500/20" key={`stats-${refreshKey}`}>
+                <Coins className="h-3.5 w-3.5 text-amber-600 dark:text-amber-500" />
+                <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">
+                  {typeof user.coins === 'number' ? user.coins : 0}
+                </span>
+                <div className="w-px h-3 bg-amber-500/30 mx-0.5" />
+                <Trophy className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-semibold text-primary">
+                  {typeof user.level === 'number' ? user.level : 1}
+                </span>
               </div>
 
               {user.role === 'ADMIN' && (
                 <Link 
                   href="/admin" 
-                  className="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 rounded-lg transition-colors"
+                  className="hidden lg:flex items-center gap-1 px-2 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 rounded-lg transition-colors"
                 >
                   <Shield className="h-4 w-4" />
-                  <span className="hidden lg:inline">Admin</span>
                 </Link>
               )}
 

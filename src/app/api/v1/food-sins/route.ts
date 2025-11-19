@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession, authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { checkAndAwardAllBadges } from '@/lib/badge-checker';
+import { checkAndUpdateChallenges } from '@/lib/challenge-checker';
+import { updateUserStreak, checkStreakMilestones } from '@/lib/streak-calculator';
 
 // Validation schema
 const createSinSchema = z.object({
@@ -94,10 +96,26 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Badge kontrolü (async, sonucu bekleme)
-    checkAndAwardBadges(session.user.id, validated.sinType).catch(console.error);
+    // Streak güncelle (günah yapıldı, streak sıfırlanacak)
+    const currentStreak = await updateUserStreak(session.user.id);
 
-    return NextResponse.json({ sin }, { status: 201 });
+    // Sadece "Gizli Tatlıcı" rozetini kontrol et (aynı gün 2 tatlı)
+    // Diğer rozetler günlük kontrol ile verilir
+    if (validated.sinType === 'tatli') {
+      const { checkSpecificBadge } = await import('@/lib/badge-checker');
+      checkSpecificBadge(session.user.id, 'gizli_tatlici').catch(console.error);
+    }
+
+    // Challenge ve Streak milestone kontrolü (async, sonucu bekleme)
+    Promise.all([
+      checkAndUpdateChallenges(session.user.id),
+      checkStreakMilestones(session.user.id, currentStreak),
+    ]).catch(console.error);
+
+    return NextResponse.json({ 
+      sin,
+      reactionText: sin.reactionText 
+    }, { status: 201 });
   } catch (error: any) {
     console.error('Error creating food sin:', error);
     
@@ -115,50 +133,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Badge kontrol fonksiyonu
-async function checkAndAwardBadges(userId: string, sinType: string) {
-  // 7 gün tatlı yememek - Glukozsuz Kahraman
-  if (sinType !== 'tatli') {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const tatliCount = await prisma.foodSin.count({
-      where: {
-        userId,
-        sinType: 'tatli',
-        sinDate: { gte: sevenDaysAgo },
-      },
-    });
-
-    if (tatliCount === 0) {
-      const badge = await prisma.sinBadge.findUnique({
-        where: { key: 'glukozsuz_kahraman' },
-      });
-
-      if (badge) {
-        await prisma.userSinBadge.upsert({
-          where: {
-            userId_badgeId: {
-              userId,
-              badgeId: badge.id,
-            },
-          },
-          create: {
-            userId,
-            badgeId: badge.id,
-          },
-          update: {},
-        });
-
-        // XP ve coin ver
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            xp: { increment: badge.xpReward },
-            coins: { increment: badge.coinReward },
-          },
-        });
-      }
-    }
-  }
-}
+// Badge kontrol fonksiyonu artık badge-checker.ts'de

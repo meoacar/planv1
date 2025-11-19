@@ -14,13 +14,17 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "worker:ai": "tsx src/workers/ai-response.worker.ts",
-    "worker:cron": "tsx src/workers/cron-jobs.ts"
+    "worker:cron": "tsx src/workers/cron-jobs.ts",
+    "push:generate-keys": "node scripts/generate-vapid-keys.mjs",
+    "push:migrate": "node scripts/apply-push-notification-migration.mjs",
+    "friends:migrate": "node scripts/apply-friend-system-migration.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "3.9.1",
     "@prisma/client": "5.22.0",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -65,6 +69,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "7.53.2",
+    "react-markdown": "^10.1.0",
     "recharts": "2.13.3",
     "redis": "4.7.0",
     "resend": "^6.4.2",

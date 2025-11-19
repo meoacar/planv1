@@ -21,6 +21,7 @@ import {
   Gamepad2,
   UsersRound,
   BookOpen,
+  Flame,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -84,6 +85,11 @@ const menuItems = [
     title: "Görevler",
     href: "/admin/gamification/quests",
     icon: Gamepad2,
+  },
+  {
+    title: "Günah Sayacı",
+    href: "/admin/gunah-sayaci",
+    icon: Flame,
   },
   {
     title: "Cohorts",

@@ -68,6 +68,8 @@ model User {
   plans                Plan[]
   photos               ProgressPhoto[]
   pushSubscriptions    PushSubscription[]
+  pushNotifications    PushNotification[]
+  notificationSettings NotificationSettings?
   recipeComments       RecipeComment[]
   recipeLikes          RecipeLike[]
   recipes              Recipe[]
@@ -88,6 +90,12 @@ model User {
   sinBadges            UserSinBadge[]
   sinChallenges        UserSinChallenge[]
   sinWeeklySummaries   SinWeeklySummary[]
+  sentFriendRequests   FriendRequest[]  @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  friendships          Friendship[]     @relation("UserFriendships")
+  friendOf             Friendship[]     @relation("FriendOf")
+  friendActivities     FriendActivity[]
+  friendSettings       FriendSettings?
 
   @@index([email])
   @@index([username])
@@ -1021,17 +1029,19 @@ model PasswordReset {
 }
 
 model PushSubscription {
-  id        String   @id @default(cuid())
-  userId    String
-  endpoint  String   @db.VarChar(500)
-  p256dh    String   @db.Text
-  auth      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(cuid())
+  userId     String
+  endpoint   String   @db.Text
+  p256dh     String   @db.Text
+  auth       String   @db.Text
+  userAgent  String?  @db.Text
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, endpoint])
   @@index([userId])
+  @@index([isActive])
   @@map("push_subscriptions")
 }
 
@@ -1639,4 +1649,140 @@ enum SinType {
   gazli
   alkol
   diger
+}
+
+model PushNotification {
+  id           String               @id @default(cuid())
+  userId       String
+  type         PushNotificationType
+  title        String
+  body         String               @db.Text
+  icon         String?
+  badge        String?
+  data         String?              @db.Text
+  status       PushNotificationStatus @default(pending)
+  sentAt       DateTime?
+  clickedAt    DateTime?
+  errorMessage String?              @db.Text
+  createdAt    DateTime             @default(now())
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("push_notifications")
+}
+
+model NotificationSettings {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  dailyReminder      Boolean  @default(true)
+  dailyReminderTime  String   @default("20:00")
+  weeklySummary      Boolean  @default(true)
+  badgeEarned        Boolean  @default(true)
+  challengeReminder  Boolean  @default(true)
+  streakWarning      Boolean  @default(true)
+  friendActivity     Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+enum PushNotificationType {
+  daily_reminder
+  weekly_summary
+  badge_earned
+  challenge_reminder
+  streak_warning
+  friend_activity
+  custom
+}
+
+enum PushNotificationStatus {
+  pending
+  sent
+  failed
+  clicked
+}
+
+model FriendRequest {
+  id          String              @id @default(cuid())
+  senderId    String
+  receiverId  String
+  status      FriendRequestStatus @default(pending)
+  message     String?             @db.Text
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  respondedAt DateTime?
+  sender      User                @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User                @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+  @@map("friend_requests")
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@index([userId])
+  @@index([friendId])
+  @@map("friendships")
+}
+
+model FriendActivity {
+  id           String               @id @default(cuid())
+  userId       String
+  activityType FriendActivityType
+  activityData String?              @db.Text
+  isPublic     Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([activityType])
+  @@index([createdAt])
+  @@index([isPublic])
+  @@map("friend_activities")
+}
+
+model FriendSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  allowFriendRequests Boolean  @default(true)
+  showStreak          Boolean  @default(true)
+  showBadges          Boolean  @default(true)
+  showStats           Boolean  @default(true)
+  showActivity        Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("friend_settings")
+}
+
+enum FriendRequestStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+}
+
+enum FriendActivityType {
+  sin_added
+  badge_earned
+  streak_milestone
+  challenge_completed
+  level_up
 }

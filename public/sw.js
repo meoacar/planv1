@@ -1,78 +1,96 @@
-// Service Worker for Push Notifications
-const CACHE_NAME = 'zayiflamaplan-v1';
+/**
+ * Service Worker - Push Notifications
+ * Web Push API için service worker
+ */
 
-// Install event
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
   self.skipWaiting();
 });
 
-// Activate event
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...');
   event.waitUntil(clients.claim());
 });
 
-// Push event - handle incoming push notifications
+// Push notification alındığında
 self.addEventListener('push', (event) => {
-  console.log('Push received:', event);
-  
-  let data = {
-    title: 'ZayiflamaPlan',
-    body: 'Yeni bir bildiriminiz var',
-    icon: '/maskot/maskot-192.png',
-    badge: '/maskot/maskot-192.png',
-    tag: 'default',
-    requireInteraction: false,
-  };
+  console.log('[SW] Push notification received:', event);
 
-  if (event.data) {
-    try {
-      const payload = event.data.json();
-      data = { ...data, ...payload };
-    } catch (e) {
-      data.body = event.data.text();
-    }
+  if (!event.data) {
+    console.log('[SW] No data in push event');
+    return;
   }
 
-  const promiseChain = self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: data.icon,
-    badge: data.badge,
-    tag: data.tag,
-    requireInteraction: data.requireInteraction,
-    data: data.data || {},
-  });
+  try {
+    const data = event.data.json();
+    console.log('[SW] Push data:', data);
+    
+    const { title, body, icon, badge, data: customData, tag, requireInteraction } = data;
 
-  event.waitUntil(promiseChain);
+    const options = {
+      body,
+      icon: icon || '/icons/icon-192x192.png',
+      badge: badge || '/icons/badge-72x72.png',
+      tag: tag || 'default',
+      requireInteraction: requireInteraction || false,
+      data: customData || {},
+      vibrate: [200, 100, 200],
+      actions: [
+        {
+          action: 'open',
+          title: 'Aç',
+        },
+        {
+          action: 'close',
+          title: 'Kapat',
+        },
+      ],
+    };
+
+    console.log('[SW] Showing notification:', title, options);
+
+    event.waitUntil(
+      self.registration.showNotification(title, options).then(() => {
+        console.log('[SW] Notification shown successfully!');
+      }).catch((error) => {
+        console.error('[SW] Error showing notification:', error);
+      })
+    );
+  } catch (error) {
+    console.error('[SW] Error processing push:', error);
+  }
 });
 
-// Notification click event
+// Notification tıklandığında
 self.addEventListener('notificationclick', (event) => {
   console.log('Notification clicked:', event);
-  
+
   event.notification.close();
 
-  const urlToOpen = event.notification.data?.url || '/';
+  if (event.action === 'close') {
+    return;
+  }
+
+  const urlToOpen = event.notification.data?.url || '/gunah-sayaci';
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList) => {
-        // Check if there's already a window open
-        for (const client of clientList) {
-          if (client.url === urlToOpen && 'focus' in client) {
-            return client.focus();
-          }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Zaten açık bir pencere varsa, onu kullan
+      for (const client of clientList) {
+        if (client.url.includes(urlToOpen) && 'focus' in client) {
+          return client.focus();
         }
-        // Open new window
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
-        }
-      })
+      }
+      // Yoksa yeni pencere aç
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
   );
 });
 
-// Background sync (optional - for offline support)
-self.addEventListener('sync', (event) => {
-  console.log('Background sync:', event.tag);
+// Notification kapatıldığında
+self.addEventListener('notificationclose', (event) => {
+  console.log('Notification closed:', event);
 });

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getServerSession, authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 // GET - Kullanıcının günah istatistikleri
@@ -17,15 +16,17 @@ export async function GET(req: NextRequest) {
     let startDate = new Date();
     
     switch (period) {
-      case 'day':
+      case 'daily':
         startDate.setHours(0, 0, 0, 0);
         break;
-      case 'week':
+      case 'weekly':
         startDate.setDate(startDate.getDate() - 7);
         break;
-      case 'month':
+      case 'monthly':
         startDate.setMonth(startDate.getMonth() - 1);
         break;
+      default:
+        startDate.setDate(startDate.getDate() - 7);
     }
 
     // Toplam günah sayısı
@@ -78,6 +79,12 @@ export async function GET(req: NextRequest) {
     // Günlük ortalama
     const dailyAverage = totalDays > 0 ? (totalSins / totalDays).toFixed(1) : 0;
 
+    // sinsByType'ı Record<string, number> formatına çevir
+    const sinsByTypeRecord: Record<string, number> = {};
+    sinsByType.forEach(item => {
+      sinsByTypeRecord[item.sinType] = item._count;
+    });
+
     return NextResponse.json({
       period,
       totalSins,
@@ -86,6 +93,7 @@ export async function GET(req: NextRequest) {
       dailyAverage,
       motivationBar,
       mostCommonSin: mostCommonSin.sinType,
+      sinsByType: sinsByTypeRecord,
       breakdown: sinsByType.map(item => ({
         type: item.sinType,
         count: item._count,

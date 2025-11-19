@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { notifyAdmins } from "@/lib/notifications";
 
 // GET /api/appeals - List user's appeals or all appeals (admin)
 export async function GET(req: NextRequest) {
@@ -266,6 +267,28 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    // Admin'lere bildirim gönder
+    const contentTypeNames: Record<string, string> = {
+      plan: 'Plan',
+      recipe: 'Tarif',
+      comment: 'Yorum',
+      recipe_comment: 'Tarif Yorumu',
+      group_post: 'Grup Gönderisi'
+    }
+
+    await notifyAdmins({
+      type: 'appeal_pending',
+      title: 'Yeni İtiraz Bekliyor',
+      message: `${appeal.user.name || appeal.user.username} tarafından ${contentTypeNames[contentType]} için itiraz yapıldı`,
+      link: `/admin/itirazlar`,
+      metadata: {
+        appealId: appeal.id,
+        contentType,
+        contentId,
+        userId: session.user.id,
+      }
+    })
 
     return NextResponse.json(appeal, { status: 201 });
   } catch (error) {

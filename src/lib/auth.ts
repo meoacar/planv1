@@ -133,3 +133,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 })
+
+// Backward compatibility exports for NextAuth v4 style
+export const authOptions = {
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+  session: { strategy: 'jwt' as const },
+};
+
+// Wrapper for getServerSession (NextAuth v5 uses auth() instead)
+export async function getServerSession(options?: any) {
+  return await auth();
+}
