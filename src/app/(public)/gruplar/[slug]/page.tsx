@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Users, MessageSquare, Calendar, Lock, ArrowLeft, Plus, Heart, Pin } from "lucide-react";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 async function getGroup(slug: string) {
@@ -40,7 +40,8 @@ async function getGroupPosts(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const group = await getGroup(params.slug);
+  const { slug } = await params;
+  const group = await getGroup(slug);
   if (!group) {
     return { title: "Grup Bulunamadı" };
   }
@@ -53,9 +54,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 import { Navbar } from "@/components/navbar";
 
 export default async function GroupPage({ params }: Props) {
+  const { slug } = await params;
   const [group, posts] = await Promise.all([
-    getGroup(params.slug),
-    getGroupPosts(params.slug),
+    getGroup(slug),
+    getGroupPosts(slug),
   ]);
 
   if (!group) {
@@ -142,7 +144,7 @@ export default async function GroupPage({ params }: Props) {
                     ✓ Üyesin
                   </Badge>
                   <Button asChild>
-                    <Link href={`/gruplar/${params.slug}/yeni-gonderi`}>
+                    <Link href={`/gruplar/${slug}/yeni-gonderi`}>
                       <Plus className="h-4 w-4 mr-2" />
                       Gönderi Paylaş
                     </Link>
@@ -182,7 +184,7 @@ export default async function GroupPage({ params }: Props) {
                     </p>
                     {group.isMember && (
                       <Button asChild>
-                        <Link href={`/gruplar/${params.slug}/yeni-gonderi`}>
+                        <Link href={`/gruplar/${slug}/yeni-gonderi`}>
                           <Plus className="h-4 w-4 mr-2" />
                           İlk Gönderiyi Paylaş
                         </Link>
