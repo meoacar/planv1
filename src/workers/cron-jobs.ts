@@ -2,6 +2,8 @@
 
 import cron from 'node-cron';
 import { updatePopularConfessions } from '@/services/confession.service';
+import { scheduleBulkRecommendations } from './ai-recommendation.worker';
+import { schedulePendingReminders } from './smart-reminder.worker';
 
 // ====================================================
 // CRON JOB DEFINITIONS
@@ -29,6 +31,50 @@ export const popularConfessionsJob = cron.schedule(
   }
 );
 
+/**
+ * AI önerilerini günceller
+ * Her gün saat 03:00'te çalışır
+ */
+export const aiRecommendationsJob = cron.schedule(
+  '0 3 * * *',
+  async () => {
+    console.log('🤖 Running AI recommendations generation job...');
+    
+    try {
+      await scheduleBulkRecommendations();
+      console.log('✓ AI recommendations scheduled successfully');
+    } catch (error) {
+      console.error('❌ Error scheduling AI recommendations:', error);
+    }
+  },
+  {
+    scheduled: false,
+    timezone: 'Europe/Istanbul',
+  }
+);
+
+/**
+ * Akıllı hatırlatıcıları gönderir
+ * Her saat başı çalışır
+ */
+export const smartRemindersJob = cron.schedule(
+  '0 * * * *',
+  async () => {
+    console.log('⏰ Running smart reminders job...');
+    
+    try {
+      await schedulePendingReminders();
+      console.log('✓ Smart reminders scheduled successfully');
+    } catch (error) {
+      console.error('❌ Error scheduling smart reminders:', error);
+    }
+  },
+  {
+    scheduled: false,
+    timezone: 'Europe/Istanbul',
+  }
+);
+
 // ====================================================
 // CRON JOB MANAGER
 // ====================================================
@@ -42,7 +88,11 @@ export function startCronJobs() {
   popularConfessionsJob.start();
   console.log('✓ Popular confessions job started (runs every 6 hours)');
   
-  // Gelecekte eklenecek diğer cron job'lar buraya eklenebilir
+  aiRecommendationsJob.start();
+  console.log('✓ AI recommendations job started (runs daily at 3 AM)');
+  
+  smartRemindersJob.start();
+  console.log('✓ Smart reminders job started (runs every hour)');
 }
 
 /**
@@ -52,6 +102,8 @@ export function stopCronJobs() {
   console.log('🛑 Stopping cron jobs...');
   
   popularConfessionsJob.stop();
+  aiRecommendationsJob.stop();
+  smartRemindersJob.stop();
   console.log('✓ All cron jobs stopped');
 }
 
@@ -89,4 +141,6 @@ export default {
   startCronJobs,
   stopCronJobs,
   popularConfessionsJob,
+  aiRecommendationsJob,
+  smartRemindersJob,
 };

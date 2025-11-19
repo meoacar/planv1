@@ -370,10 +370,19 @@ export async function updateStreak(userId: string) {
 
   if (!user.lastCheckIn) {
     // First check-in
-    await prisma.user.update({
-      where: { id: userId },
-      data: { streak: 1, lastCheckIn: now },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { streak: 1, lastCheckIn: now },
+      }),
+      prisma.checkInHistory.create({
+        data: {
+          id: `${userId}_${now.getTime()}`,
+          userId,
+          checkInAt: now,
+        },
+      }),
+    ]);
     return { streak: 1, continued: false };
   }
 
@@ -388,10 +397,19 @@ export async function updateStreak(userId: string) {
   } else if (daysDiff === 1) {
     // Consecutive day
     const newStreak = user.streak + 1;
-    await prisma.user.update({
-      where: { id: userId },
-      data: { streak: newStreak, lastCheckIn: now },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { streak: newStreak, lastCheckIn: now },
+      }),
+      prisma.checkInHistory.create({
+        data: {
+          id: `${userId}_${now.getTime()}`,
+          userId,
+          checkInAt: now,
+        },
+      }),
+    ]);
 
     // Award streak milestone badges
     if (newStreak === 7) await awardBadge(userId, 'streak_7');
@@ -404,12 +422,33 @@ export async function updateStreak(userId: string) {
     return { streak: newStreak, continued: true };
   } else {
     // Streak broken
-    await prisma.user.update({
-      where: { id: userId },
-      data: { streak: 1, lastCheckIn: now },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: { streak: 1, lastCheckIn: now },
+      }),
+      prisma.checkInHistory.create({
+        data: {
+          id: `${userId}_${now.getTime()}`,
+          userId,
+          checkInAt: now,
+        },
+      }),
+    ]);
     return { streak: 1, continued: false, broken: true };
   }
+}
+
+// ====================================================
+// CHECK-IN HISTORY
+// ====================================================
+
+export async function getCheckInHistory(userId: string, limit: number = 30) {
+  return prisma.checkInHistory.findMany({
+    where: { userId },
+    orderBy: { checkInAt: 'desc' },
+    take: limit,
+  });
 }
 
 export async function recoverStreak(userId: string, daysLost: number) {

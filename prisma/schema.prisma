@@ -9,93 +9,94 @@ datasource db {
 }
 
 model User {
-  id                   String              @id @default(cuid())
-  email                String              @unique
-  username             String?             @unique
-  passwordHash         String?
-  name                 String?
-  bio                  String?             @db.Text
-  image                String?             @db.Text
-  role                 Role                @default(USER)
-  currentWeight        Float?
-  targetWeight         Float?
-  height               Float?
-  emailVerified        DateTime?
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  isBanned             Boolean             @default(false)
-  coins                Int                 @default(0)
-  lastCheckIn          DateTime?
-  level                Int                 @default(1)
-  reputationScore      Int                 @default(0)
-  streak               Int                 @default(0)
-  xp                   Int                 @default(0)
-  banReason            String?             @db.Text
-  bannedUntil          DateTime?
-  activeTitle          String?
-  coinBoostUntil       DateTime?
-  customEmoji          String?
-  nameColor            String?
-  profileBadge         String?
-  profileFrame         String?
-  profileTheme         String?
-  streakFreezeCount    Int                 @default(0)
-  xpBoostUntil         DateTime?
-  accounts             Account[]
-  blogComments         BlogComment[]
-  blogPosts            BlogPost[]
-  coinTransactions     CoinTransaction[]
-  comments             Comment[]
-  confessionEmpathies  ConfessionEmpathy[]
-  confessionReports    ConfessionReport[]
-  confessions          Confession[]
-  resolvedAppeals      ContentAppeal[]     @relation("AppealResolver")
-  appeals              ContentAppeal[]
-  favorites            Favorite[]
-  followers            Follow[]            @relation("UserFollowers")
-  following            Follow[]            @relation("UserFollowing")
-  groupMemberships     GroupMember[]
-  groupPosts           GroupPost[]
-  createdGroups        Group[]             @relation("GroupCreator")
-  guildJoinRequests    GuildJoinRequest[]
-  guildMemberships     GuildMember[]
-  ledGuilds            Guild[]             @relation("GuildLeader")
-  likes                Like[]
-  receivedMessages     Message[]           @relation("ReceivedMessages")
-  sentMessages         Message[]           @relation("SentMessages")
-  notifications        Notification[]
-  passwordResets       PasswordReset[]
-  plans                Plan[]
-  photos               ProgressPhoto[]
-  pushSubscriptions    PushSubscription[]
-  pushNotifications    PushNotification[]
-  notificationSettings NotificationSettings?
-  recipeComments       RecipeComment[]
-  recipeLikes          RecipeLike[]
-  recipes              Recipe[]
-  referralCode         ReferralCode?
-  referralsReceived    Referral[]          @relation("ReferredUser")
-  referralsMade        Referral[]          @relation("ReferrerUser")
-  sessions             Session[]
-  streakRecoveries     StreakRecovery[]
-  badges               UserBadge[]
-  battlePasses         UserBattlePass[]
-  cohorts              UserCohort[]        @relation("UserCohorts")
-  quests               UserDailyQuest[]
-  leagueParticipations UserLeague[]
-  purchases            UserPurchase[]
-  weightLogs           WeightLog[]
-  conversations        Conversation[]      @relation("conversationparticipants")
-  foodSins             FoodSin[]
-  sinBadges            UserSinBadge[]
-  sinChallenges        UserSinChallenge[]
-  sinWeeklySummaries   SinWeeklySummary[]
-  sentFriendRequests   FriendRequest[]  @relation("SentFriendRequests")
-  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
-  friendships          Friendship[]     @relation("UserFriendships")
-  friendOf             Friendship[]     @relation("FriendOf")
-  friendActivities     FriendActivity[]
-  friendSettings       FriendSettings?
+  id                     String                @id @default(cuid())
+  email                  String                @unique
+  username               String?               @unique
+  passwordHash           String?
+  name                   String?
+  bio                    String?               @db.Text
+  image                  String?               @db.Text
+  role                   Role                  @default(USER)
+  currentWeight          Float?
+  targetWeight           Float?
+  height                 Float?
+  emailVerified          DateTime?
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  isBanned               Boolean               @default(false)
+  coins                  Int                   @default(0)
+  lastCheckIn            DateTime?
+  level                  Int                   @default(1)
+  reputationScore        Int                   @default(0)
+  streak                 Int                   @default(0)
+  xp                     Int                   @default(0)
+  banReason              String?               @db.Text
+  bannedUntil            DateTime?
+  activeTitle            String?
+  coinBoostUntil         DateTime?
+  customEmoji            String?
+  nameColor              String?
+  profileBadge           String?
+  profileFrame           String?
+  profileTheme           String?
+  streakFreezeCount      Int                   @default(0)
+  xpBoostUntil           DateTime?
+  accounts               Account[]
+  blogComments           BlogComment[]
+  blogPosts              BlogPost[]
+  checkInHistory         CheckInHistory[]
+  coinTransactions       CoinTransaction[]
+  comments               Comment[]
+  confessionEmpathies    ConfessionEmpathy[]
+  confessionReports      ConfessionReport[]
+  confessions            Confession[]
+  resolvedAppeals        ContentAppeal[]       @relation("AppealResolver")
+  appeals                ContentAppeal[]
+  favorites              Favorite[]
+  followers              Follow[]              @relation("UserFollowers")
+  following              Follow[]              @relation("UserFollowing")
+  foodSins               FoodSin[]
+  friendActivities       FriendActivity[]
+  receivedFriendRequests FriendRequest[]       @relation("ReceivedFriendRequests")
+  sentFriendRequests     FriendRequest[]       @relation("SentFriendRequests")
+  friendSettings         FriendSettings?
+  friendOf               Friendship[]          @relation("FriendOf")
+  friendships            Friendship[]          @relation("UserFriendships")
+  groupMemberships       GroupMember[]
+  groupPosts             GroupPost[]
+  createdGroups          Group[]               @relation("GroupCreator")
+  guildJoinRequests      GuildJoinRequest[]
+  guildMemberships       GuildMember[]
+  ledGuilds              Guild[]               @relation("GuildLeader")
+  likes                  Like[]
+  receivedMessages       Message[]             @relation("ReceivedMessages")
+  sentMessages           Message[]             @relation("SentMessages")
+  notificationSettings   NotificationSettings?
+  notifications          Notification[]
+  passwordResets         PasswordReset[]
+  plans                  Plan[]
+  photos                 ProgressPhoto[]
+  pushNotifications      PushNotification[]
+  pushSubscriptions      PushSubscription[]
+  recipeComments         RecipeComment[]
+  recipeLikes            RecipeLike[]
+  recipes                Recipe[]
+  referralCode           ReferralCode?
+  referralsReceived      Referral[]            @relation("ReferredUser")
+  referralsMade          Referral[]            @relation("ReferrerUser")
+  sessions               Session[]
+  sinWeeklySummaries     SinWeeklySummary[]
+  streakRecoveries       StreakRecovery[]
+  badges                 UserBadge[]
+  battlePasses           UserBattlePass[]
+  cohorts                UserCohort[]          @relation("UserCohorts")
+  quests                 UserDailyQuest[]
+  leagueParticipations   UserLeague[]
+  purchases              UserPurchase[]
+  sinBadges              UserSinBadge[]
+  sinChallenges          UserSinChallenge[]
+  weightLogs             WeightLog[]
+  conversations          Conversation[]        @relation("conversationparticipants")
 
   @@index([email])
   @@index([username])
@@ -1029,17 +1030,18 @@ model PasswordReset {
 }
 
 model PushSubscription {
-  id         String   @id @default(cuid())
-  userId     String
-  endpoint   String   @db.Text
-  p256dh     String   @db.Text
-  auth       String   @db.Text
-  userAgent  String?  @db.Text
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @db.VarChar(500)
+  p256dh    String   @db.Text
+  auth      String   @db.Text
+  userAgent String?  @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, endpoint])
   @@index([userId])
   @@index([isActive])
   @@map("push_subscriptions")
@@ -1277,6 +1279,307 @@ model BlogComment {
   @@index([status, createdAt])
   @@index([createdAt])
   @@map("blog_comments")
+}
+
+model FoodSin {
+  id           String   @id @default(cuid())
+  userId       String
+  sinType      SinType
+  note         String?  @db.Text
+  emoji        String   @db.VarChar(10)
+  sinDate      DateTime @default(now())
+  reactionText String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sinDate])
+  @@index([sinType, sinDate])
+  @@index([userId, createdAt])
+  @@map("food_sins")
+}
+
+model SinReaction {
+  id           String   @id @default(cuid())
+  sinType      SinType
+  reactionText String   @db.Text
+  isActive     Boolean  @default(true)
+  usageCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([sinType, isActive])
+  @@map("sin_reactions")
+}
+
+model SinBadge {
+  id          String         @id @default(cuid())
+  key         String         @unique
+  name        String
+  description String         @db.Text
+  icon        String
+  sinType     SinType?
+  requirement String         @db.Text
+  xpReward    Int            @default(0)
+  coinReward  Int            @default(0)
+  isActive    Boolean        @default(true)
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  users       UserSinBadge[]
+
+  @@index([isActive])
+  @@index([sinType])
+  @@map("sin_badges")
+}
+
+model UserSinBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  badge    SinBadge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId, earnedAt])
+  @@index([badgeId])
+  @@map("user_sin_badges")
+}
+
+model SinChallenge {
+  id           String             @id @default(cuid())
+  title        String
+  description  String             @db.Text
+  sinType      SinType?
+  targetDays   Int
+  maxSins      Int
+  xpReward     Int                @default(0)
+  coinReward   Int                @default(0)
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  participants UserSinChallenge[]
+
+  @@index([isActive, startDate, endDate])
+  @@map("sin_challenges")
+}
+
+model UserSinChallenge {
+  id          String       @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Int          @default(0)
+  completed   Boolean      @default(false)
+  completedAt DateTime?
+  joinedAt    DateTime     @default(now())
+  challenge   SinChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([userId, completed])
+  @@index([challengeId])
+  @@map("user_sin_challenges")
+}
+
+model SinWeeklySummary {
+  id            String   @id @default(cuid())
+  userId        String
+  weekStart     DateTime
+  weekEnd       DateTime
+  totalSins     Int      @default(0)
+  cleanDays     Int      @default(0)
+  mostCommonSin SinType?
+  sinBreakdown  String?  @db.Text
+  aiSummary     String?  @db.Text
+  motivationBar Int      @default(0)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+  @@map("sin_weekly_summaries")
+}
+
+model PushNotification {
+  id           String                 @id @default(cuid())
+  userId       String
+  type         PushNotificationType
+  title        String                 @db.VarChar(255)
+  body         String                 @db.Text
+  icon         String?                @db.VarChar(255)
+  badge        String?                @db.VarChar(255)
+  data         String?                @db.LongText
+  status       PushNotificationStatus @default(pending)
+  sentAt       DateTime?
+  clickedAt    DateTime?
+  errorMessage String?                @db.Text
+  createdAt    DateTime               @default(now())
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("push_notifications")
+}
+
+model NotificationSettings {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  dailyReminder     Boolean  @default(true)
+  dailyReminderTime String   @default("20:00") @db.VarChar(5)
+  weeklySummary     Boolean  @default(true)
+  badgeEarned       Boolean  @default(true)
+  challengeReminder Boolean  @default(true)
+  streakWarning     Boolean  @default(true)
+  friendActivity    Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_settings")
+}
+
+model FriendRequest {
+  id          String              @id @default(cuid())
+  senderId    String
+  receiverId  String
+  status      FriendRequestStatus @default(pending)
+  message     String?             @db.Text
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @default(now()) @updatedAt
+  respondedAt DateTime?
+  receiver    User                @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender      User                @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+  @@map("friend_requests")
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+  friend    User     @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@index([userId])
+  @@index([friendId])
+  @@map("friendships")
+}
+
+model FriendActivity {
+  id           String             @id @default(cuid())
+  userId       String
+  activityType FriendActivityType
+  activityData String?            @db.LongText
+  isPublic     Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([activityType])
+  @@index([createdAt])
+  @@index([isPublic])
+  @@map("friend_activities")
+}
+
+model FriendSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  allowFriendRequests Boolean  @default(true)
+  showStreak          Boolean  @default(true)
+  showBadges          Boolean  @default(true)
+  showStats           Boolean  @default(true)
+  showActivity        Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("friend_settings")
+}
+
+model AIRecommendation {
+  id                 String    @id @default(cuid())
+  userId             String
+  recommendationType String    @db.VarChar(50)
+  targetId           String
+  targetTitle        String?
+  score              Float     @default(0)
+  reason             String?   @db.Text
+  metadata           String?   @db.Text
+  clicked            Boolean   @default(false)
+  clickedAt          DateTime?
+  dismissed          Boolean   @default(false)
+  dismissedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  expiresAt          DateTime?
+
+  @@index([userId, recommendationType, createdAt])
+  @@index([userId, clicked])
+  @@index([score])
+  @@index([expiresAt])
+  @@map("ai_recommendations")
+}
+
+model SmartReminder {
+  id           String    @id @default(cuid())
+  userId       String
+  reminderType String    @db.VarChar(50)
+  optimalTime  String    @db.VarChar(5)
+  frequency    String    @default("daily") @db.VarChar(20)
+  enabled      Boolean   @default(true)
+  lastSentAt   DateTime?
+  nextSendAt   DateTime?
+  clickRate    Float     @default(0)
+  totalSent    Int       @default(0)
+  totalClicked Int       @default(0)
+  metadata     String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userId, reminderType])
+  @@index([userId, enabled])
+  @@index([nextSendAt, enabled])
+  @@index([reminderType])
+  @@map("smart_reminders")
+}
+
+model CheckInHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  checkInAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, checkInAt])
+  @@map("check_in_history")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String   @db.VarChar(100)
+  entity    String   @db.VarChar(100)
+  entityId  String?
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  metadata  String?  @db.LongText
+  createdAt DateTime @default(now())
+
+  @@index([action, createdAt], map: "idx_action")
+  @@index([actorId, createdAt], map: "idx_actor")
+  @@index([createdAt], map: "idx_created")
+  @@index([entity, entityId], map: "idx_entity")
+  @@map("activity_logs")
 }
 
 enum Role {
@@ -1517,178 +1820,12 @@ enum BlogCommentStatus {
   SPAM
 }
 
-// ============================================
-// YEMEK GÜNAH SAYACI (FOOD SIN TRACKER) SYSTEM
-// ============================================
-
-model FoodSin {
-  id           String      @id @default(cuid())
-  userId       String
-  sinType      SinType
-  note         String?     @db.Text
-  emoji        String      @db.VarChar(10)
-  sinDate      DateTime    @default(now())
-  reactionText String?     @db.Text
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, sinDate])
-  @@index([sinType, sinDate])
-  @@index([userId, createdAt])
-  @@map("food_sins")
-}
-
-model SinReaction {
-  id          String   @id @default(cuid())
-  sinType     SinType
-  reactionText String  @db.Text
-  isActive    Boolean  @default(true)
-  usageCount  Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([sinType, isActive])
-  @@map("sin_reactions")
-}
-
-model SinBadge {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  name        String
-  description String   @db.Text
-  icon        String
-  sinType     SinType?
-  requirement String   @db.Text
-  xpReward    Int      @default(0)
-  coinReward  Int      @default(0)
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  users       UserSinBadge[]
-
-  @@index([isActive])
-  @@index([sinType])
-  @@map("sin_badges")
-}
-
-model UserSinBadge {
-  id       String   @id @default(cuid())
-  userId   String
-  badgeId  String
-  earnedAt DateTime @default(now())
-  badge    SinBadge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, badgeId])
-  @@index([userId, earnedAt])
-  @@index([badgeId])
-  @@map("user_sin_badges")
-}
-
-model SinChallenge {
-  id          String   @id @default(cuid())
-  title       String
-  description String   @db.Text
-  sinType     SinType?
-  targetDays  Int
-  maxSins     Int
-  xpReward    Int      @default(0)
-  coinReward  Int      @default(0)
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  participants UserSinChallenge[]
-
-  @@index([isActive, startDate, endDate])
-  @@map("sin_challenges")
-}
-
-model UserSinChallenge {
-  id          String       @id @default(cuid())
-  userId      String
-  challengeId String
-  progress    Int          @default(0)
-  completed   Boolean      @default(false)
-  completedAt DateTime?
-  joinedAt    DateTime     @default(now())
-  challenge   SinChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, challengeId])
-  @@index([userId, completed])
-  @@index([challengeId])
-  @@map("user_sin_challenges")
-}
-
-model SinWeeklySummary {
-  id           String   @id @default(cuid())
-  userId       String
-  weekStart    DateTime
-  weekEnd      DateTime
-  totalSins    Int      @default(0)
-  cleanDays    Int      @default(0)
-  mostCommonSin SinType?
-  sinBreakdown String?  @db.Text
-  aiSummary    String?  @db.Text
-  motivationBar Int     @default(0)
-  createdAt    DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, weekStart])
-  @@index([userId, weekStart])
-  @@map("sin_weekly_summaries")
-}
-
 enum SinType {
   tatli
   fastfood
   gazli
   alkol
   diger
-}
-
-model PushNotification {
-  id           String               @id @default(cuid())
-  userId       String
-  type         PushNotificationType
-  title        String
-  body         String               @db.Text
-  icon         String?
-  badge        String?
-  data         String?              @db.Text
-  status       PushNotificationStatus @default(pending)
-  sentAt       DateTime?
-  clickedAt    DateTime?
-  errorMessage String?              @db.Text
-  createdAt    DateTime             @default(now())
-  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([type])
-  @@index([status])
-  @@index([createdAt])
-  @@map("push_notifications")
-}
-
-model NotificationSettings {
-  id                 String   @id @default(cuid())
-  userId             String   @unique
-  dailyReminder      Boolean  @default(true)
-  dailyReminderTime  String   @default("20:00")
-  weeklySummary      Boolean  @default(true)
-  badgeEarned        Boolean  @default(true)
-  challengeReminder  Boolean  @default(true)
-  streakWarning      Boolean  @default(true)
-  friendActivity     Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("notification_settings")
 }
 
 enum PushNotificationType {
@@ -1706,70 +1843,6 @@ enum PushNotificationStatus {
   sent
   failed
   clicked
-}
-
-model FriendRequest {
-  id          String              @id @default(cuid())
-  senderId    String
-  receiverId  String
-  status      FriendRequestStatus @default(pending)
-  message     String?             @db.Text
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  respondedAt DateTime?
-  sender      User                @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver    User                @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade)
-
-  @@unique([senderId, receiverId])
-  @@index([senderId])
-  @@index([receiverId])
-  @@index([status])
-  @@map("friend_requests")
-}
-
-model Friendship {
-  id        String   @id @default(cuid())
-  userId    String
-  friendId  String
-  createdAt DateTime @default(now())
-  user      User     @relation("UserFriendships", fields: [userId], references: [id], onDelete: Cascade)
-  friend    User     @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, friendId])
-  @@index([userId])
-  @@index([friendId])
-  @@map("friendships")
-}
-
-model FriendActivity {
-  id           String               @id @default(cuid())
-  userId       String
-  activityType FriendActivityType
-  activityData String?              @db.Text
-  isPublic     Boolean              @default(true)
-  createdAt    DateTime             @default(now())
-  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([activityType])
-  @@index([createdAt])
-  @@index([isPublic])
-  @@map("friend_activities")
-}
-
-model FriendSettings {
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  allowFriendRequests Boolean  @default(true)
-  showStreak          Boolean  @default(true)
-  showBadges          Boolean  @default(true)
-  showStats           Boolean  @default(true)
-  showActivity        Boolean  @default(true)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("friend_settings")
 }
 
 enum FriendRequestStatus {

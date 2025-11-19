@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, Flame, Calendar } from 'lucide-react'
+import { CheckCircle2, Flame, Calendar, History } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface CheckInClientProps {
@@ -13,9 +13,35 @@ interface CheckInClientProps {
   hasCheckedInToday: boolean
 }
 
+interface CheckInHistoryItem {
+  id: string
+  checkInAt: string
+  createdAt: string
+}
+
 export function CheckInClient({ streak, lastCheckIn, hasCheckedInToday }: CheckInClientProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [history, setHistory] = useState<CheckInHistoryItem[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(true)
+
+  useEffect(() => {
+    fetchHistory()
+  }, [])
+
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch('/api/v1/check-in/history?limit=30')
+      const data = await res.json()
+      if (data.success) {
+        setHistory(data.data.history)
+      }
+    } catch (error) {
+      console.error('Failed to fetch history:', error)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
 
   const handleCheckIn = async () => {
     setLoading(true)
@@ -32,11 +58,29 @@ export function CheckInClient({ streak, lastCheckIn, hasCheckedInToday }: CheckI
 
       toast.success('Check-in başarılı! 🎉')
       router.refresh()
+      fetchHistory() // Geçmişi yenile
     } catch (error: any) {
       toast.error(error.message || 'Bir hata oluştu')
     } finally {
       setLoading(false)
     }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('tr-TR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  }
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString('tr-TR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   return (
@@ -114,6 +158,56 @@ export function CheckInClient({ streak, lastCheckIn, hasCheckedInToday }: CheckI
             <p>🔥 7, 30 ve 100 günlük streak'lerde özel rozetler kazanırsın!</p>
             <p>✅ Check-in yaptığında günlük görev de tamamlanır!</p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Check-in History */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <History className="w-5 h-5" />
+            Check-in Geçmişi
+          </CardTitle>
+          <CardDescription>
+            Son 30 günlük check-in kayıtların
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingHistory ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Yükleniyor...
+            </div>
+          ) : history.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Henüz check-in kaydın yok. İlk check-in'ini yap!
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {history.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                      <CheckCircle2 className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-medium">
+                        {formatDate(item.checkInAt)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatTime(item.checkInAt)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    ✅
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

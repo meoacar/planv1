@@ -14,6 +14,7 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "worker:ai": "tsx src/workers/ai-response.worker.ts",
+    "worker:ai-features": "tsx src/scripts/start-ai-workers.ts",
     "worker:cron": "tsx src/workers/cron-jobs.ts",
     "push:generate-keys": "node scripts/generate-vapid-keys.mjs",
     "push:migrate": "node scripts/apply-push-notification-migration.mjs",

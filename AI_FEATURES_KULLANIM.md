@@ -1,525 +1,467 @@
-# 🤖 Gelişmiş AI Özellikleri - Kullanım Kılavuzu
+# AI Features Kullanım Kılavuzu 🤖
 
-**Durum:** ✅ Tamamlandı  
-**Tarih:** 18 Kasım 2025
+## 🎯 Genel Bakış
 
----
+AI özellikleri artık tamamen hazır ve kullanıma sunuldu! Bu kılavuz, AI recommendation ve smart reminder sistemlerinin nasıl kullanılacağını açıklar.
 
-## 📋 Genel Bakış
+## ✅ Tamamlanan Özellikler
 
-Gelişmiş AI özellikleri, Google Gemini Pro kullanarak kullanıcılara kişiselleştirilmiş destek sağlar.
+### 1. AI Recommendation System
+- ✅ Veritabanı modeli (`AIRecommendation`)
+- ✅ AI servis fonksiyonları (`src/lib/ai.ts`)
+- ✅ API endpoints (`/api/v1/ai/recommendations`)
+- ✅ BullMQ worker (`ai-recommendation.worker.ts`)
+- ✅ React bileşeni (`AIRecommendations.tsx`)
 
-### Özellikler
+### 2. Smart Reminder System
+- ✅ Veritabanı modeli (`SmartReminder`)
+- ✅ ML optimizasyon fonksiyonları
+- ✅ API endpoints (`/api/v1/ai/smart-reminders`)
+- ✅ BullMQ worker (`smart-reminder.worker.ts`)
+- ✅ React bileşeni (`SmartReminders.tsx`)
 
-✅ **AI Chatbot** - Beslenme koçu (7/24 destek)  
-✅ **Trend Analizi** - 4 haftalık veri analizi  
-✅ **Günlük Motivasyon** - AI motivasyon mesajları  
-✅ **Hedef Önerisi** - Kişiselleştirilmiş hedefler  
-✅ **Hızlı Sorular** - Önceden hazırlanmış cevaplar  
-✅ **Konuşma Geçmişi** - Bağlam korumalı sohbet
-
----
-
-## 🚀 Özellikler
-
-### 1. AI Chatbot 🤖
-
-**Yetenekler:**
-- Beslenme tavsiyeleri
-- Motivasyon desteği
-- Soru-cevap
-- Empati ve anlayış
-- Pratik öneriler
-
-**Kullanıcı Context:**
-- İsim, level, streak
-- Son günah kayıtları
-- Kazanılan rozetler
-- Toplam günah sayısı
-
-**Hızlı Sorular:**
-- "Nasıl başlarım?"
-- "Motivasyon lazım"
-- "Tatlı isteği nasıl bastırırım?"
-- "Fast food yerine ne yiyebilirim?"
-- "Streak kırıldı ne yapmalıyım?"
-
-### 2. Trend Analizi 📊
-
-**4 Haftalık Analiz:**
-- Haftalık günah sayıları
-- Temiz gün sayıları
-- Günlük ortalamalar
-- Günah türü dağılımı
-
-**AI Analiz Çıktıları:**
-- **Özet:** Genel durum (2-3 cümle)
-- **Trendler:** Artış/azalış/değişim (3-4 trend)
-- **İçgörüler:** Derin analizler (3-4 içgörü)
-- **Öneriler:** Pratik tavsiyeler (3-4 öneri)
-- **Tahmin:** Gelecek hafta tahmini
-
-### 3. Günlük Motivasyon 💪
-
-**Özellikler:**
-- Kişiselleştirilmiş mesajlar
-- Kullanıcı başarılarına vurgu
-- Pozitif ve motive edici
-- Günlük yenileme
-
-**Örnek Mesajlar:**
-- "Bugün 7. günün! Her gün daha güçlüsün! 💪🔥"
-- "5 rozet kazandın! Harikasın! 🏆"
-- "Streak'ini korumaya devam et! 🌟"
-
-### 4. Hedef Önerisi 🎯
-
-**AI Hedef Belirleme:**
-- Kullanıcı durumuna uygun
-- Gerçekçi ve ulaşılabilir
-- Mevcut verilere dayalı
-- Kişiselleştirilmiş
-
-**Örnek Hedefler:**
-- "7 gün boyunca tatlı yememeye ne dersin? 🎯"
-- "Bu hafta 5 temiz gün hedefle! 💚"
-- "Fast food'u 2 haftaya azalt! 🍔"
+### 3. Frontend
+- ✅ AI Features sayfası (`/ai-features`)
+- ✅ Kullanıcı arayüzü bileşenleri
+- ✅ Real-time güncellemeler
 
 ---
 
-## 🔧 API Endpoints
+## 🚀 Kurulum ve Başlatma
 
-### AI Chatbot
+### 1. Gerekli Ortam Değişkenleri
 
-**POST /api/v1/ai/chat**
-```typescript
-// Normal sohbet
-{
-  "messages": [
-    { "role": "user", "content": "Tatlı isteği nasıl bastırırım?" },
-    { "role": "assistant", "content": "..." }
-  ]
-}
+`.env` dosyanıza ekleyin:
 
-// Hızlı soru
-{
-  "quickQuestion": "Nasıl başlarım?"
-}
+```env
+# AI Provider (en az birini seçin - Gemini ÖNERİLİR)
+GEMINI_API_KEY=your-gemini-api-key-here
+# veya
+OPENAI_API_KEY=sk-your-openai-key
+# veya
+ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
+
+# Redis (BullMQ için gerekli)
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
 ```
 
-**Response:**
-```typescript
-{
-  "success": true,
-  "response": "AI cevabı...",
-  "userContext": {
-    "level": 5,
-    "streak": 7,
-    "badgeCount": 3
-  }
-}
-```
+**Gemini API Key Nasıl Alınır?**
+1. https://makersuite.google.com/app/apikey adresine gidin
+2. Google hesabınızla giriş yapın
+3. "Create API Key" butonuna tıklayın
+4. Ücretsiz! (Aylık 60 istek/dakika limiti)
 
-### Trend Analizi
+### 2. Redis'i Başlatın
 
-**GET /api/v1/ai/trends**
-```typescript
-// Detaylı analiz
-GET /api/v1/ai/trends
-
-// Hızlı özet
-GET /api/v1/ai/trends?quick=true
-```
-
-**Response:**
-```typescript
-{
-  "success": true,
-  "analysis": {
-    "summary": "Son hafta...",
-    "trends": ["Trend 1", "Trend 2"],
-    "insights": ["İçgörü 1", "İçgörü 2"],
-    "recommendations": ["Öneri 1", "Öneri 2"],
-    "prediction": "Gelecek hafta...",
-    "weeklyData": [...]
-  }
-}
-```
-
-### Motivasyon
-
-**GET /api/v1/ai/motivation**
-```typescript
-// Günlük motivasyon
-GET /api/v1/ai/motivation
-```
-
-**POST /api/v1/ai/motivation/goal**
-```typescript
-// Hedef önerisi
-POST /api/v1/ai/motivation/goal
-```
-
----
-
-## 🎨 Frontend Bileşenleri
-
-### 1. AIChatbot
-```typescript
-import { AIChatbot } from '@/components/ai/ai-chatbot';
-
-<AIChatbot />
-```
-
-**Özellikler:**
-- Mesaj geçmişi
-- Hızlı sorular
-- Gerçek zamanlı cevaplar
-- Loading state'leri
-- Otomatik scroll
-
-### 2. TrendAnalysis
-```typescript
-import { TrendAnalysis } from '@/components/ai/trend-analysis';
-
-<TrendAnalysis />
-```
-
-**Özellikler:**
-- 4 haftalık veri görselleştirme
-- AI analiz sonuçları
-- Trendler, içgörüler, öneriler
-- Yenileme butonu
-
-### 3. DailyMotivation
-```typescript
-import { DailyMotivation } from '@/components/ai/daily-motivation';
-
-<DailyMotivation />
-```
-
-**Özellikler:**
-- Günlük motivasyon mesajı
-- Hedef önerisi
-- Yenileme butonları
-- Loading state'leri
-
----
-
-## 🧠 AI Servisler
-
-### ai-chatbot.ts
-
-**Fonksiyonlar:**
-```typescript
-// Ana sohbet
-await chatWithAI(messages, userContext);
-
-// Hızlı cevap
-await getQuickAnswer(question, userContext);
-
-// Günlük motivasyon
-await getDailyMotivation(userContext);
-
-// Hedef önerisi
-await suggestGoal(userContext);
-
-// Konuşma özeti
-await summarizeConversation(messages);
-```
-
-### ai-trend-analyzer.ts
-
-**Fonksiyonlar:**
-```typescript
-// 4 haftalık analiz
-await analyzeTrends(userId);
-
-// Hızlı özet
-await getQuickTrendSummary(userId);
-
-// Haftalık veri
-await getLast4WeeksData(userId);
-```
-
----
-
-## 💡 Kullanım Örnekleri
-
-### Chatbot Kullanımı
-
-```typescript
-// 1. Kullanıcı mesaj gönderir
-const userMessage = "Tatlı isteği nasıl bastırırım?";
-
-// 2. API'ye gönder
-const response = await fetch('/api/v1/ai/chat', {
-  method: 'POST',
-  body: JSON.stringify({
-    messages: [{ role: 'user', content: userMessage }]
-  })
-});
-
-// 3. AI cevabı al
-const data = await response.json();
-console.log(data.response);
-// "Tatlı isteğini bastırmak için:
-// 1. Bol su iç 💧
-// 2. Meyve ye 🍎
-// 3. 10 dakika bekle..."
-```
-
-### Trend Analizi
-
-```typescript
-// 1. Analiz iste
-const response = await fetch('/api/v1/ai/trends');
-const data = await response.json();
-
-// 2. Sonuçları göster
-console.log(data.analysis.summary);
-// "Son hafta 5 günah kaydettiniz. Önceki haftaya göre %20 azalma var! 🎉"
-
-console.log(data.analysis.trends);
-// ["📉 Günah sayısında azalma trendi", "✅ Temiz gün sayısı arttı"]
-```
-
-### Motivasyon Mesajı
-
-```typescript
-// 1. Günlük motivasyon al
-const response = await fetch('/api/v1/ai/motivation');
-const data = await response.json();
-
-console.log(data.motivation);
-// "Bugün 8. günün! Her gün daha güçlüsün! 💪🔥"
-```
-
----
-
-## 🔒 Güvenlik ve Gizlilik
-
-### API Key Güvenliği
-- GEMINI_API_KEY environment variable'da
-- Backend'de saklanır, frontend'e açılmaz
-- Rate limiting uygulanmalı
-
-### Kullanıcı Verisi
-- Sadece gerekli veriler AI'ya gönderilir
-- Hassas bilgiler filtrelenir
-- Konuşma geçmişi kullanıcıya özel
-
-### Fallback Mekanizması
-- AI çalışmazsa önceden hazırlanmış cevaplar
-- Hata durumunda kullanıcı bilgilendirilir
-- Graceful degradation
-
----
-
-## 📊 AI Prompt Stratejisi
-
-### System Prompt
-```
-Sen bir beslenme ve sağlıklı yaşam koçusun.
-
-Görevin:
-- Kullanıcılara yardımcı olmak
-- Motivasyon sağlamak
-- Pratik öneriler vermek
-- Empati kurmak
-- Yargılamamak
-
-Kurallar:
-- Türkçe konuş
-- Kısa ve öz cevaplar (max 3-4 cümle)
-- Emoji kullan ama abartma
-- Pratik öneriler ver
-- Başarıları kutla
-```
-
-### User Context
-```
-Kullanıcı Bilgileri:
-- İsim: [name]
-- Level: [level]
-- Streak: [streak] gün
-- Toplam Günah: [totalSins]
-- Kazanılan Rozetler: [badges]
-- Son Günah: [recentSins]
-```
-
-### Response Format
-```
-Kısa ve öz (1-3 cümle)
-Emoji kullan (1-2 adet)
-Pozitif ve motive edici
-Pratik ve uygulanabilir
-```
-
----
-
-## 🧪 Test Senaryoları
-
-### 1. Chatbot Testi
-```typescript
-// Hızlı soru
-const response = await fetch('/api/v1/ai/chat', {
-  method: 'POST',
-  body: JSON.stringify({
-    quickQuestion: "Nasıl başlarım?"
-  })
-});
-
-// Cevap alınmalı
-expect(response.ok).toBe(true);
-```
-
-### 2. Trend Analizi Testi
-```typescript
-// Analiz iste
-const response = await fetch('/api/v1/ai/trends');
-const data = await response.json();
-
-// Tüm alanlar dolu olmalı
-expect(data.analysis.summary).toBeTruthy();
-expect(data.analysis.trends.length).toBeGreaterThan(0);
-```
-
-### 3. Motivasyon Testi
-```typescript
-// Motivasyon al
-const response = await fetch('/api/v1/ai/motivation');
-const data = await response.json();
-
-// Mesaj alınmalı
-expect(data.motivation).toBeTruthy();
-expect(data.motivation.length).toBeGreaterThan(0);
-```
-
----
-
-## 🐛 Sorun Giderme
-
-### AI Cevap Vermiyor
-
-**1. API Key Kontrolü**
 ```bash
-# .env dosyasında kontrol et
-GEMINI_API_KEY=your_key_here
+# Windows (XAMPP kullanıyorsanız)
+# Redis'i manuel olarak başlatın veya:
+redis-server
 ```
 
-**2. Fallback Kontrolü**
-```typescript
-// Fallback cevap dönmeli
-if (!aiResponse) {
-  return getFallbackResponse();
-}
+### 3. Worker'ları Başlatın
+
+```bash
+# AI worker'larını başlat
+npm run worker:ai-features
 ```
 
-### Yavaş Cevaplar
+Bu komut şunları yapar:
+- AI Recommendation worker'ı başlatır
+- Smart Reminder worker'ı başlatır
+- Her saat otomatik job'lar planlar
+- Aktif kullanıcılar için öneriler oluşturur
 
-**1. Timeout Ayarı**
+### 4. Uygulamayı Başlatın
+
+```bash
+npm run dev
+```
+
+Tarayıcıda: `http://localhost:3000/ai-features`
+
+---
+
+## 📖 Kullanım
+
+### AI Önerileri
+
+#### Frontend'den Kullanım
+
+1. `/ai-features` sayfasına gidin
+2. Sol tarafta AI önerilerinizi görün
+3. Önerilere tıklayarak ilgili içeriğe gidin
+4. İstemediğiniz önerileri X ile kapatın
+5. Yenile butonuyla yeni öneriler alın
+
+#### API'den Kullanım
+
 ```typescript
-const response = await fetch('/api/v1/ai/chat', {
-  signal: AbortSignal.timeout(10000) // 10 saniye
+// Önerileri getir
+const response = await fetch('/api/v1/ai/recommendations?type=recipe&limit=5');
+const data = await response.json();
+
+// Yeni öneriler oluştur (cache'i atla)
+const response = await fetch('/api/v1/ai/recommendations?refresh=true');
+
+// Öneri tıklandı
+await fetch('/api/v1/ai/recommendations', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    recommendationId: 'rec_123',
+    action: 'clicked'
+  })
+});
+
+// Öneriyi kapat
+await fetch('/api/v1/ai/recommendations', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    recommendationId: 'rec_123',
+    action: 'dismissed'
+  })
 });
 ```
 
-**2. Loading State**
+#### Programatik Kullanım
+
 ```typescript
-setIsLoading(true);
-// API call
-setIsLoading(false);
+import { generateRecommendations } from '@/lib/ai';
+
+const recommendations = await generateRecommendations({
+  userId: 'user_123',
+  userPreferences: {
+    dietType: 'vegetarian',
+    allergies: ['gluten'],
+    goals: ['weight_loss'],
+    activityLevel: 'medium'
+  },
+  userHistory: {
+    completedPlans: ['plan_1', 'plan_2'],
+    likedRecipes: ['recipe_1', 'recipe_2'],
+    joinedGroups: ['group_1']
+  },
+  limit: 10
+});
 ```
 
-### Hatalı Analiz
+### Akıllı Hatırlatmalar
 
-**1. Veri Kontrolü**
+#### Frontend'den Kullanım
+
+1. `/ai-features` sayfasına gidin
+2. Sağ tarafta hatırlatmalarınızı görün
+3. Switch ile hatırlatmaları aç/kapat
+4. "Optimize Et" butonuyla zamanlamayı iyileştirin
+5. Tıklama oranınızı görün
+
+#### API'den Kullanım
+
 ```typescript
-// Yeterli veri var mı?
-const sins = await prisma.foodSin.count({ where: { userId } });
-if (sins < 5) {
-  return "Daha fazla veri gerekli";
+// Hatırlatmaları listele
+const response = await fetch('/api/v1/ai/smart-reminders');
+const data = await response.json();
+
+// Yeni hatırlatma oluştur
+await fetch('/api/v1/ai/smart-reminders', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    reminderType: 'daily_checkin',
+    frequency: 'daily',
+    enabled: true
+  })
+});
+
+// Hatırlatmayı optimize et
+await fetch('/api/v1/ai/smart-reminders/optimize', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    reminderId: 'reminder_123'
+  })
+});
+
+// Hatırlatmayı sil
+await fetch('/api/v1/ai/smart-reminders?id=reminder_123', {
+  method: 'DELETE'
+});
+```
+
+#### Programatik Kullanım
+
+```typescript
+import { optimizeReminderTime } from '@/lib/ai';
+
+const optimalTime = await optimizeReminderTime(
+  'user_123',
+  'daily_checkin',
+  {
+    activeHours: [8, 9, 10, 18, 19, 20],
+    clickHistory: [
+      { time: '08:00', clicked: true },
+      { time: '20:00', clicked: true },
+      { time: '14:00', clicked: false }
+    ]
+  }
+);
+
+console.log(`Optimal time: ${optimalTime}`); // "20:00"
+```
+
+---
+
+## 🔧 Worker Yönetimi
+
+### Manuel Job Planlama
+
+```typescript
+import { scheduleUserRecommendations } from '@/workers/ai-recommendation.worker';
+import { scheduleReminderSend } from '@/workers/smart-reminder.worker';
+
+// Belirli bir kullanıcı için öneri oluştur
+await scheduleUserRecommendations('user_123');
+
+// Hatırlatma gönder
+await scheduleReminderSend('reminder_123');
+```
+
+### Toplu İşlemler
+
+```typescript
+import { scheduleBulkRecommendations } from '@/workers/ai-recommendation.worker';
+import { schedulePendingReminders } from '@/workers/smart-reminder.worker';
+
+// Tüm aktif kullanıcılar için öneriler oluştur
+await scheduleBulkRecommendations();
+
+// Bekleyen tüm hatırlatmaları gönder
+await schedulePendingReminders();
+```
+
+### Cron Job Entegrasyonu
+
+`src/workers/cron-jobs.ts` dosyasına ekleyin:
+
+```typescript
+import { scheduleBulkRecommendations } from './ai-recommendation.worker';
+import { schedulePendingReminders } from './smart-reminder.worker';
+
+// Her gün saat 02:00'de öneriler oluştur
+cron.schedule('0 2 * * *', async () => {
+  console.log('🤖 Günlük AI önerileri oluşturuluyor...');
+  await scheduleBulkRecommendations();
+});
+
+// Her saat hatırlatmaları kontrol et
+cron.schedule('0 * * * *', async () => {
+  console.log('⏰ Hatırlatmalar kontrol ediliyor...');
+  await schedulePendingReminders();
+});
+```
+
+---
+
+## 🎨 Özelleştirme
+
+### Öneri Türleri
+
+`src/lib/ai.ts` dosyasında yeni öneri türleri ekleyebilirsiniz:
+
+```typescript
+export type RecommendationType = 
+  | 'plan' 
+  | 'recipe' 
+  | 'group' 
+  | 'guild' 
+  | 'challenge'
+  | 'blog_post'  // Yeni tür
+  | 'event';     // Yeni tür
+```
+
+### Hatırlatma Türleri
+
+`src/workers/smart-reminder.worker.ts` dosyasında yeni hatırlatma türleri:
+
+```typescript
+const reminderLabels: Record<string, { title: string; icon: string }> = {
+  // Mevcut türler...
+  custom_reminder: { title: 'Özel Hatırlatma', icon: '🔔' },
+  medication: { title: 'İlaç Hatırlatması', icon: '💊' },
+};
+```
+
+### AI Prompt'ları
+
+`src/lib/ai.ts` dosyasında prompt'ları özelleştirin:
+
+```typescript
+function buildRecommendationPrompt(input: RecommendationInput): string {
+  return `
+Kullanıcı için kişiselleştirilmiş öneriler oluştur.
+
+Kullanıcı Profili:
+- Hedefler: ${input.userPreferences?.goals?.join(', ')}
+- Aktivite Seviyesi: ${input.userPreferences?.activityLevel}
+- Alerjiler: ${input.userPreferences?.allergies?.join(', ')}
+
+Geçmiş:
+- Tamamlanan Planlar: ${input.userHistory?.completedPlans?.length || 0}
+- Beğenilen Tarifler: ${input.userHistory?.likedRecipes?.length || 0}
+
+Lütfen ${input.limit} öneri oluştur...
+  `.trim();
 }
 ```
 
 ---
 
-## 📈 Performans Optimizasyonu
+## 📊 Monitoring ve Analytics
 
-### Caching
-```typescript
-// Günlük motivasyon cache'le (24 saat)
-const cacheKey = `motivation:${userId}:${today}`;
-const cached = await redis.get(cacheKey);
-if (cached) return cached;
+### Worker Durumu
 
-const motivation = await getDailyMotivation(userContext);
-await redis.set(cacheKey, motivation, 'EX', 86400);
+```bash
+# Worker loglarını izle
+npm run worker:ai-features
+
+# Çıktı:
+# ✅ AI Recommendation Worker hazır
+# ✅ Smart Reminder Worker hazır
+# 📋 İlk job'lar planlanıyor...
 ```
+
+### Redis Queue Monitoring
+
+```typescript
+import { aiRecommendationQueue } from '@/workers/ai-recommendation.worker';
+
+// Queue durumu
+const jobCounts = await aiRecommendationQueue.getJobCounts();
+console.log(jobCounts);
+// { waiting: 5, active: 2, completed: 100, failed: 3 }
+
+// Başarısız job'ları görüntüle
+const failedJobs = await aiRecommendationQueue.getFailed();
+failedJobs.forEach(job => {
+  console.log(`Job ${job.id} failed:`, job.failedReason);
+});
+```
+
+### Veritabanı İstatistikleri
+
+```sql
+-- Öneri istatistikleri
+SELECT 
+  recommendationType,
+  COUNT(*) as total,
+  SUM(CASE WHEN clicked THEN 1 ELSE 0 END) as clicked,
+  AVG(score) as avg_score
+FROM ai_recommendations
+GROUP BY recommendationType;
+
+-- Hatırlatma performansı
+SELECT 
+  reminderType,
+  AVG(clickRate) as avg_click_rate,
+  SUM(totalSent) as total_sent,
+  SUM(totalClicked) as total_clicked
+FROM smart_reminders
+WHERE enabled = true
+GROUP BY reminderType;
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### AI Önerileri Gelmiyor
+
+1. **API Key kontrolü:**
+   ```bash
+   # .env dosyasını kontrol edin
+   echo $OPENAI_API_KEY
+   ```
+
+2. **Worker çalışıyor mu:**
+   ```bash
+   npm run worker:ai-features
+   ```
+
+3. **Redis bağlantısı:**
+   ```bash
+   redis-cli ping
+   # PONG dönmeli
+   ```
+
+### Hatırlatmalar Optimize Edilemiyor
+
+- En az 10 bildirim geçmişi gerekli
+- Kullanıcının bildirim geçmişini kontrol edin:
+  ```sql
+  SELECT COUNT(*) FROM push_notifications WHERE userId = 'user_123';
+  ```
+
+### Worker Hataları
+
+```bash
+# Worker loglarını detaylı görmek için
+DEBUG=bullmq:* npm run worker:ai-features
+```
+
+---
+
+## 🔐 Güvenlik
 
 ### Rate Limiting
+
+API endpoint'lerine rate limit ekleyin:
+
 ```typescript
-// Kullanıcı başına limit
-const limit = await rateLimit.check(userId, {
-  max: 20, // 20 istek
-  window: '1h' // 1 saat
+import rateLimit from 'express-rate-limit';
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 dakika
+  max: 100 // maksimum 100 istek
 });
+
+app.use('/api/v1/ai/', limiter);
 ```
 
----
+### API Key Güvenliği
 
-## 🎯 Gelecek Geliştirmeler
-
-### Öncelik 1: Ses Desteği
-- [ ] Text-to-speech (AI cevapları sesli)
-- [ ] Speech-to-text (sesli soru)
-- [ ] Ses tonu ayarları
-
-### Öncelik 2: Gelişmiş Analiz
-- [ ] Aylık trend analizi
-- [ ] Yıllık özet
-- [ ] Karşılaştırmalı analiz
-
-### Öncelik 3: Kişiselleştirme
-- [ ] AI öğrenme (kullanıcı tercihleri)
-- [ ] Özel hedef planları
-- [ ] Adaptif öneriler
+- API key'leri asla client-side'da kullanmayın
+- Environment variable'ları güvenli tutun
+- Production'da farklı key'ler kullanın
 
 ---
 
-## ✅ Checklist
+## 📈 Performans İpuçları
 
-### Backend
-- [x] AI chatbot servisi
-- [x] Trend analyzer servisi
-- [x] Chat API endpoint
-- [x] Trends API endpoint
-- [x] Motivation API endpoint
-- [x] Fallback mekanizması
-
-### Frontend
-- [x] Chatbot component
-- [x] Trend analysis component
-- [x] Daily motivation component
-- [x] Loading states
-- [x] Error handling
-
-### AI
-- [x] System prompt
-- [x] User context
-- [x] Quick answers
-- [x] Trend analysis
-- [x] Motivation messages
-- [x] Goal suggestions
-
-### Dokümantasyon
-- [x] Kullanım kılavuzu
-- [x] API dokümantasyonu
-- [x] Test senaryoları
+1. **Cache kullanın:** Öneriler 7 gün geçerli, gereksiz yere yenilemeyin
+2. **Batch işlemler:** Toplu öneri oluşturma için `scheduleBulkRecommendations` kullanın
+3. **Queue önceliklendirme:** Önemli job'lara yüksek priority verin
+4. **Redis optimizasyonu:** Redis'i production'da ayrı bir sunucuda çalıştırın
 
 ---
 
-**Hazırlayan:** Kiro AI  
-**Tarih:** 18 Kasım 2025  
-**Durum:** ✅ Production Ready
+## 🎯 Sonraki Adımlar
+
+- [ ] A/B testing için farklı AI modelleri deneyin
+- [ ] Öneri kalitesini ölçmek için metrikler ekleyin
+- [ ] Kullanıcı feedback sistemi ekleyin
+- [ ] Email ile hatırlatma seçeneği ekleyin
+- [ ] Öneri açıklamalarını Türkçeleştirin
+
+---
+
+## 📞 Destek
+
+Sorun yaşarsanız:
+1. Bu dokümandaki troubleshooting bölümünü kontrol edin
+2. Worker loglarını inceleyin
+3. Redis ve veritabanı bağlantılarını test edin
+
+**AI Features artık tamamen hazır! 🎉**

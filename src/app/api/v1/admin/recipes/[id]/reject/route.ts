@@ -78,7 +78,21 @@ export async function PATCH(
       },
     })
 
-    // TODO: Log activity when ActivityLog model is added
+    // Log activity
+    await db.activityLog.create({
+      data: {
+        actorId: session.user.id,
+        action: 'reject_recipe',
+        entity: 'recipe',
+        entityId: recipe.id,
+        metadata: JSON.stringify({
+          recipeTitle: recipe.title,
+          authorId: recipe.authorId,
+          authorUsername: recipe.author.username,
+          reason,
+        }),
+      },
+    })
 
     return NextResponse.json({
       success: true,
