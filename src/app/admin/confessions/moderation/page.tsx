@@ -75,7 +75,7 @@ async function getModerationData(page: number = 1, limit: number = 20) {
 export default async function AdminConfessionModerationPage({
   searchParams,
 }: {
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string }>
 }) {
   const session = await auth()
   
@@ -93,7 +93,8 @@ export default async function AdminConfessionModerationPage({
     redirect("/")
   }
 
-  const page = parseInt(searchParams.page || "1")
+  const params = await searchParams
+  const page = parseInt(params.page || "1")
   const { confessions, meta } = await getModerationData(page)
 
   return (

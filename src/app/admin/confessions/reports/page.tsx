@@ -99,7 +99,7 @@ async function getReportedConfessions(page: number = 1, limit: number = 20) {
 export default async function AdminConfessionReportsPage({
   searchParams,
 }: {
-  searchParams: { page?: string }
+  searchParams: Promise<{ page?: string }>
 }) {
   const session = await auth()
   
@@ -117,7 +117,8 @@ export default async function AdminConfessionReportsPage({
     redirect("/")
   }
 
-  const page = parseInt(searchParams.page || "1")
+  const params = await searchParams
+  const page = parseInt(params.page || "1")
   const { data, meta } = await getReportedConfessions(page)
 
   return (

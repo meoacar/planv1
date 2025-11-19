@@ -12,7 +12,7 @@ import { Mail, MailOpen, MessageSquare, Archive, AlertTriangle, Eye } from 'luci
 export default async function AdminContactPage({
   searchParams,
 }: {
-  searchParams: { status?: string }
+  searchParams: Promise<{ status?: string }>
 }) {
   const session = await auth()
 
@@ -20,7 +20,8 @@ export default async function AdminContactPage({
     redirect('/giris')
   }
 
-  const statusFilter = searchParams.status || 'all'
+  const params = await searchParams
+  const statusFilter = params.status || 'all'
 
   // Mesajları çek
   const messages = await db.contactMessage.findMany({

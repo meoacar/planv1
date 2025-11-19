@@ -49,12 +49,13 @@ async function getPopularConfessions() {
 export default async function ConfessionsPage({
   searchParams,
 }: {
-  searchParams: { category?: string; popular?: string }
+  searchParams: Promise<{ category?: string; popular?: string }>
 }) {
   const popularConfessions = await getPopularConfessions()
 
-  const category = searchParams.category as ConfessionCategory | undefined
-  const showPopular = searchParams.popular === 'true'
+  const params = await searchParams
+  const category = params.category as ConfessionCategory | undefined
+  const showPopular = params.popular === 'true'
 
   return (
     <div className="min-h-screen bg-muted/30">

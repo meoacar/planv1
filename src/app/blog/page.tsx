@@ -57,13 +57,13 @@ export const metadata: Metadata = {
 }
 
 interface BlogPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string
     category?: string
     tag?: string
     search?: string
     sort?: string
-  }
+  }>
 }
 
 async function getBlogPageData(searchParams: BlogPageProps['searchParams']) {
@@ -109,7 +109,8 @@ function BlogListSkeleton() {
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const pageData = await getBlogPageData(searchParams)
+  const params = await searchParams
+  const pageData = await getBlogPageData(params)
   
   const postsData = {
     data: pageData.posts.data,
@@ -169,22 +170,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </div>
 
           {/* Active Filters */}
-          {(searchParams.category || searchParams.tag || searchParams.search) && (
+          {(params.category || params.tag || params.search) && (
             <div className="mb-6 flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Filtreler:</span>
-              {searchParams.category && (
+              {params.category && (
                 <span className="text-sm bg-accent px-3 py-1 rounded-full">
-                  Kategori: {searchParams.category}
+                  Kategori: {params.category}
                 </span>
               )}
-              {searchParams.tag && (
+              {params.tag && (
                 <span className="text-sm bg-accent px-3 py-1 rounded-full">
-                  Etiket: #{searchParams.tag}
+                  Etiket: #{params.tag}
                 </span>
               )}
-              {searchParams.search && (
+              {params.search && (
                 <span className="text-sm bg-accent px-3 py-1 rounded-full">
-                  Arama: "{searchParams.search}"
+                  Arama: "{params.search}"
                 </span>
               )}
             </div>

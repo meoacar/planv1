@@ -19,14 +19,14 @@ import type {
 } from '@/types/blog'
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     page?: string
     search?: string
     sort?: string
-  }
+  }>
 }
 
 async function getCategory(slug: string) {
@@ -95,7 +95,8 @@ async function getPopularTags() {
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
-  const category = await getCategory(params.slug)
+  const { slug } = await params
+  const category = await getCategory(slug)
 
   if (!category) {
     return {
@@ -115,7 +116,7 @@ export async function generateMetadata({
       title,
       description,
       type: 'website',
-      url: `${baseUrl}/blog/category/${params.slug}`,
+      url: `${baseUrl}/blog/category/${slug}`,
       siteName: 'Zayıflama Planı',
     },
     twitter: {
@@ -125,7 +126,7 @@ export async function generateMetadata({
       site: '@zayiflamaplan',
     },
     alternates: {
-      canonical: `${baseUrl}/blog/category/${params.slug}`,
+      canonical: `${baseUrl}/blog/category/${slug}`,
     },
     robots: {
       index: true,
@@ -166,9 +167,11 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
+  const { slug } = await params
+  const searchParamsResolved = await searchParams
   const [category, postsData, categoriesData, tagsData] = await Promise.all([
-    getCategory(params.slug),
-    getBlogPosts(params.slug, searchParams),
+    getCategory(slug),
+    getBlogPosts(slug, searchParamsResolved),
     getCategories(),
     getPopularTags(),
   ])
@@ -206,7 +209,7 @@ export default async function CategoryPage({
             <BlogSidebar
               categories={categoriesData.data}
               popularTags={tagsData.data}
-              selectedCategory={params.slug}
+              selectedCategory={slug}
             />
           </div>
         </aside>
@@ -227,11 +230,11 @@ export default async function CategoryPage({
           </div>
 
           {/* Active Filters */}
-          {searchParams.search && (
+          {searchParamsResolved.search && (
             <div className="mb-6 flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Filtreler:</span>
               <span className="text-sm bg-accent px-3 py-1 rounded-full">
-                Arama: "{searchParams.search}"
+                Arama: "{searchParamsResolved.search}"
               </span>
             </div>
           )}

@@ -19,14 +19,14 @@ import type {
 } from '@/types/blog'
 
 interface TagPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     page?: string
     search?: string
     sort?: string
-  }
+  }>
 }
 
 async function getTag(slug: string) {
@@ -95,7 +95,8 @@ async function getPopularTags() {
 export async function generateMetadata({
   params,
 }: TagPageProps): Promise<Metadata> {
-  const tag = await getTag(params.slug)
+  const { slug } = await params
+  const tag = await getTag(slug)
 
   if (!tag) {
     return {
@@ -166,9 +167,11 @@ export default async function TagPage({
   params,
   searchParams,
 }: TagPageProps) {
+  const { slug } = await params
+  const searchParamsResolved = await searchParams
   const [tag, postsData, categoriesData, tagsData] = await Promise.all([
-    getTag(params.slug),
-    getBlogPosts(params.slug, searchParams),
+    getTag(slug),
+    getBlogPosts(slug, searchParamsResolved),
     getCategories(),
     getPopularTags(),
   ])
@@ -206,7 +209,7 @@ export default async function TagPage({
             <BlogSidebar
               categories={categoriesData.data}
               popularTags={tagsData.data}
-              selectedTag={params.slug}
+              selectedTag={slug}
             />
           </div>
         </aside>
@@ -227,11 +230,11 @@ export default async function TagPage({
           </div>
 
           {/* Active Filters */}
-          {searchParams.search && (
+          {searchParamsResolved.search && (
             <div className="mb-6 flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Filtreler:</span>
               <span className="text-sm bg-accent px-3 py-1 rounded-full">
-                Arama: "{searchParams.search}"
+                Arama: "{searchParamsResolved.search}"
               </span>
             </div>
           )}
