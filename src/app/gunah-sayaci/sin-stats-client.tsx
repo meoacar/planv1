@@ -76,17 +76,17 @@ export function SinStatsClient() {
       {/* Tabs */}
       <Tabs defaultValue="stats" className="space-y-6">
         <div className="overflow-x-auto -mx-4 px-4 pb-2 scrollbar-hide">
-          <TabsList className="inline-flex w-auto justify-start gap-1 flex-nowrap">
-            <TabsTrigger value="stats" className="whitespace-nowrap flex-shrink-0">📊 İstatistikler</TabsTrigger>
-            <TabsTrigger value="streak" className="whitespace-nowrap flex-shrink-0">🔥 Streak</TabsTrigger>
-            <TabsTrigger value="calendar" className="whitespace-nowrap flex-shrink-0">📅 Takvim</TabsTrigger>
-            <TabsTrigger value="summary" className="whitespace-nowrap flex-shrink-0">📈 Özet</TabsTrigger>
-            <TabsTrigger value="badges" className="whitespace-nowrap flex-shrink-0">🏆 Rozetler</TabsTrigger>
-            <TabsTrigger value="challenges" className="whitespace-nowrap flex-shrink-0">🎯 Challenge</TabsTrigger>
-            <TabsTrigger value="leaderboard" className="whitespace-nowrap flex-shrink-0">🏅 Liderlik</TabsTrigger>
-            <TabsTrigger value="friends" className="whitespace-nowrap flex-shrink-0">👥 Arkadaşlar</TabsTrigger>
-            <TabsTrigger value="ai" className="whitespace-nowrap flex-shrink-0">🤖 AI Koç</TabsTrigger>
-            <TabsTrigger value="settings" className="whitespace-nowrap flex-shrink-0">⚙️ Ayarlar</TabsTrigger>
+          <TabsList className="inline-flex w-auto justify-start gap-1 flex-nowrap h-auto p-1">
+            <TabsTrigger value="stats" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">📊 İstatistikler</TabsTrigger>
+            <TabsTrigger value="streak" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">🔥 Streak</TabsTrigger>
+            <TabsTrigger value="calendar" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">📅 Takvim</TabsTrigger>
+            <TabsTrigger value="summary" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">📈 Özet</TabsTrigger>
+            <TabsTrigger value="badges" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">🏆 Rozetler</TabsTrigger>
+            <TabsTrigger value="challenges" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">🎯 Challenge</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">🏅 Liderlik</TabsTrigger>
+            <TabsTrigger value="friends" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">👥 Arkadaşlar</TabsTrigger>
+            <TabsTrigger value="ai" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">🤖 AI Koç</TabsTrigger>
+            <TabsTrigger value="settings" className="whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">⚙️ Ayarlar</TabsTrigger>
           </TabsList>
         </div>
 
