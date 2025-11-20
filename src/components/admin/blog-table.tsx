@@ -76,7 +76,7 @@ interface BlogPost {
     slug: string
     color: string | null
   }
-  tags: Array<{
+  blog_tags: Array<{
     id: string
     name: string
     slug: string
