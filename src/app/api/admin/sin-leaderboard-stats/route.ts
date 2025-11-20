@@ -40,7 +40,6 @@ export async function GET() {
 
     // En başarılı kullanıcılar (en az günah)
     const topUsers = await prisma.user.findMany({
-      where: { isActive: true },
       select: {
         id: true,
         name: true,
@@ -80,7 +79,6 @@ export async function GET() {
 
     // En çok rozet kazanan kullanıcılar
     const topBadgeEarners = await prisma.user.findMany({
-      where: { isActive: true },
       select: {
         id: true,
         name: true,
