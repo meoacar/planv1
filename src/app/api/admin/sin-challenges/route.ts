@@ -32,6 +32,7 @@ const createSchema = z.object({
   title: z.string().min(5, 'Başlık en az 5 karakter olmalı'),
   description: z.string().min(10, 'Açıklama en az 10 karakter olmalı'),
   targetDays: z.number().min(1, 'Hedef gün sayısı en az 1 olmalı'),
+  maxSins: z.number().min(0, 'Max günah sayısı 0 veya daha büyük olmalı'),
   sinType: z.enum(['tatli', 'fastfood', 'gazli', 'alkol', 'diger']),
   xpReward: z.number().min(0, 'XP 0 veya daha büyük olmalı'),
   coinReward: z.number().min(0, 'Coin 0 veya daha büyük olmalı'),
