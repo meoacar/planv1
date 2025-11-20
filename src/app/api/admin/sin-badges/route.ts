@@ -33,7 +33,7 @@ const createSchema = z.object({
   name: z.string().min(3, 'İsim en az 3 karakter olmalı'),
   description: z.string().min(10, 'Açıklama en az 10 karakter olmalı'),
   icon: z.string().min(1, 'Icon gerekli'),
-  requirement: z.number().min(1, 'Requirement en az 1 olmalı'),
+  requirement: z.string().min(1, 'Requirement gerekli'),
   xpReward: z.number().min(0, 'XP 0 veya daha büyük olmalı'),
   coinReward: z.number().min(0, 'Coin 0 veya daha büyük olmalı'),
 })
