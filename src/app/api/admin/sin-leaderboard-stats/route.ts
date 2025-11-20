@@ -62,7 +62,7 @@ export async function GET() {
           select: {
             badge: {
               select: {
-                emoji: true,
+                icon: true,
                 name: true,
               },
             },
@@ -125,7 +125,7 @@ export async function GET() {
         xp: user.xp || 0,
         weeklySins: user._count.foodSins,
         badges: user.sinBadges.map((ub) => ({
-          emoji: ub.badge.emoji,
+          icon: ub.badge.icon,
           name: ub.badge.name,
         })),
       })),
