@@ -75,18 +75,20 @@ export function SinStatsClient() {
 
       {/* Tabs */}
       <Tabs defaultValue="stats" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 md:grid-cols-10 lg:w-auto lg:inline-grid gap-1">
-          <TabsTrigger value="stats">📊 İstatistikler</TabsTrigger>
-          <TabsTrigger value="streak">🔥 Streak</TabsTrigger>
-          <TabsTrigger value="calendar">📅 Takvim</TabsTrigger>
-          <TabsTrigger value="summary">📈 Özet</TabsTrigger>
-          <TabsTrigger value="badges">🏆 Rozetler</TabsTrigger>
-          <TabsTrigger value="challenges">🎯 Challenge</TabsTrigger>
-          <TabsTrigger value="leaderboard">🏅 Liderlik</TabsTrigger>
-          <TabsTrigger value="friends">👥 Arkadaşlar</TabsTrigger>
-          <TabsTrigger value="ai">🤖 AI Koç</TabsTrigger>
-          <TabsTrigger value="settings">⚙️ Ayarlar</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-4 px-4 pb-2">
+          <TabsList className="inline-flex w-auto min-w-full md:min-w-0 gap-1">
+            <TabsTrigger value="stats" className="whitespace-nowrap">📊 İstatistikler</TabsTrigger>
+            <TabsTrigger value="streak" className="whitespace-nowrap">🔥 Streak</TabsTrigger>
+            <TabsTrigger value="calendar" className="whitespace-nowrap">📅 Takvim</TabsTrigger>
+            <TabsTrigger value="summary" className="whitespace-nowrap">📈 Özet</TabsTrigger>
+            <TabsTrigger value="badges" className="whitespace-nowrap">🏆 Rozetler</TabsTrigger>
+            <TabsTrigger value="challenges" className="whitespace-nowrap">🎯 Challenge</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="whitespace-nowrap">🏅 Liderlik</TabsTrigger>
+            <TabsTrigger value="friends" className="whitespace-nowrap">👥 Arkadaşlar</TabsTrigger>
+            <TabsTrigger value="ai" className="whitespace-nowrap">🤖 AI Koç</TabsTrigger>
+            <TabsTrigger value="settings" className="whitespace-nowrap">⚙️ Ayarlar</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* İstatistikler */}
         <TabsContent value="stats" className="space-y-6">
