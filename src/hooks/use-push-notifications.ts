@@ -74,19 +74,24 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
     try {
       console.log('[Push] Starting subscription...');
-      console.log('[Push] Current permission:', permission);
+      console.log('[Push] Current permission:', Notification.permission);
       
-      // İzin kontrolü
-      let perm = permission;
+      // İzin kontrolü - her zaman güncel permission'ı al
+      let perm = Notification.permission;
       if (perm === 'default') {
         console.log('[Push] Requesting permission...');
-        perm = await requestPermission();
+        perm = await Notification.requestPermission();
+        setPermission(perm);
         console.log('[Push] Permission result:', perm);
       }
 
       if (perm !== 'granted') {
         console.log('[Push] Permission denied');
-        toast.error('Bildirim izni verilmedi');
+        if (perm === 'denied') {
+          toast.error('Bildirim izni reddedildi. Lütfen tarayıcı ayarlarından izin verin.');
+        } else {
+          toast.error('Bildirim izni verilmedi');
+        }
         return;
       }
 

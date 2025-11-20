@@ -202,24 +202,26 @@ export default function ExplorePage() {
         <div className="mb-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-              <TabsList className="grid w-full md:w-auto grid-cols-3 md:grid-cols-4">
-                <TabsTrigger value="all" className="gap-2">
-                  <Grid3x3 className="w-4 h-4" />
-                  Tümü
-                </TabsTrigger>
-                <TabsTrigger value="trending" className="gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Trend
-                </TabsTrigger>
-                <TabsTrigger value="popular" className="gap-2">
-                  <Heart className="w-4 h-4" />
-                  Popüler
-                </TabsTrigger>
-                <TabsTrigger value="new" className="gap-2">
-                  <Clock className="w-4 h-4" />
-                  Yeni
-                </TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto -mx-4 px-4 pb-2 scrollbar-hide">
+                <TabsList className="inline-flex w-auto justify-start gap-1 flex-nowrap h-auto p-1">
+                  <TabsTrigger value="all" className="gap-2 whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">
+                    <Grid3x3 className="w-4 h-4" />
+                    Tümü
+                  </TabsTrigger>
+                  <TabsTrigger value="trending" className="gap-2 whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Trend
+                  </TabsTrigger>
+                  <TabsTrigger value="popular" className="gap-2 whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">
+                    <Heart className="w-4 h-4" />
+                    Popüler
+                  </TabsTrigger>
+                  <TabsTrigger value="new" className="gap-2 whitespace-nowrap flex-shrink-0 text-xs px-2 py-1.5 md:text-sm md:px-3 md:py-2">
+                    <Clock className="w-4 h-4" />
+                    Yeni
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               <div className="flex items-center gap-2">
                 <Select value={sortBy} onValueChange={setSortBy}>
