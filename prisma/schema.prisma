@@ -1610,6 +1610,7 @@ enum CommentStatus {
 enum TargetType {
   plan
   photo
+  confession
 }
 
 enum PhotoType {
