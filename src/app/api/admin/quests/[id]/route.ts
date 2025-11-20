@@ -8,7 +8,7 @@ const questSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   icon: z.string().min(1),
-  type: z.enum(['daily', 'weekly', 'monthly']),
+  type: z.enum(['daily', 'weekly', 'special']),
   target: z.number().min(1),
   xpReward: z.number().min(0),
   coinReward: z.number().min(0),
