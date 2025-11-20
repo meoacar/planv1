@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       data: {
         name: validated.name,
         description: validated.description,
-        filters: validated.filters,
+        filters: JSON.stringify(validated.filters),
         createdBy: session.user.id
       }
     });
