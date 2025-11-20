@@ -25,10 +25,8 @@ export async function GET() {
     weekStart.setDate(now.getDate() - now.getDay());
     weekStart.setHours(0, 0, 0, 0);
 
-    // Aktif kullanıcı sayısı
-    const totalActiveUsers = await prisma.user.count({
-      where: { isActive: true },
-    });
+    // Aktif kullanıcı sayısı (tüm kullanıcılar)
+    const totalActiveUsers = await prisma.user.count();
 
     // Bu hafta günah ekleyen kullanıcı sayısı
     const weeklyActiveUsers = await prisma.foodSin.groupBy({
