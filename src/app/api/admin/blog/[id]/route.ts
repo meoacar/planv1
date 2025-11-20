@@ -139,7 +139,7 @@ export async function PUT(
       // Blog var mı kontrol et
       const existingPost = await db.blogPost.findUnique({
         where: { 
-          id: params.id,
+          id: id,
           deletedAt: null,
         },
       })

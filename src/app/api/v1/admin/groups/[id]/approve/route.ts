@@ -26,7 +26,7 @@ export async function PATCH(
     }
 
     const group = await db.group.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         creator: {
           select: {
@@ -53,7 +53,7 @@ export async function PATCH(
 
     // Update group status
     const updated = await db.group.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: 'published',
         publishedAt: new Date(),

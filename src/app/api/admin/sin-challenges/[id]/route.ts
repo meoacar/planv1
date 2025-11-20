@@ -31,7 +31,7 @@ export async function PUT(
     const validated = updateSchema.parse(body)
 
     const challenge = await prisma.sinChallenge.update({
-      where: { id: params.id },
+      where: { id: id },
       data: validated,
     })
 
@@ -60,12 +60,12 @@ export async function DELETE(
 
     // Önce katılımcıları sil
     await prisma.userSinChallenge.deleteMany({
-      where: { challengeId: params.id },
+      where: { challengeId: id },
     })
 
     // Sonra challenge'ı sil
     await prisma.sinChallenge.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

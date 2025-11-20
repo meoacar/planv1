@@ -28,7 +28,7 @@ export async function PUT(
     const validated = updateSchema.parse(body)
 
     const badge = await prisma.sinBadge.update({
-      where: { id: params.id },
+      where: { id: id },
       data: validated,
     })
 
@@ -57,12 +57,12 @@ export async function DELETE(
 
     // Önce kullanıcı ilişkilerini sil
     await prisma.userSinBadge.deleteMany({
-      where: { badgeId: params.id },
+      where: { badgeId: id },
     })
 
     // Sonra badge'i sil
     await prisma.sinBadge.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

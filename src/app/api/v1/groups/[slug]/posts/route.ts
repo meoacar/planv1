@@ -23,7 +23,7 @@ export async function GET(
     const skip = (page - 1) * limit
 
     const group = await db.group.findUnique({
-      where: { slug: params.slug },
+      where: { slug: slug },
     })
 
     if (!group) {
@@ -109,7 +109,7 @@ export async function POST(
     }
 
     const group = await db.group.findUnique({
-      where: { slug: params.slug },
+      where: { slug: slug },
     })
 
     if (!group) {

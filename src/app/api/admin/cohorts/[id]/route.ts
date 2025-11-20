@@ -16,7 +16,7 @@ export async function GET(
     }
 
     const cohort = await db.cohortDefinition.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         users: {
           include: {
@@ -64,7 +64,7 @@ export async function DELETE(
     }
 
     await db.cohortDefinition.delete({
-      where: { id: params.id }
+      where: { id: id }
     });
 
     return NextResponse.json({ success: true });
@@ -91,7 +91,7 @@ export async function PATCH(
     const { name, description, isActive } = body;
 
     const cohort = await db.cohortDefinition.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...(name && { name }),
         ...(description !== undefined && { description }),

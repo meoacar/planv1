@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const appeal = await db.contentAppeal.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         user: {
           select: {
@@ -91,7 +91,7 @@ export async function PATCH(
     const { status, adminNote } = validation.data;
 
     const appeal = await db.contentAppeal.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!appeal) {
@@ -107,7 +107,7 @@ export async function PATCH(
 
     // Update appeal
     const updatedAppeal = await db.contentAppeal.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status,
         adminNote,
@@ -219,7 +219,7 @@ export async function DELETE(
     }
 
     const appeal = await db.contentAppeal.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!appeal) {
@@ -238,7 +238,7 @@ export async function DELETE(
     }
 
     await db.contentAppeal.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({ message: "Appeal cancelled" });

@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { slug } = await params;
     
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
 
     return NextResponse.json({
       success: true,
@@ -57,7 +57,7 @@ export async function PATCH(
     }
 
     // Get recipe to check ownership
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
 
     const body = await req.json()
     const validatedData = updateRecipeSchema.parse(body)
@@ -120,7 +120,7 @@ export async function DELETE(
       )
     }
 
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
     await RecipeService.deleteRecipe(recipe.id, session.user.id)
 
     return NextResponse.json({

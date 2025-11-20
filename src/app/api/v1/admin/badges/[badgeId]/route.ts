@@ -20,7 +20,7 @@ export async function PATCH(
     const validated = updateBadgeSchema.parse(body);
 
     const badge = await prisma.badge.update({
-      where: { id: params.badgeId },
+      where: { id: badgeId },
       data: validated,
     });
 
@@ -47,7 +47,7 @@ export async function DELETE(
     }
 
     await prisma.badge.delete({
-      where: { id: params.badgeId },
+      where: { id: badgeId },
     });
 
     return apiResponse.success({ message: 'Badge deleted successfully' });

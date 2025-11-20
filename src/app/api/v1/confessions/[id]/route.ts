@@ -25,7 +25,7 @@ export async function GET(
       );
     }
 
-    const confession = await getConfessionById(params.id);
+    const confession = await getConfessionById(id);
 
     return NextResponse.json({
       success: true,

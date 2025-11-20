@@ -14,8 +14,8 @@ export async function GET(
     const guild = await prisma.guild.findFirst({
       where: { 
         OR: [
-          { slug: params.id },
-          { id: params.id },
+          { slug: id },
+          { id: id },
         ],
         status: 'published',
       },
@@ -72,7 +72,7 @@ export async function PATCH(
     }
 
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!guild) {
@@ -86,7 +86,7 @@ export async function PATCH(
     const body = await req.json();
     
     const updatedGuild = await prisma.guild.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         description: body.description,
         icon: body.icon,

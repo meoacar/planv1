@@ -34,7 +34,7 @@ export async function PATCH(
     const { reason } = rejectSchema.parse(body)
 
     const recipe = await db.recipe.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         author: {
           select: {
@@ -61,7 +61,7 @@ export async function PATCH(
 
     // Update recipe status
     const updated = await db.recipe.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: 'rejected',
         rejectionReason: reason,

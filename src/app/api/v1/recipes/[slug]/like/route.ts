@@ -19,7 +19,7 @@ export async function GET(
       })
     }
 
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
     const liked = await RecipeService.isLiked(recipe.id, session.user.id)
 
     return NextResponse.json({
@@ -65,7 +65,7 @@ export async function POST(
       )
     }
 
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
     const result = await RecipeService.likeRecipe(recipe.id, session.user.id)
 
     // Gamification: Update quest progress for likes

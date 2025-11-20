@@ -15,7 +15,7 @@ export async function GET(
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
 
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
     const result = await RecipeService.getComments(recipe.id, page, limit)
 
     return NextResponse.json({
@@ -65,7 +65,7 @@ export async function POST(
     const body = await req.json()
     const validatedData = recipeCommentSchema.parse(body)
 
-    const recipe = await RecipeService.getRecipeBySlug(params.slug)
+    const recipe = await RecipeService.getRecipeBySlug(slug)
     const comment = await RecipeService.addComment(recipe.id, session.user.id, validatedData.body)
 
     // Add Guild XP

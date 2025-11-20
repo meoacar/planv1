@@ -22,7 +22,7 @@ export async function PATCH(
     const { status } = await request.json()
 
     await db.contactMessage.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { status },
     })
 
@@ -54,7 +54,7 @@ export async function DELETE(
     }
 
     await db.contactMessage.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

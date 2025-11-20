@@ -35,7 +35,7 @@ export async function PUT(
 
     // Mevcut sayfayı kontrol et
     const existingPage = await db.page.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!existingPage) {
@@ -60,7 +60,7 @@ export async function PUT(
     }
 
     const page = await db.page.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...data,
         status: data.isPublished ? 'published' : 'draft',
@@ -98,7 +98,7 @@ export async function DELETE(
     }
 
     await db.page.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

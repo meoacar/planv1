@@ -20,7 +20,7 @@ export async function PATCH(
 
     await prisma.notification.update({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id
       },
       data: {

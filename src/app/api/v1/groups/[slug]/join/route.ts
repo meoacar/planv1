@@ -19,7 +19,7 @@ export async function POST(
     }
 
     const group = await db.group.findUnique({
-      where: { slug: params.slug },
+      where: { slug: slug },
       include: {
         _count: {
           select: { members: true },
@@ -104,7 +104,7 @@ export async function DELETE(
     }
 
     const group = await db.group.findUnique({
-      where: { slug: params.slug },
+      where: { slug: slug },
     });
 
     if (!group) {

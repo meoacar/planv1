@@ -30,7 +30,7 @@ export async function PUT(
 
     // İsteği bul
     const request = await prisma.friendRequest.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         sender: {
           select: {
@@ -73,7 +73,7 @@ export async function PUT(
     if (action === 'accept') {
       // İsteği kabul et
       await prisma.friendRequest.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
           status: 'accepted',
           respondedAt: new Date(),
@@ -112,7 +112,7 @@ export async function PUT(
     } else {
       // İsteği reddet
       await prisma.friendRequest.update({
-        where: { id: params.id },
+        where: { id: id },
         data: {
           status: 'rejected',
           respondedAt: new Date(),
@@ -147,7 +147,7 @@ export async function DELETE(
 
     // İsteği bul
     const request = await prisma.friendRequest.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!request) {
@@ -171,7 +171,7 @@ export async function DELETE(
 
     // İsteği iptal et
     await prisma.friendRequest.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: 'cancelled',
         respondedAt: new Date(),

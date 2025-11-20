@@ -16,7 +16,7 @@ export async function POST(
     }
 
     const cohort = await db.cohortDefinition.findUnique({
-      where: { id: params.id }
+      where: { id: id }
     });
 
     if (!cohort) {
@@ -25,7 +25,7 @@ export async function POST(
 
     // Delete existing users
     await db.userCohort.deleteMany({
-      where: { cohortId: params.id }
+      where: { cohortId: id }
     });
 
     // Recalculate users
@@ -82,7 +82,7 @@ export async function POST(
     if (users.length > 0) {
       await db.userCohort.createMany({
         data: users.map(user => ({
-          cohortId: params.id,
+          cohortId: id,
           userId: user.id
         })),
         skipDuplicates: true

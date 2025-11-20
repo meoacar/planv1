@@ -16,7 +16,7 @@ export async function DELETE(
     }
 
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!guild) {
@@ -30,14 +30,14 @@ export async function DELETE(
     // Delete member
     await prisma.guildMember.deleteMany({
       where: {
-        guildId: params.id,
-        userId: params.memberId,
+        guildId: id,
+        userId: memberId,
       },
     });
 
     // Update member count
     await prisma.guild.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { memberCount: { decrement: 1 } },
     });
 

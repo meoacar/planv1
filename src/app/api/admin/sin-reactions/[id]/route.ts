@@ -25,7 +25,7 @@ export async function PUT(
     const validated = updateSchema.parse(body)
 
     const reaction = await prisma.sinReaction.update({
-      where: { id: params.id },
+      where: { id: id },
       data: validated,
     })
 
@@ -53,7 +53,7 @@ export async function DELETE(
     }
 
     await prisma.sinReaction.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

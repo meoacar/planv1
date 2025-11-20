@@ -18,7 +18,7 @@ export async function DELETE(
     }
 
     const photo = await db.progressPhoto.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!photo) {
@@ -40,7 +40,7 @@ export async function DELETE(
 
     // Veritabanından sil
     await db.progressPhoto.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({ success: true });
@@ -67,7 +67,7 @@ export async function PATCH(
     }
 
     const photo = await db.progressPhoto.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!photo) {
@@ -82,7 +82,7 @@ export async function PATCH(
     const { weight, caption, type } = body;
 
     const updatedPhoto = await db.progressPhoto.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...(weight !== undefined && { weight: parseFloat(weight) }),
         ...(caption !== undefined && { caption }),

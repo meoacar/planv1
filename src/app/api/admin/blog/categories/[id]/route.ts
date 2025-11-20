@@ -24,12 +24,12 @@ export async function PUT(
     // Validation
     const validatedData = updateBlogCategorySchema.parse({
       ...body,
-      id: params.id,
+      id: id,
     })
 
     // Kategori var mı kontrol et
     const existingCategory = await db.blogCategory.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!existingCategory) {
@@ -44,7 +44,7 @@ export async function PUT(
       const slugExists = await db.blogCategory.findFirst({
         where: {
           slug: validatedData.slug,
-          id: { not: params.id },
+          id: { not: id },
         },
       })
 
@@ -61,7 +61,7 @@ export async function PUT(
       const nameExists = await db.blogCategory.findFirst({
         where: {
           name: validatedData.name,
-          id: { not: params.id },
+          id: { not: id },
         },
       })
 
@@ -84,7 +84,7 @@ export async function PUT(
 
     // Kategori güncelle
     const category = await db.blogCategory.update({
-      where: { id: params.id },
+      where: { id: id },
       data: updateData,
       include: {
         _count: {
@@ -134,7 +134,7 @@ export async function DELETE(
 
     // Kategori var mı kontrol et
     const category = await db.blogCategory.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         _count: {
           select: {
@@ -164,7 +164,7 @@ export async function DELETE(
 
     // Kategoriyi sil
     await db.blogCategory.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({

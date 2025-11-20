@@ -19,7 +19,7 @@ export async function DELETE(
     }
 
     await db.footerSocial.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

@@ -30,7 +30,7 @@ export async function POST(
 
     // Mesajı al
     const message = await db.contactMessage.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!message) {
@@ -42,7 +42,7 @@ export async function POST(
 
     // Yanıtı kaydet
     await db.contactMessage.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         response,
         status: 'responded',

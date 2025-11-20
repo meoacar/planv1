@@ -20,7 +20,7 @@ export async function POST(
 
     // Check if guild exists and is published
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!guild) {

@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!guild) {
@@ -30,7 +30,7 @@ export async function GET(
 
     const requests = await prisma.guildJoinRequest.findMany({
       where: {
-        guildId: params.id,
+        guildId: id,
         status: 'pending',
       },
       include: {

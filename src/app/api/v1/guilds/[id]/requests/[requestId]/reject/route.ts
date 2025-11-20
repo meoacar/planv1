@@ -16,7 +16,7 @@ export async function POST(
     }
 
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!guild) {
@@ -28,10 +28,10 @@ export async function POST(
     }
 
     const request = await prisma.guildJoinRequest.findUnique({
-      where: { id: params.requestId },
+      where: { id: requestId },
     });
 
-    if (!request || request.guildId !== params.id) {
+    if (!request || request.guildId !== id) {
       return errorResponse('NOT_FOUND', 'İstek bulunamadı', 404);
     }
 
@@ -41,7 +41,7 @@ export async function POST(
 
     // Update request status
     await prisma.guildJoinRequest.update({
-      where: { id: params.requestId },
+      where: { id: requestId },
       data: { status: 'rejected' },
     });
 

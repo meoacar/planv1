@@ -27,7 +27,7 @@ export async function POST(
     }
 
     // İtirafı kontrol et
-    const confession = await getConfessionById(params.id);
+    const confession = await getConfessionById(id);
 
     // Sadece kendi itirafının telafi planını kabul edebilir
     if (confession.userId !== session.user.id) {

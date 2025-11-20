@@ -12,7 +12,7 @@ export async function GET(
     
     const session = await auth();
     const group = await db.group.findUnique({
-      where: { slug: params.slug },
+      where: { slug: slug },
       include: {
         creator: {
           select: {
@@ -102,7 +102,7 @@ export async function DELETE(
     }
 
     const group = await db.group.findUnique({
-      where: { slug: params.slug },
+      where: { slug: slug },
     });
 
     if (!group) {

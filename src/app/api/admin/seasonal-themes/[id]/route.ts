@@ -47,7 +47,7 @@ export async function GET(
     
     /*
     const theme = await db.seasonalTheme.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
     */
 
@@ -125,7 +125,7 @@ export async function PUT(
     
     /*
     const existingTheme = await db.seasonalTheme.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
     */
 
@@ -167,13 +167,13 @@ export async function PUT(
 
     // Mock response
     const theme = {
-      id: params.id,
+      id: id,
       ...updateData,
     };
 
     /*
     const theme = await db.seasonalTheme.update({
-      where: { id: params.id },
+      where: { id: id },
       data: updateData,
     });
     */
@@ -225,7 +225,7 @@ export async function DELETE(
     
     /*
     const existingTheme = await db.seasonalTheme.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
     */
 
@@ -238,7 +238,7 @@ export async function DELETE(
 
     /*
     await db.seasonalTheme.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
     */
 

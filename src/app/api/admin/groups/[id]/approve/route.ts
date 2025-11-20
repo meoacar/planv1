@@ -31,7 +31,7 @@ export async function POST(
     }
 
     const group = await db.group.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: "published",
         publishedAt: new Date(),

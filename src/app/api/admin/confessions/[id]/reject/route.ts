@@ -56,7 +56,7 @@ export async function POST(
 
     // İtirafı kontrol et
     const existingConfession = await db.confession.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       select: { userId: true, status: true, content: true },
     });
 
@@ -69,7 +69,7 @@ export async function POST(
 
     // İtirafı reddet
     const confession = await db.confession.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: "rejected",
         rejectionReason: reason,

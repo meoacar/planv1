@@ -41,7 +41,7 @@ export async function POST(
       );
     }
 
-    await reportConfession(params.id, session.user.id, reason);
+    await reportConfession(id, session.user.id, reason);
 
     return NextResponse.json({
       success: true,

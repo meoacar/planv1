@@ -16,7 +16,7 @@ export async function PATCH(
     }
 
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!guild) {
@@ -36,8 +36,8 @@ export async function PATCH(
 
     const updatedMember = await prisma.guildMember.updateMany({
       where: {
-        guildId: params.id,
-        userId: params.memberId,
+        guildId: id,
+        userId: memberId,
       },
       data: { role },
     });

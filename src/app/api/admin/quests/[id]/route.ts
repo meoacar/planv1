@@ -35,7 +35,7 @@ export async function PATCH(
     const data = questSchema.parse(body)
 
     const quest = await prisma.dailyQuest.update({
-      where: { id: params.id },
+      where: { id: id },
       data,
     })
 
@@ -83,7 +83,7 @@ export async function DELETE(
     }
 
     await prisma.dailyQuest.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({

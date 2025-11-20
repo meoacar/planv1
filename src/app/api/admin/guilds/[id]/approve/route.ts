@@ -16,7 +16,7 @@ export async function POST(
     }
 
     const guild = await prisma.guild.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { leader: true },
     });
 
@@ -26,7 +26,7 @@ export async function POST(
 
     // Update guild status
     const updatedGuild = await prisma.guild.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: 'published',
         publishedAt: new Date(),

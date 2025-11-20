@@ -25,7 +25,7 @@ export async function POST(
       );
     }
 
-    const result = await addEmpathy(params.id, session.user.id);
+    const result = await addEmpathy(id, session.user.id);
 
     return NextResponse.json({
       success: true,
@@ -100,7 +100,7 @@ export async function DELETE(
       );
     }
 
-    const result = await removeEmpathy(params.id, session.user.id);
+    const result = await removeEmpathy(id, session.user.id);
 
     return NextResponse.json({
       success: true,

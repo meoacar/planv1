@@ -19,7 +19,7 @@ export async function POST(
     // Blog var mı kontrol et
     const existingPost = await db.blogPost.findUnique({
       where: { 
-        id: params.id,
+        id: id,
         deletedAt: null,
       },
     })
@@ -41,7 +41,7 @@ export async function POST(
 
     // Blog yayınla
     const blogPost = await db.blogPost.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: 'PUBLISHED',
         publishedAt: new Date(),

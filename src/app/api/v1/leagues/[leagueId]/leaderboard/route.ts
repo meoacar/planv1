@@ -12,7 +12,7 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get('limit') || '100');
 
-    const leaderboard = await gamificationService.getLeagueLeaderboard(params.leagueId, limit);
+    const leaderboard = await gamificationService.getLeagueLeaderboard(leagueId, limit);
     return apiResponse.success(leaderboard);
   } catch (error: any) {
     console.error('GET /api/v1/leagues/[leagueId]/leaderboard error:', error);

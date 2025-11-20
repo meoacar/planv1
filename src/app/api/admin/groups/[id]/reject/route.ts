@@ -39,7 +39,7 @@ export async function POST(
     const validated = rejectSchema.parse(body);
 
     const group = await db.group.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         status: "rejected",
         rejectionReason: validated.reason,

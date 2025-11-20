@@ -16,7 +16,7 @@ export async function GET(
     }
 
     const cohort = await db.cohortDefinition.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         users: {
           include: {

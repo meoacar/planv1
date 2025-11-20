@@ -28,7 +28,7 @@ export async function POST(
     // Blog var mı kontrol et
     const existingPost = await db.blogPost.findUnique({
       where: { 
-        id: params.id,
+        id,
         deletedAt: null,
       },
     })
@@ -54,7 +54,7 @@ export async function POST(
         where: {
           featured: true,
           deletedAt: null,
-          id: { not: params.id },
+          id: { not: id },
         },
       })
 
@@ -68,7 +68,7 @@ export async function POST(
 
     // Blog öne çıkar/kaldır
     const blogPost = await db.blogPost.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         featured: validatedData.featured,
         featuredOrder: validatedData.featured ? validatedData.featuredOrder : null,
