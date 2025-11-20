@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
 const pageSchema = z.object({
@@ -70,6 +71,10 @@ export async function PUT(
       },
     })
 
+    // Cache'i temizle
+    revalidatePath(`/${page.slug}`)
+    revalidatePath('/sitemap.xml')
+
     return NextResponse.json(page)
   } catch (error: any) {
     console.error('Page update error:', error)
@@ -97,9 +102,20 @@ export async function DELETE(
       )
     }
 
+    const page = await db.page.findUnique({
+      where: { id: id },
+      select: { slug: true },
+    })
+
     await db.page.delete({
       where: { id: id },
     })
+
+    // Cache'i temizle
+    if (page) {
+      revalidatePath(`/${page.slug}`)
+      revalidatePath('/sitemap.xml')
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
