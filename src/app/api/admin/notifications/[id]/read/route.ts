@@ -24,7 +24,7 @@ export async function PATCH(
         userId: session.user.id
       },
       data: {
-        isRead: true
+        read: true
       }
     })
 
