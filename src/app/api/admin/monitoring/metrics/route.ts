@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getRedisClient } from "@/lib/redis";
-import { getQueue } from "@/lib/queue";
+// import { getRedisClient } from "@/lib/redis";
+// import { getQueue } from "@/lib/queue";
 
 /**
  * Admin Monitoring Metrics Endpoint
@@ -144,36 +144,37 @@ async function getAIMetrics() {
  * Get queue-related metrics
  */
 async function getQueueMetrics() {
-  try {
-    const queue = await getQueue("ai-response-generation");
-    
-    if (!queue) {
-      return {
-        queueSize: 0,
-        active: 0,
-        completed: 0,
-        failed: 0,
-        delayed: 0,
-      };
-    }
+  // TODO: Re-enable when queue is properly configured
+  // try {
+  //   const queue = await getQueue("ai-response-generation");
+  //   
+  //   if (!queue) {
+  //     return {
+  //       queueSize: 0,
+  //       active: 0,
+  //       completed: 0,
+  //       failed: 0,
+  //       delayed: 0,
+  //     };
+  //   }
 
-    const [waiting, active, completed, failed, delayed] = await Promise.all([
-      queue.getWaitingCount(),
-      queue.getActiveCount(),
-      queue.getCompletedCount(),
-      queue.getFailedCount(),
-      queue.getDelayedCount(),
-    ]);
+  //   const [waiting, active, completed, failed, delayed] = await Promise.all([
+  //     queue.getWaitingCount(),
+  //     queue.getActiveCount(),
+  //     queue.getCompletedCount(),
+  //     queue.getFailedCount(),
+  //     queue.getDelayedCount(),
+  //   ]);
 
-    return {
-      queueSize: waiting,
-      active,
-      completed,
-      failed,
-      delayed,
-    };
-  } catch (error) {
-    console.error("[Monitoring] Queue metrics error:", error);
+  //   return {
+  //     queueSize: waiting,
+  //     active,
+  //     completed,
+  //     failed,
+  //     delayed,
+  //   };
+  // } catch (error) {
+  //   console.error("[Monitoring] Queue metrics error:", error);
     return {
       queueSize: 0,
       active: 0,
@@ -181,28 +182,29 @@ async function getQueueMetrics() {
       failed: 0,
       delayed: 0,
     };
-  }
+  // }
 }
 
 /**
  * Get system-related metrics
  */
 async function getSystemMetrics() {
-  const redis = await getRedisClient();
+  // TODO: Re-enable when redis is properly configured
+  // const redis = await getRedisClient();
   
   let redisStatus = "not_configured";
   let redisMemory = 0;
   
-  if (redis) {
-    try {
-      const info = await redis.info("memory");
-      const memoryMatch = info.match(/used_memory:(\d+)/);
-      redisMemory = memoryMatch ? parseInt(memoryMatch[1]) : 0;
-      redisStatus = "connected";
-    } catch (error) {
-      redisStatus = "error";
-    }
-  }
+  // if (redis) {
+  //   try {
+  //     const info = await redis.info("memory");
+  //     const memoryMatch = info.match(/used_memory:(\d+)/);
+  //     redisMemory = memoryMatch ? parseInt(memoryMatch[1]) : 0;
+  //     redisStatus = "connected";
+  //   } catch (error) {
+  //     redisStatus = "error";
+  //   }
+  // }
 
   return {
     uptime: process.uptime(),
