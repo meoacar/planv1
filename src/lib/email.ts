@@ -13,7 +13,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
-      subject: 'Şifre Sıfırlama Talebi - ZayiflamaPlanim.com',
+      subject: 'Şifre Sıfırlama - ZayiflamaPlanim.com',
       html: `
         <!DOCTYPE html>
         <html>
@@ -295,7 +295,7 @@ export async function sendWelcomeEmail(email: string, name?: string) {
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
-      subject: `${name ? name + ', ' : ''}Hoş Geldin! 🎉 - ZayiflamaPlanim.com`,
+      subject: `${name ? name + ', ' : ''}Zayıflama Yolculuğun Başlıyor! - ZayiflamaPlanim.com`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -303,153 +303,102 @@ export async function sendWelcomeEmail(email: string, name?: string) {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.6;
-                color: #1f2937;
+              * {
                 margin: 0;
                 padding: 0;
-                background: linear-gradient(135deg, #f5f3ff 0%, #fce7f3 50%, #fff7ed 100%);
+                box-sizing: border-box;
               }
-              .email-wrapper {
-                padding: 40px 20px;
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.5;
+                color: #1d1d1f;
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f7;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
               }
-              .container {
+              .email-container {
                 max-width: 600px;
                 margin: 0 auto;
-                background: white;
-                border-radius: 24px;
-                overflow: hidden;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+                background: #ffffff;
               }
-              .hero-header {
-                background: linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f97316 100%);
-                padding: 60px 40px;
+              .hero-section {
+                padding: 0;
                 text-align: center;
-                position: relative;
                 overflow: hidden;
               }
-              .hero-header::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-                animation: pulse 3s ease-in-out infinite;
-              }
-              @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 0.5; }
-                50% { transform: scale(1.1); opacity: 0.8; }
-              }
-              .hero-emoji {
-                font-size: 80px;
-                margin-bottom: 20px;
+              .hero-section img {
                 display: block;
-                animation: celebrate 1s ease-in-out infinite;
+                width: 100%;
+                height: auto;
               }
-              @keyframes celebrate {
-                0%, 100% { transform: rotate(-5deg) scale(1); }
-                50% { transform: rotate(5deg) scale(1.1); }
-              }
-              .hero-title {
-                color: white;
-                font-size: 36px;
-                font-weight: 800;
-                margin: 0;
-                text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                position: relative;
-                z-index: 1;
-              }
-              .hero-subtitle {
-                color: rgba(255,255,255,0.95);
-                font-size: 18px;
-                margin: 12px 0 0 0;
-                font-weight: 500;
-                position: relative;
-                z-index: 1;
-              }
-              .content {
+              .content-section {
                 padding: 50px 40px;
               }
-              .greeting {
-                font-size: 20px;
-                font-weight: 700;
-                color: #1f2937;
-                margin-bottom: 20px;
-              }
-              .text {
-                color: #4b5563;
-                font-size: 16px;
-                line-height: 1.8;
-                margin: 16px 0;
-              }
-              .feature-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-                margin: 35px 0;
-              }
-              .feature-card {
-                background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-                padding: 25px;
-                border-radius: 16px;
+              .welcome-text {
+                font-size: 17px;
+                color: #1d1d1f;
+                line-height: 1.6;
+                margin-bottom: 30px;
                 text-align: center;
-                border: 2px solid #e5e7eb;
+              }
+              .cta-button {
+                display: inline-block;
+                background: linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f59e0b 100%);
+                color: #ffffff;
+                font-size: 17px;
+                font-weight: 600;
+                text-decoration: none;
+                padding: 16px 40px;
+                border-radius: 980px;
+                margin: 20px 0 40px;
+                box-shadow: 0 4px 20px rgba(147, 51, 234, 0.3);
                 transition: all 0.3s ease;
               }
-              .feature-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-                border-color: #ec4899;
-              }
-              .feature-icon {
-                font-size: 48px;
-                margin-bottom: 12px;
-                display: block;
-              }
-              .feature-title {
-                font-size: 16px;
-                font-weight: 700;
-                color: #1f2937;
-                margin-bottom: 8px;
-              }
-              .feature-desc {
-                font-size: 13px;
-                color: #6b7280;
-                line-height: 1.5;
-              }
-              .button-container {
+              .cta-container {
                 text-align: center;
+              }
+              .features {
                 margin: 40px 0;
               }
-              .button {
-                display: inline-block;
-                background: linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f97316 100%);
-                color: white;
-                padding: 18px 48px;
-                text-decoration: none;
+              .feature-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 16px;
+                margin-bottom: 24px;
+                padding: 20px;
+                background: #f5f5f7;
                 border-radius: 16px;
-                font-weight: 700;
-                font-size: 16px;
-                box-shadow: 0 10px 30px rgba(147, 51, 234, 0.4);
-                transition: all 0.3s ease;
               }
-              .button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 15px 40px rgba(147, 51, 234, 0.5);
+              .feature-icon {
+                font-size: 32px;
+                flex-shrink: 0;
               }
-              .stats-box {
-                background: linear-gradient(135deg, #ede9fe 0%, #fce7f3 100%);
+              .feature-content {
+                flex: 1;
+              }
+              .feature-title {
+                font-size: 17px;
+                font-weight: 600;
+                color: #1d1d1f;
+                margin-bottom: 4px;
+              }
+              .feature-desc {
+                font-size: 15px;
+                color: #6e6e73;
+                line-height: 1.5;
+              }
+              .stats-section {
+                background: linear-gradient(135deg, #f5f3ff 0%, #fef3c7 100%);
                 padding: 30px;
-                border-radius: 16px;
-                margin: 35px 0;
+                border-radius: 20px;
+                margin: 40px 0;
                 text-align: center;
               }
               .stats-grid {
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: repeat(3, 1fr);
                 gap: 20px;
                 margin-top: 20px;
               }
@@ -457,152 +406,141 @@ export async function sendWelcomeEmail(email: string, name?: string) {
                 text-align: center;
               }
               .stat-number {
-                font-size: 32px;
-                font-weight: 800;
-                background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+                font-size: 36px;
+                font-weight: 700;
+                background: linear-gradient(135deg, #9333ea 0%, #f59e0b 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
+                margin-bottom: 4px;
               }
               .stat-label {
                 font-size: 13px;
-                color: #6b7280;
-                margin-top: 5px;
+                color: #6e6e73;
+                font-weight: 500;
               }
-              .footer {
-                background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+              .footer-section {
+                background: #f5f5f7;
                 padding: 40px;
                 text-align: center;
+                border-radius: 40px 40px 0 0;
               }
               .footer-brand {
-                color: white;
-                font-size: 24px;
-                font-weight: 800;
-                margin-bottom: 12px;
-                background: linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f97316 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+                font-size: 19px;
+                font-weight: 700;
+                color: #1d1d1f;
+                margin-bottom: 8px;
               }
               .footer-tagline {
-                color: #9ca3af;
-                font-size: 14px;
-                margin-bottom: 25px;
+                font-size: 15px;
+                color: #6e6e73;
+                margin-bottom: 24px;
               }
               .footer-links {
                 margin: 20px 0;
               }
               .footer-links a {
-                color: #d1d5db;
+                color: #06c;
                 text-decoration: none;
-                margin: 0 12px;
                 font-size: 14px;
-                transition: color 0.3s;
-              }
-              .footer-links a:hover {
-                color: #ec4899;
+                margin: 0 12px;
               }
               .footer-note {
-                color: #6b7280;
                 font-size: 12px;
-                margin-top: 25px;
-                line-height: 1.6;
+                color: #86868b;
+                margin-top: 20px;
+                line-height: 1.5;
               }
               @media only screen and (max-width: 600px) {
-                .feature-grid, .stats-grid {
+                .content-section {
+                  padding: 40px 20px;
+                }
+                .stats-grid {
                   grid-template-columns: 1fr;
+                  gap: 16px;
                 }
               }
             </style>
           </head>
           <body>
-            <div class="email-wrapper">
-              <div class="container">
-                <div class="hero-header">
-                  <span class="hero-emoji">🎉</span>
-                  <h1 class="hero-title">Hoş Geldin${name ? ` ${name}` : ''}!</h1>
-                  <p class="hero-subtitle">Yeni bir başlangıç, yeni bir sen!</p>
-                </div>
-                
-                <div class="content">
-                  <p class="greeting">Merhaba ve hoş geldin! 👋</p>
-                  
-                  <p class="text">
-                    <strong>ZayiflamaPlanim.com</strong> ailesine katıldığın için çok mutluyuz! 
-                    Burada gerçek insanların gerçek başarı hikayelerini bulacak, kendi yolculuğunu paylaşacak 
-                    ve topluluk desteğiyle hedeflerine ulaşacaksın. 💪
-                  </p>
+            <div class="email-container">
+              <!-- Hero Section -->
+              <div class="hero-section">
+                <img src="https://i.imgur.com/kXLlJrD.png" alt="ZayiflamaPlanim.com - Birlikte Başarıyoruz, Birlikte Güçlüyüz!" style="max-width: 100%; height: auto; display: block; width: 600px;" />
+              </div>
 
-                  <div class="stats-box">
-                    <h3 style="margin: 0 0 10px 0; color: #7c3aed; font-size: 18px;">🌟 Topluluğumuz</h3>
-                    <div class="stats-grid">
-                      <div class="stat-item">
-                        <div class="stat-number">67</div>
-                        <div class="stat-label">Rozet</div>
-                      </div>
-                      <div class="stat-item">
-                        <div class="stat-number">∞</div>
-                        <div class="stat-label">Görev</div>
-                      </div>
-                      <div class="stat-item">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">Destek</div>
-                      </div>
+              <!-- Content Section -->
+              <div class="content-section">
+                <p class="welcome-text">
+                  <strong>ZayiflamaPlanim.com</strong> ailesine katıldığın için çok mutluyuz. 
+                  Burada gerçek insanların gerçek başarı hikayelerini bulacak, kendi yolculuğunu paylaşacak 
+                  ve topluluk desteğiyle hedeflerine ulaşacaksın.
+                </p>
+
+                <!-- Stats -->
+                <div class="stats-section">
+                  <div class="stats-grid">
+                    <div class="stat-item">
+                      <div class="stat-number">67</div>
+                      <div class="stat-label">Rozet Sistemi</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-number">∞</div>
+                      <div class="stat-label">Günlük Görev</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-number">24/7</div>
+                      <div class="stat-label">Topluluk Desteği</div>
                     </div>
                   </div>
-                  
-                  <h3 style="color: #1f2937; font-size: 20px; margin: 35px 0 20px 0;">🚀 Hemen Başla</h3>
-                  
-                  <div class="feature-grid">
-                    <div class="feature-card">
-                      <span class="feature-icon">📋</span>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="cta-container">
+                  <a href="${APP_URL}/dashboard" class="cta-button">Hemen Başla</a>
+                </div>
+
+                <!-- Features -->
+                <div class="features">
+                  <div class="feature-item">
+                    <span class="feature-icon">📋</span>
+                    <div class="feature-content">
                       <div class="feature-title">Planları Keşfet</div>
                       <div class="feature-desc">Binlerce gerçek plan arasından sana uygun olanı bul</div>
                     </div>
-                    <div class="feature-card">
-                      <span class="feature-icon">✍️</span>
-                      <div class="feature-title">Planını Paylaş</div>
-                      <div class="feature-desc">Kendi başarı hikayeni oluştur ve paylaş</div>
-                    </div>
-                    <div class="feature-card">
-                      <span class="feature-icon">📊</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-content">
                       <div class="feature-title">İlerlemeni Takip Et</div>
                       <div class="feature-desc">Kilo, su, fotoğraf takibi ile gelişimini gör</div>
                     </div>
-                    <div class="feature-card">
-                      <span class="feature-icon">👥</span>
+                  </div>
+                  <div class="feature-item">
+                    <span class="feature-icon">👥</span>
+                    <div class="feature-content">
                       <div class="feature-title">Topluluğa Katıl</div>
                       <div class="feature-desc">Gruplar ve loncalarla motivasyon bul</div>
                     </div>
                   </div>
-                  
-                  <div class="button-container">
-                    <a href="${APP_URL}/dashboard" class="button">
-                      🎯 Hemen Başla
-                    </a>
-                  </div>
-                  
-                  <p class="text" style="text-align: center; color: #6b7280; font-size: 15px;">
-                    Sorularını veya önerilerini bizimle paylaşmaktan çekinme!<br>
-                    Başarı yolculuğunda yanındayız. 🌟
-                  </p>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <div class="footer-section">
+                <div class="footer-brand">ZayiflamaPlanim.com</div>
+                <div class="footer-tagline">Birlikte Başarıyoruz 💪</div>
+                
+                <div class="footer-links">
+                  <a href="${APP_URL}">Ana Sayfa</a>
+                  <a href="${APP_URL}/kesfet">Keşfet</a>
+                  <a href="${APP_URL}/blog">Blog</a>
+                  <a href="${APP_URL}/iletisim">İletişim</a>
                 </div>
                 
-                <div class="footer">
-                  <div class="footer-brand">ZayiflamaPlanim.com</div>
-                  <div class="footer-tagline">💪 Birlikte Başarıyoruz, Birlikte Güçlüyüz!</div>
-                  
-                  <div class="footer-links">
-                    <a href="${APP_URL}">🏠 Ana Sayfa</a>
-                    <a href="${APP_URL}/kesfet">🔍 Keşfet</a>
-                    <a href="${APP_URL}/blog">📚 Blog</a>
-                    <a href="${APP_URL}/iletisim">💬 İletişim</a>
-                  </div>
-                  
-                  <div class="footer-note">
-                    Bu e-posta otomatik olarak gönderilmiştir, lütfen yanıtlamayın.<br>
-                    Sorularınız için <a href="${APP_URL}/iletisim" style="color: #ec4899;">iletişim sayfamızı</a> ziyaret edebilirsiniz.
-                  </div>
+                <div class="footer-note">
+                  Bu e-posta otomatik olarak gönderilmiştir.<br>
+                  Sorularınız için <a href="${APP_URL}/iletisim" style="color: #06c;">iletişim sayfamızı</a> ziyaret edebilirsiniz.
                 </div>
               </div>
             </div>
