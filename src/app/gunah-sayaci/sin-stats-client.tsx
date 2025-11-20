@@ -75,18 +75,18 @@ export function SinStatsClient() {
 
       {/* Tabs */}
       <Tabs defaultValue="stats" className="space-y-6">
-        <div className="overflow-x-auto -mx-4 px-4 pb-2">
-          <TabsList className="inline-flex w-auto min-w-full md:min-w-0 gap-1">
-            <TabsTrigger value="stats" className="whitespace-nowrap">📊 İstatistikler</TabsTrigger>
-            <TabsTrigger value="streak" className="whitespace-nowrap">🔥 Streak</TabsTrigger>
-            <TabsTrigger value="calendar" className="whitespace-nowrap">📅 Takvim</TabsTrigger>
-            <TabsTrigger value="summary" className="whitespace-nowrap">📈 Özet</TabsTrigger>
-            <TabsTrigger value="badges" className="whitespace-nowrap">🏆 Rozetler</TabsTrigger>
-            <TabsTrigger value="challenges" className="whitespace-nowrap">🎯 Challenge</TabsTrigger>
-            <TabsTrigger value="leaderboard" className="whitespace-nowrap">🏅 Liderlik</TabsTrigger>
-            <TabsTrigger value="friends" className="whitespace-nowrap">👥 Arkadaşlar</TabsTrigger>
-            <TabsTrigger value="ai" className="whitespace-nowrap">🤖 AI Koç</TabsTrigger>
-            <TabsTrigger value="settings" className="whitespace-nowrap">⚙️ Ayarlar</TabsTrigger>
+        <div className="overflow-x-auto -mx-4 px-4 pb-2 scrollbar-hide">
+          <TabsList className="inline-flex w-auto justify-start gap-1 flex-nowrap">
+            <TabsTrigger value="stats" className="whitespace-nowrap flex-shrink-0">📊 İstatistikler</TabsTrigger>
+            <TabsTrigger value="streak" className="whitespace-nowrap flex-shrink-0">🔥 Streak</TabsTrigger>
+            <TabsTrigger value="calendar" className="whitespace-nowrap flex-shrink-0">📅 Takvim</TabsTrigger>
+            <TabsTrigger value="summary" className="whitespace-nowrap flex-shrink-0">📈 Özet</TabsTrigger>
+            <TabsTrigger value="badges" className="whitespace-nowrap flex-shrink-0">🏆 Rozetler</TabsTrigger>
+            <TabsTrigger value="challenges" className="whitespace-nowrap flex-shrink-0">🎯 Challenge</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="whitespace-nowrap flex-shrink-0">🏅 Liderlik</TabsTrigger>
+            <TabsTrigger value="friends" className="whitespace-nowrap flex-shrink-0">👥 Arkadaşlar</TabsTrigger>
+            <TabsTrigger value="ai" className="whitespace-nowrap flex-shrink-0">🤖 AI Koç</TabsTrigger>
+            <TabsTrigger value="settings" className="whitespace-nowrap flex-shrink-0">⚙️ Ayarlar</TabsTrigger>
           </TabsList>
         </div>
 
