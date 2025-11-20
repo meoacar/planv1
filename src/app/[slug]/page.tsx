@@ -63,7 +63,8 @@ export default async function DynamicPage({ params }: PageProps) {
               {page.slug === 'gizlilik-politikasi' && '🔒 Gizlilik'}
               {page.slug === 'kullanim-kosullari' && '📋 Koşullar'}
               {page.slug === 'iletisim' && '📧 İletişim'}
-              {!['hakkimizda', 'gizlilik-politikasi', 'kullanim-kosullari', 'iletisim'].includes(page.slug) && '📄 Sayfa'}
+              {page.slug === 'kariyer' && '💼 Kariyer'}
+              {!['hakkimizda', 'gizlilik-politikasi', 'kullanim-kosullari', 'iletisim', 'kariyer'].includes(page.slug) && '📄 Sayfa'}
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
