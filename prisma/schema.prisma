@@ -1625,6 +1625,8 @@ enum NotificationType {
   plan_approved
   plan_rejected
   message
+  confession_approved
+  confession_rejected
 }
 
 enum RecipeCategory {
