@@ -614,10 +614,10 @@ export default async function HomePage() {
             <Crown className="w-4 h-4 mr-2" />
             Özel Özellikler
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white">
-            Neden ZayiflamaPlanim.com?
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 text-slate-900 dark:text-white px-4">
+            Neden <span className="break-words">ZayiflamaPlanim.com?</span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Sadece bir uygulama değil, bir yaşam tarzı değişimi 🌟
           </p>
         </div>
