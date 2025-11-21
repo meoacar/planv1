@@ -12,6 +12,7 @@ import { Loader2, X, Plus, Copy, Check } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
+import { TemplateSelector } from '@/components/plan/template-selector'
 
 interface DailyMenuTabsProps {
   dayCount: number
@@ -583,6 +584,58 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
     return Math.round((completed / total) * 100)
   }
 
+  const handleTemplateSelect = (template: any) => {
+    // Fill form with template data
+    if (formRef.current) {
+      const titleInput = formRef.current.querySelector('#title') as HTMLInputElement
+      const descInput = formRef.current.querySelector('#description') as HTMLTextAreaElement
+      const durationInput = formRef.current.querySelector('#duration') as HTMLInputElement
+      const difficultySelect = formRef.current.querySelector('#difficulty') as HTMLSelectElement
+      const targetWeightInput = formRef.current.querySelector('#targetWeightLoss') as HTMLInputElement
+      const tagsInput = formRef.current.querySelector('#tags') as HTMLInputElement
+
+      if (titleInput) {
+        titleInput.value = template.name
+        setTitleLength(template.name.length)
+      }
+      if (descInput) {
+        descInput.value = template.description
+        setDescriptionLength(template.description.length)
+      }
+      if (durationInput) {
+        durationInput.value = template.duration.toString()
+        setDuration(template.duration)
+      }
+      if (difficultySelect) {
+        difficultySelect.value = template.difficulty
+        setDifficulty(template.difficulty)
+      }
+      if (targetWeightInput && template.targetWeightLoss) {
+        targetWeightInput.value = template.targetWeightLoss.toString()
+      }
+      if (tagsInput && template.tags) {
+        tagsInput.value = template.tags
+      }
+    }
+
+    // Fill day data
+    if (template.days && template.days.length > 0) {
+      const newDayData: Record<number, any> = {}
+      template.days.forEach((day: any) => {
+        newDayData[day.dayNumber] = {
+          breakfast: day.breakfast || '',
+          snack1: day.snack1 || '',
+          lunch: day.lunch || '',
+          snack2: day.snack2 || '',
+          dinner: day.dinner || '',
+          notes: day.notes || '',
+        }
+      })
+      setDayData(newDayData)
+      setDayCount(template.days.length)
+    }
+  }
+
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       {/* Hidden planId for editing */}
@@ -627,6 +680,23 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
           </div>
         </CardContent>
       </Card>
+      {/* Template Selector - Only show for new plans */}
+      {!existingPlan && (
+        <Card className="border-2 border-dashed border-primary/30 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-950/20 dark:to-pink-950/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              ✨ Hızlı Başlangıç
+            </CardTitle>
+            <CardDescription>
+              Hazır şablonlardan birini seçerek hızlıca başlayın veya sıfırdan oluşturun
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TemplateSelector onSelectTemplate={handleTemplateSelect} />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Basic Info */}
       <Card>
         <CardHeader>
