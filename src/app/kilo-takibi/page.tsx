@@ -72,58 +72,58 @@ export default async function WeightTrackingPage() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
+      <main className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-              <Target className="h-10 w-10 text-primary" />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 flex items-center gap-2 sm:gap-3">
+              <Target className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-primary" />
               Kilo Takibi
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Kilonu düzenli kaydet, ilerlemeni gör!
             </p>
           </div>
-          <Button asChild variant="outline">
-            <Link href="/dashboard">← Dashboard'a Dön</Link>
+          <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
+            <Link href="/dashboard">← Dashboard</Link>
           </Button>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
           <Card className="shadow-lg border-2">
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Mevcut Kilo
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardDescription className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <Target className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Mevcut </span>Kilo
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold">
+              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold">
                 {currentWeight ? `${currentWeight} kg` : '--'}
               </p>
             </CardContent>
           </Card>
 
           <Card className="shadow-lg">
-            <CardHeader className="pb-3">
-              <CardDescription className="flex items-center gap-2">
-                <Award className="h-4 w-4" />
-                Toplam Kayıp
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardDescription className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <Award className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Toplam </span>Kayıp
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className={`text-4xl font-bold flex items-center gap-2 ${
+              <p className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-1 sm:gap-2 ${
                 totalLoss && totalLoss > 0 ? 'text-green-600' : ''
               }`}>
                 {totalLoss && totalLoss > 0 ? (
                   <>
-                    <TrendingDown className="h-6 w-6" />
+                    <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                     {totalLoss.toFixed(1)} kg
                   </>
                 ) : totalLoss && totalLoss < 0 ? (
                   <>
-                    <TrendingUp className="h-6 w-6 text-red-600" />
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-600" />
                     {Math.abs(totalLoss).toFixed(1)} kg
                   </>
                 ) : '--'}
@@ -132,22 +132,22 @@ export default async function WeightTrackingPage() {
           </Card>
 
           <Card className="shadow-lg">
-            <CardHeader className="pb-3">
-              <CardDescription>Bu Hafta</CardDescription>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardDescription className="text-xs sm:text-sm">Bu Hafta</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className={`text-4xl font-bold flex items-center gap-2 ${
+              <p className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-1 sm:gap-2 ${
                 weekChange && weekChange < 0 ? 'text-green-600' : 
                 weekChange && weekChange > 0 ? 'text-red-600' : ''
               }`}>
                 {weekChange ? (
                   <>
-                    {weekChange < 0 ? <TrendingDown className="h-6 w-6" /> : <TrendingUp className="h-6 w-6" />}
+                    {weekChange < 0 ? <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" /> : <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />}
                     {Math.abs(weekChange).toFixed(1)} kg
                   </>
                 ) : (
                   <>
-                    <Minus className="h-6 w-6" />
+                    <Minus className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                     --
                   </>
                 )}
@@ -156,20 +156,20 @@ export default async function WeightTrackingPage() {
           </Card>
 
           <Card className="shadow-lg">
-            <CardHeader className="pb-3">
-              <CardDescription>Hedefe Kalan</CardDescription>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardDescription className="text-xs sm:text-sm">Hedefe Kalan</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-orange-600">
+              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-600">
                 {remaining && remaining > 0 ? `${remaining.toFixed(1)} kg` : '--'}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column - Form */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* Add Weight Form */}
             <Card className="shadow-lg border-2 border-primary/20">
               <CardHeader>
@@ -216,7 +216,7 @@ export default async function WeightTrackingPage() {
           </div>
 
           {/* Right Column - Chart & History */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Weight Chart - Basit görselleştirme */}
             <Card className="shadow-lg">
               <CardHeader>

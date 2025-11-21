@@ -683,6 +683,24 @@ export function Navbar() {
               </Link>
               
               <Link 
+                href="/su-takibi" 
+                className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="text-xl">💧</span>
+                <span className="font-medium">Su Takibi</span>
+              </Link>
+              
+              <Link 
+                href="/kilo-takibi" 
+                className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="text-xl">⚖️</span>
+                <span className="font-medium">Kilo Takibi</span>
+              </Link>
+              
+              <Link 
                 href="/magaza" 
                 className="flex items-center gap-3 px-4 py-3 hover:bg-accent rounded-lg transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
