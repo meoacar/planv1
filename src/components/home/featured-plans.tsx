@@ -52,7 +52,17 @@ export function FeaturedPlans() {
         const response = await fetch('/api/plans/explore?limit=3&sort=popular')
         if (response.ok) {
           const data = await response.json()
-          setPlans(data.plans || [])
+          console.log('API Response:', data) // Debug
+          
+          // API'den gelen veriyi normalize et
+          const normalizedPlans = (data.plans || []).map((plan: any) => ({
+            ...plan,
+            _count: plan._count || { likes: 0, comments: 0 },
+            likesCount: plan.likesCount || plan._count?.likes || 0,
+            commentsCount: plan.commentsCount || plan._count?.comments || 0
+          }))
+          
+          setPlans(normalizedPlans)
         }
       } catch (error) {
         console.error('Planlar yüklenemedi:', error)
