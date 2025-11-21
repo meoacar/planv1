@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
 import { db } from '@/lib/db'
 import { signIn } from '@/lib/auth'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export async function registerAction(formData: FormData) {
   const email = formData.get('email') as string
@@ -44,7 +45,7 @@ export async function registerAction(formData: FormData) {
   const passwordHash = await bcrypt.hash(password, 10)
 
   // Create user
-  await db.user.create({
+  const user = await db.user.create({
     data: {
       email,
       passwordHash,
@@ -54,6 +55,12 @@ export async function registerAction(formData: FormData) {
     },
   })
 
+  // Send welcome email (non-blocking)
+  sendWelcomeEmail(user.email, user.name || undefined).catch((error) => {
+    console.error('Welcome email failed:', error)
+    // Don't block registration if email fails
+  })
+
   // Auto login after registration
   await signIn('credentials', {
     email,
@@ -61,5 +68,5 @@ export async function registerAction(formData: FormData) {
     redirect: false,
   })
 
-  redirect('/dashboard')
+  redirect('/onboarding/step-1')
 }
