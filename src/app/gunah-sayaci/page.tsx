@@ -5,8 +5,20 @@ import { SinStatsClient } from "./sin-stats-client";
 import { SinLanding } from "@/components/food-sins/sin-landing";
 
 export const metadata = {
-  title: "Yemek Günah Sayacı | Zayıflama Planı",
-  description: "Kaçamak davranışlarını mizahla takip et, farkındalığını artır!",
+  title: "Yemek Günah Sayacı - Kaçamak Takip Sistemi | Zayıflama Planı",
+  description: "Kaçamak yaptığın anları kaydet, streak'ini koru, rozetler kazan! Mizahi yaklaşımla farkındalığını artır ve hedeflerine ulaş. Günlük takip, istatistikler ve liderlik tablosu.",
+  keywords: "günah sayacı, kaçamak takibi, diyet takibi, yemek günlüğü, streak sistemi, diyet rozetleri, kilo takibi",
+  openGraph: {
+    title: "Yemek Günah Sayacı - Kaçamak Takip Sistemi",
+    description: "Kaçamak yaptığın anları kaydet, streak'ini koru, rozetler kazan! Mizahi yaklaşımla farkındalığını artır.",
+    type: "website",
+    locale: "tr_TR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yemek Günah Sayacı - Kaçamak Takip Sistemi",
+    description: "Kaçamak yaptığın anları kaydet, streak'ini koru, rozetler kazan!",
+  },
 };
 
 export default async function GunahSayaciPage() {
@@ -25,10 +37,10 @@ export default async function GunahSayaciPage() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.05),transparent_70%)]" />
               <div className="relative z-10 text-center">
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-                  🍰 Yemek Günah Sayacı 😈
+                  Yemek Günah Sayacı - Kaçamak Takip Sistemi
                 </h1>
                 <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto">
-                  Kaçamak yaparsan bile, kendinle dalga geçmeyi unutma!
+                  Kaçamak yaptığın anları kaydet, streak'ini koru ve rozetler kazan! 🍰😈
                 </p>
               </div>
             </div>
@@ -44,10 +56,10 @@ export default async function GunahSayaciPage() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.05),transparent_70%)]" />
               <div className="relative z-10 text-center">
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
-                  🍰 Yemek Günah Sayacı 😈
+                  Yemek Günah Sayacı - Kaçamak Takip Sistemi
                 </h1>
                 <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto">
-                  Kaçamak yaparsan bile, kendinle dalga geçmeyi unutma!
+                  Kaçamak yaptığın anları kaydet, streak'ini koru ve rozetler kazan! 🍰😈
                 </p>
               </div>
             </div>

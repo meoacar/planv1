@@ -75,7 +75,7 @@ export function SinLanding() {
       {/* Hero Section */}
       <div className="text-center space-y-6">
         <div className="inline-block">
-          <div className="text-6xl md:text-8xl mb-4 animate-bounce">🍰</div>
+          <div className="text-6xl md:text-8xl mb-4 animate-bounce" role="img" aria-label="Pasta emoji">🍰</div>
         </div>
         <h2 className="text-3xl md:text-5xl font-bold text-foreground">
           Kaçamak Yaparsan Bile,
@@ -84,10 +84,10 @@ export function SinLanding() {
             Kendinle Dalga Geç!
           </span>
         </h2>
-        <div className="text-5xl md:text-6xl">😈</div>
+        <div className="text-5xl md:text-6xl" role="img" aria-label="Şeytan emoji">😈</div>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Yemek günah sayacı ile kaçamak davranışlarını mizahla takip et,
-          farkındalığını artır ve hedeflerine ulaş!
+          farkındalığını artır ve hedeflerine ulaş! Günlük takip, streak sistemi, rozetler ve liderlik tablosu ile motivasyonunu artır.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
           <Button
