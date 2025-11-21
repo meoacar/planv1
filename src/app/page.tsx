@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/layout/footer'
+import { FeaturedPlans } from '@/components/home/featured-plans'
 import { getSetting } from '@/lib/settings'
 import { auth } from '@/lib/auth'
 import { 
@@ -118,6 +119,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Featured Plans Section - NEW! */}
+      <FeaturedPlans />
 
       {/* Features Highlight - Modern Cards */}
       <section className="relative py-16 md:py-20">
