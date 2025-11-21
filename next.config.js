@@ -30,21 +30,12 @@ const nextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
-  // Modern JavaScript - reduce polyfills
-  swcMinify: true,
-  // Optimize CSS
+  // Optimize imports
   experimental: {
     serverActions: {
       bodySizeLimit: '5mb',
     },
-    optimizeCss: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-  },
-  // Reduce bundle size
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-    },
   },
 }
 
