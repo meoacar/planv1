@@ -81,9 +81,10 @@ export function SinLanding() {
           Kaçamak Yaparsan Bile,
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-600 to-yellow-500">
-            Kendinle Dalga Geç! 😈
+            Kendinle Dalga Geç!
           </span>
         </h2>
+        <div className="text-5xl md:text-6xl">😈</div>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Yemek günah sayacı ile kaçamak davranışlarını mizahla takip et,
           farkındalığını artır ve hedeflerine ulaş!
@@ -163,16 +164,17 @@ export function SinLanding() {
           {/* Demo Card 1 */}
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-950/30 dark:to-orange-950/30 p-8 relative">
+              <div className="bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-950/30 dark:to-orange-950/30 p-12 md:p-16 relative min-h-[280px]">
                 <div className="absolute inset-0 backdrop-blur-sm bg-white/30 dark:bg-black/30 flex items-center justify-center">
-                  <div className="text-center space-y-3">
-                    <Calendar className="h-16 w-16 mx-auto text-primary" />
-                    <p className="text-lg font-semibold">
+                  <div className="text-center space-y-4 px-4">
+                    <div className="text-6xl mb-2">📅</div>
+                    <p className="text-lg md:text-xl font-semibold">
                       Günlük Takip Takvimi
                     </p>
                     <Button
                       onClick={() => router.push("/giris")}
                       variant="secondary"
+                      size="lg"
                     >
                       Giriş Yap ve Gör
                     </Button>
@@ -185,14 +187,15 @@ export function SinLanding() {
           {/* Demo Card 2 */}
           <Card className="overflow-hidden">
             <CardContent className="p-0">
-              <div className="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 p-8 relative">
+              <div className="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-950/30 dark:to-pink-950/30 p-12 md:p-16 relative min-h-[280px]">
                 <div className="absolute inset-0 backdrop-blur-sm bg-white/30 dark:bg-black/30 flex items-center justify-center">
-                  <div className="text-center space-y-3">
-                    <Award className="h-16 w-16 mx-auto text-primary" />
-                    <p className="text-lg font-semibold">Rozet Koleksiyonu</p>
+                  <div className="text-center space-y-4 px-4">
+                    <div className="text-6xl mb-2">🏆</div>
+                    <p className="text-lg md:text-xl font-semibold">Rozet Koleksiyonu</p>
                     <Button
                       onClick={() => router.push("/giris")}
                       variant="secondary"
+                      size="lg"
                     >
                       Giriş Yap ve Gör
                     </Button>
