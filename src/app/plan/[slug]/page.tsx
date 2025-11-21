@@ -14,6 +14,8 @@ import { Metadata } from 'next'
 import { getSetting } from '@/lib/settings'
 import AppealButton from '@/components/appeal-button'
 import { RelatedBlogs } from '@/components/plan/related-blogs'
+import { NutritionCalculator } from '@/components/plan/nutrition-calculator'
+import { ShoppingList } from '@/components/plan/shopping-list'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -598,6 +600,16 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
             {/* Sidebar */}
             <aside className="lg:col-span-4">
               <div className="sticky top-4 space-y-6">
+                {/* Nutrition Calculator */}
+                {session?.user && isPublished && (
+                  <NutritionCalculator planSlug={slug} />
+                )}
+
+                {/* Shopping List */}
+                {session?.user && isPublished && (
+                  <ShoppingList planSlug={slug} planTitle={plan.title} />
+                )}
+
                 {/* İlgili Blog Yazıları */}
                 {relatedBlogs.length > 0 && (
                   <RelatedBlogs blogs={relatedBlogs} />
