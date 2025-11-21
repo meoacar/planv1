@@ -13,6 +13,7 @@ import { tr } from 'date-fns/locale'
 import { Metadata } from 'next'
 import { getSetting } from '@/lib/settings'
 import AppealButton from '@/components/appeal-button'
+import { RelatedBlogs } from '@/components/plan/related-blogs'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -239,16 +240,36 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
     medium: 'bg-yellow-100 text-yellow-800',
     hard: 'bg-red-100 text-red-800',
   }
+
+  // Fetch related blogs
+  let relatedBlogs = []
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/plans/${slug}/related-blogs`, {
+      next: { revalidate: 600 },
+    })
+    if (res.ok) {
+      const data = await res.json()
+      relatedBlogs = data.success ? data.data : []
+    }
+  } catch (error) {
+    console.error('Failed to fetch related blogs:', error)
+  }
+
   return (
     <div className="min-h-screen bg-muted/30">
       <Navbar />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Back Button */}
-        <Button asChild variant="ghost" className="mb-4">
-          <Link href="/kesfet">← Geri</Link>
-        </Button>
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-8">
+              {/* Back Button */}
+              <Button asChild variant="ghost" className="mb-4">
+                <Link href="/kesfet">← Geri</Link>
+              </Button>
 
         {/* Status Banner for non-published plans */}
         {!isPublished && (
@@ -572,6 +593,50 @@ export default async function PlanDetailPage({ params }: { params: Promise<{ slu
             )}
           </CardContent>
         </Card>
+            </div>
+
+            {/* Sidebar */}
+            <aside className="lg:col-span-4">
+              <div className="sticky top-4 space-y-6">
+                {/* İlgili Blog Yazıları */}
+                {relatedBlogs.length > 0 && (
+                  <RelatedBlogs blogs={relatedBlogs} />
+                )}
+
+                {/* Plan Stats */}
+                <Card className="border-2">
+                  <CardHeader>
+                    <CardTitle className="text-lg">📊 Plan İstatistikleri</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Görüntülenme</span>
+                      <span className="font-semibold">{plan.views}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Beğeni</span>
+                      <span className="font-semibold">{plan.likesCount}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Yorum</span>
+                      <span className="font-semibold">{plan.commentsCount}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Kayıt</span>
+                      <span className="font-semibold">{savesCount}</span>
+                    </div>
+                    {plan.averageRating > 0 && (
+                      <div className="flex justify-between items-center pt-2 border-t">
+                        <span className="text-sm text-muted-foreground">Ortalama Puan</span>
+                        <span className="font-semibold">⭐ {plan.averageRating.toFixed(1)}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </aside>
+          </div>
+        </div>
       </main>
     </div>
   )

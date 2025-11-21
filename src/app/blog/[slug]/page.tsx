@@ -22,6 +22,7 @@ import { InternalLinks, CategoryInternalLinks, PopularInternalLinks } from '@/co
 import { RelatedPosts } from '@/components/blog/related-posts'
 import { BlogFloatingActions } from '@/components/blog/blog-floating-actions'
 import { BlogAuthorCard } from '@/components/blog/blog-author-card'
+import { RelatedPlans } from '@/components/blog/related-plans'
 import { Clock, Eye, Calendar, ArrowLeft, Heart, MessageCircle, Bookmark } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -48,6 +49,25 @@ async function getBlogPost(slug: string) {
   }
 
   return res.json() as Promise<BlogPostDetailResponse>
+}
+
+async function getRelatedPlans(slug: string) {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/blog/${slug}/related-plans`, {
+      next: { revalidate: 600 },
+    })
+
+    if (!res.ok) {
+      return []
+    }
+
+    const data = await res.json()
+    return data.success ? data.data : []
+  } catch (error) {
+    console.error('Failed to fetch related plans:', error)
+    return []
+  }
 }
 
 async function incrementViewCount(slug: string) {
@@ -129,6 +149,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const post = data.data
+
+  // Fetch related plans
+  const relatedPlans = await getRelatedPlans(slug)
 
   // Increment view count (fire and forget)
   incrementViewCount(slug)
@@ -330,6 +353,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <Card className="overflow-hidden border-2">
                   <BlogTOC content={post.content} />
                 </Card>
+
+                {/* İlgili Planlar - ÖNE ÇIKARTILDI */}
+                {relatedPlans.length > 0 && (
+                  <RelatedPlans plans={relatedPlans} />
+                )}
 
                 {/* Share Buttons */}
                 <Card className="overflow-hidden border-2">
