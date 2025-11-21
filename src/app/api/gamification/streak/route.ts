@@ -10,41 +10,24 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's check-in history to calculate streak
-    const checkIns = await prisma.checkInHistory.findMany({
+    // Get user's streak from database
+    const user = await prisma.user.findUnique({
       where: {
-        userId: session.user.id,
+        id: session.user.id,
       },
-      orderBy: {
-        checkInDate: 'desc',
+      select: {
+        streak: true,
+        lastCheckIn: true,
       },
-      take: 365, // Last year
     })
 
-    let currentStreak = 0
-    
-    if (checkIns.length > 0) {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      
-      let checkDate = new Date(today)
-      
-      for (const checkIn of checkIns) {
-        const checkInDate = new Date(checkIn.checkInDate)
-        checkInDate.setHours(0, 0, 0, 0)
-        
-        if (checkInDate.getTime() === checkDate.getTime()) {
-          currentStreak++
-          checkDate.setDate(checkDate.getDate() - 1)
-        } else if (checkInDate.getTime() < checkDate.getTime()) {
-          break
-        }
-      }
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     return NextResponse.json({
-      currentStreak,
-      totalCheckIns: checkIns.length,
+      currentStreak: user.streak || 0,
+      lastCheckIn: user.lastCheckIn,
     })
   } catch (error) {
     console.error('Error fetching streak:', error)
