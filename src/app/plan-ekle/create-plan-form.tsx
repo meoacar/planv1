@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -8,8 +8,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { createPlan, saveDraft } from './actions'
 import { toast } from 'sonner'
-import { Loader2, X, Plus } from 'lucide-react'
+import { Loader2, X, Plus, Copy, Check } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 
 interface DailyMenuTabsProps {
   dayCount: number
@@ -17,28 +19,99 @@ interface DailyMenuTabsProps {
   loading: boolean
   onAddDay: () => void
   onRemoveDay: (dayNumber: number) => void
+  onCopyDay: (fromDay: number, toDays: number[]) => void
   existingDays?: any[]
 }
 
-function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, existingDays }: DailyMenuTabsProps) {
+function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onCopyDay, existingDays }: DailyMenuTabsProps) {
   const [activeTab, setActiveTab] = useState('day1')
+  const [showCopyDialog, setShowCopyDialog] = useState(false)
+  const [copyFromDay, setCopyFromDay] = useState(1)
+  const [selectedDays, setSelectedDays] = useState<number[]>([])
+  const [selectAll, setSelectAll] = useState(false)
+  const [selectWeekdays, setSelectWeekdays] = useState(false)
+  const [selectWeekends, setSelectWeekends] = useState(false)
+
+  const handleCopyClick = (dayNumber: number) => {
+    setCopyFromDay(dayNumber)
+    setSelectedDays([])
+    setSelectAll(false)
+    setSelectWeekdays(false)
+    setSelectWeekends(false)
+    setShowCopyDialog(true)
+  }
+
+  const handleCopyConfirm = () => {
+    if (selectedDays.length === 0) {
+      toast.error('En az bir gün seçmelisiniz')
+      return
+    }
+    onCopyDay(copyFromDay, selectedDays)
+    setShowCopyDialog(false)
+    toast.success(`${copyFromDay}. gün ${selectedDays.length} güne kopyalandı!`)
+  }
+
+  const toggleDay = (day: number) => {
+    setSelectedDays(prev => 
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+    )
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked)
+    if (checked) {
+      const allDays = Array.from({ length: dayCount }, (_, i) => i + 1).filter(d => d !== copyFromDay)
+      setSelectedDays(allDays)
+      setSelectWeekdays(false)
+      setSelectWeekends(false)
+    } else {
+      setSelectedDays([])
+    }
+  }
+
+  const handleSelectWeekdays = (checked: boolean) => {
+    setSelectWeekdays(checked)
+    if (checked) {
+      const weekdays = Array.from({ length: dayCount }, (_, i) => i + 1)
+        .filter(d => d !== copyFromDay && (d % 7 !== 6 && d % 7 !== 0))
+      setSelectedDays(weekdays)
+      setSelectAll(false)
+      setSelectWeekends(false)
+    } else {
+      setSelectedDays([])
+    }
+  }
+
+  const handleSelectWeekends = (checked: boolean) => {
+    setSelectWeekends(checked)
+    if (checked) {
+      const weekends = Array.from({ length: dayCount }, (_, i) => i + 1)
+        .filter(d => d !== copyFromDay && (d % 7 === 6 || d % 7 === 0))
+      setSelectedDays(weekends)
+      setSelectAll(false)
+      setSelectWeekdays(false)
+    } else {
+      setSelectedDays([])
+    }
+  }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Günlük Menüler</CardTitle>
-        <CardDescription>
-          Her gün için öğün planını ekle (en az 1 gün)
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {duration === 0 ? (
-          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-            <p className="text-sm text-yellow-700">
-              ⚠️ Önce yukarıdan "Süre (gün)" alanını doldurun
-            </p>
-          </div>
-        ) : (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Günlük Menüler</CardTitle>
+          <CardDescription>
+            Her gün için öğün planını ekle - Süre girildiğinde otomatik oluşturulur
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {duration === 0 ? (
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+              <p className="text-sm text-yellow-700">
+                ⚠️ Önce yukarıdan "Süre (gün)" alanını doldurun
+              </p>
+            </div>
+          ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Sticky Tab List */}
             <div className="sticky top-0 z-10 bg-background pb-4 border-b mb-4">
@@ -175,29 +248,45 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, exi
                   </div>
                 </div>
 
-                {/* Navigation Buttons */}
-                <div className="flex justify-between pt-4 border-t">
-                  {dayNumber > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setActiveTab(`day${dayNumber - 1}`)}
-                      disabled={loading}
-                    >
-                      ← Önceki Gün
-                    </Button>
-                  )}
-                  {dayNumber < dayCount && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setActiveTab(`day${dayNumber + 1}`)}
-                      disabled={loading}
-                      className="ml-auto"
-                    >
-                      Sonraki Gün →
-                    </Button>
-                  )}
+                {/* Copy & Navigation Buttons */}
+                <div className="flex justify-between items-center pt-4 border-t gap-2">
+                  <div className="flex gap-2">
+                    {dayNumber > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setActiveTab(`day${dayNumber - 1}`)}
+                        disabled={loading}
+                      >
+                        ← Önceki
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleCopyClick(dayNumber)}
+                    disabled={loading || dayCount === 1}
+                    className="gap-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Bu Günü Kopyala
+                  </Button>
+
+                  <div className="flex gap-2">
+                    {dayNumber < dayCount && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setActiveTab(`day${dayNumber + 1}`)}
+                        disabled={loading}
+                      >
+                        Sonraki →
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </TabsContent>
             )
@@ -207,12 +296,107 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, exi
 
         <div className="bg-muted p-4 rounded-lg mt-4">
           <p className="text-sm text-muted-foreground">
-            💡 İpucu: Tablar arasında geçiş yaparak her günü kolayca düzenleyebilirsiniz.
-            "Gün Ekle" butonuyla yeni günler ekleyin!
+            💡 İpucu: Süre girildiğinde tüm günler otomatik oluşturulur. "Bu Günü Kopyala" ile hızlıca doldurabilirsiniz!
           </p>
         </div>
       </CardContent>
     </Card>
+
+    {/* Copy Dialog */}
+    <Dialog open={showCopyDialog} onOpenChange={setShowCopyDialog}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Günü Kopyala</DialogTitle>
+          <DialogDescription>
+            {copyFromDay}. günün menüsünü hangi günlere kopyalamak istersiniz?
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          {/* Quick Select Options */}
+          <div className="space-y-2 pb-3 border-b">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="select-all"
+                checked={selectAll}
+                onCheckedChange={handleSelectAll}
+              />
+              <label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
+                Tüm günler ({dayCount - 1} gün)
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="select-weekdays"
+                checked={selectWeekdays}
+                onCheckedChange={handleSelectWeekdays}
+              />
+              <label htmlFor="select-weekdays" className="text-sm font-medium cursor-pointer">
+                Hafta içi (Pazartesi-Cuma)
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="select-weekends"
+                checked={selectWeekends}
+                onCheckedChange={handleSelectWeekends}
+              />
+              <label htmlFor="select-weekends" className="text-sm font-medium cursor-pointer">
+                Hafta sonu (Cumartesi-Pazar)
+              </label>
+            </div>
+          </div>
+
+          {/* Individual Days */}
+          <div className="max-h-[300px] overflow-y-auto space-y-2">
+            <p className="text-sm font-medium mb-2">Veya tek tek seçin:</p>
+            <div className="grid grid-cols-5 gap-2">
+              {Array.from({ length: dayCount }, (_, i) => i + 1)
+                .filter(d => d !== copyFromDay)
+                .map((day) => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => toggleDay(day)}
+                    className={`p-2 text-sm rounded-md border transition-colors ${
+                      selectedDays.includes(day)
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-background hover:bg-muted border-input'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+            </div>
+          </div>
+
+          {selectedDays.length > 0 && (
+            <div className="text-sm text-muted-foreground">
+              ✓ {selectedDays.length} gün seçildi
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowCopyDialog(false)}
+          >
+            İptal
+          </Button>
+          <Button
+            type="button"
+            onClick={handleCopyConfirm}
+            disabled={selectedDays.length === 0}
+          >
+            <Copy className="h-4 w-4 mr-2" />
+            Kopyala
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }
 
@@ -222,12 +406,58 @@ interface CreatePlanFormProps {
 
 export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
   const [loading, setLoading] = useState(false)
-  const [dayCount, setDayCount] = useState(existingPlan?.days?.length || 1)
+  const [dayCount, setDayCount] = useState(existingPlan?.days?.length || 0)
   const [titleLength, setTitleLength] = useState(existingPlan?.title?.length || 0)
   const [descriptionLength, setDescriptionLength] = useState(existingPlan?.description?.length || 0)
   const [duration, setDuration] = useState(existingPlan?.duration || 0)
   const [difficulty, setDifficulty] = useState(existingPlan?.difficulty || '')
   const [storyLength, setStoryLength] = useState(existingPlan?.authorStory?.length || 0)
+  const [dayData, setDayData] = useState<Record<number, any>>({})
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle')
+  const formRef = useRef<HTMLFormElement>(null)
+  const autoSaveTimerRef = useRef<NodeJS.Timeout>()
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current)
+    }
+
+    if (titleLength > 0 || descriptionLength > 0) {
+      autoSaveTimerRef.current = setTimeout(() => {
+        handleAutoSave()
+      }, 30000) // 30 seconds
+    }
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current)
+      }
+    }
+  }, [titleLength, descriptionLength, duration, difficulty])
+
+  const handleAutoSave = async () => {
+    if (!formRef.current || loading) return
+    
+    setAutoSaveStatus('saving')
+    try {
+      const formData = new FormData(formRef.current)
+      await saveDraft(formData)
+      setAutoSaveStatus('saved')
+      setTimeout(() => setAutoSaveStatus('idle'), 3000)
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+      setAutoSaveStatus('idle')
+    }
+  }
+
+  // Auto-create days when duration changes
+  useEffect(() => {
+    if (duration > 0 && dayCount === 0 && !existingPlan) {
+      setDayCount(duration)
+      toast.success(`${duration} günlük plan oluşturuldu! İstediğiniz günleri doldurun.`)
+    }
+  }, [duration, dayCount, existingPlan])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -260,6 +490,39 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
     }
   }
 
+  const copyDay = (fromDay: number, toDays: number[]) => {
+    if (!formRef.current) return
+
+    const formData = new FormData(formRef.current)
+    
+    // Get source day data
+    const sourceData = {
+      breakfast: formData.get(`day${fromDay}-breakfast`) as string,
+      snack1: formData.get(`day${fromDay}-snack1`) as string,
+      lunch: formData.get(`day${fromDay}-lunch`) as string,
+      snack2: formData.get(`day${fromDay}-snack2`) as string,
+      dinner: formData.get(`day${fromDay}-dinner`) as string,
+      notes: formData.get(`day${fromDay}-notes`) as string,
+    }
+
+    // Copy to target days
+    toDays.forEach(day => {
+      const breakfastEl = document.getElementById(`day${day}-breakfast`) as HTMLTextAreaElement
+      const snack1El = document.getElementById(`day${day}-snack1`) as HTMLInputElement
+      const lunchEl = document.getElementById(`day${day}-lunch`) as HTMLTextAreaElement
+      const snack2El = document.getElementById(`day${day}-snack2`) as HTMLInputElement
+      const dinnerEl = document.getElementById(`day${day}-dinner`) as HTMLTextAreaElement
+      const notesEl = document.getElementById(`day${day}-notes`) as HTMLInputElement
+
+      if (breakfastEl) breakfastEl.value = sourceData.breakfast || ''
+      if (snack1El) snack1El.value = sourceData.snack1 || ''
+      if (lunchEl) lunchEl.value = sourceData.lunch || ''
+      if (snack2El) snack2El.value = sourceData.snack2 || ''
+      if (dinnerEl) dinnerEl.value = sourceData.dinner || ''
+      if (notesEl) notesEl.value = sourceData.notes || ''
+    })
+  }
+
   // Calculate progress - all important fields
   const calculateProgress = () => {
     let completed = 0
@@ -284,7 +547,7 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       {/* Hidden planId for editing */}
       {existingPlan && (
         <input type="hidden" name="planId" value={existingPlan.id} />
@@ -293,13 +556,27 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
       {/* Hidden dayCount - kaç gün eklendi */}
       <input type="hidden" name="dayCount" value={dayCount} />
       
-      {/* Progress Bar */}
+      {/* Progress Bar with Auto-save Status */}
       <Card className="bg-primary/5">
         <CardContent className="pt-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">İlerleme</span>
-              <span className="text-muted-foreground">{calculateProgress()}%</span>
+              <div className="flex items-center gap-3">
+                {autoSaveStatus === 'saving' && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Kaydediliyor...
+                  </span>
+                )}
+                {autoSaveStatus === 'saved' && (
+                  <span className="text-xs text-green-600 flex items-center gap-1">
+                    <Check className="h-3 w-3" />
+                    Otomatik kaydedildi
+                  </span>
+                )}
+                <span className="text-muted-foreground">{calculateProgress()}%</span>
+              </div>
             </div>
             <div className="w-full bg-muted rounded-full h-2">
               <div 
@@ -308,7 +585,7 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              Planınızı tamamlayın ve yayınlayın
+              Planınızı tamamlayın ve yayınlayın • Otomatik kaydetme aktif
             </p>
           </div>
         </CardContent>
@@ -495,6 +772,7 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
         loading={loading}
         onAddDay={addDay}
         onRemoveDay={removeDay}
+        onCopyDay={copyDay}
       />
 
       {/* Submit */}
