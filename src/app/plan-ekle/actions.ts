@@ -183,6 +183,7 @@ export async function saveDraft(formData: FormData) {
   const title = formData.get('title') as string
   const description = formData.get('description') as string
   const duration = formData.get('duration') as string
+  const dayCount = formData.get('dayCount') as string // Kaç gün eklendi
 
   if (!title || !description || !duration) {
     throw new Error('En azından başlık, açıklama ve süre gerekli')
@@ -227,10 +228,10 @@ export async function saveDraft(formData: FormData) {
       where: { planId },
     })
 
-    // Create new days
+    // Create new days - sadece eklenen günler kadar
     const days = []
-    const durationNum = parseInt(duration)
-    for (let i = 1; i <= durationNum; i++) {
+    const actualDayCount = dayCount ? parseInt(dayCount) : parseInt(duration)
+    for (let i = 1; i <= actualDayCount; i++) {
       const breakfast = formData.get(`day${i}-breakfast`) as string
       const snack1 = formData.get(`day${i}-snack1`) as string
       const lunch = formData.get(`day${i}-lunch`) as string
@@ -238,18 +239,17 @@ export async function saveDraft(formData: FormData) {
       const dinner = formData.get(`day${i}-dinner`) as string
       const notes = formData.get(`day${i}-notes`) as string
 
-      if (breakfast || snack1 || lunch || snack2 || dinner) {
-        days.push({
-          planId,
-          dayNumber: i,
-          breakfast: breakfast || null,
-          snack1: snack1 || null,
-          lunch: lunch || null,
-          snack2: snack2 || null,
-          dinner: dinner || null,
-          notes: notes || null,
-        })
-      }
+      // Her günü kaydet, boş olsa bile (kullanıcı eklemiş demektir)
+      days.push({
+        planId,
+        dayNumber: i,
+        breakfast: breakfast || null,
+        snack1: snack1 || null,
+        lunch: lunch || null,
+        snack2: snack2 || null,
+        dinner: dinner || null,
+        notes: notes || null,
+      })
     }
 
     if (days.length > 0) {
@@ -284,10 +284,10 @@ export async function saveDraft(formData: FormData) {
       },
     })
 
-    // Create days
+    // Create days - sadece eklenen günler kadar
     const days = []
-    const durationNum = parseInt(duration)
-    for (let i = 1; i <= durationNum; i++) {
+    const actualDayCount = dayCount ? parseInt(dayCount) : parseInt(duration)
+    for (let i = 1; i <= actualDayCount; i++) {
       const breakfast = formData.get(`day${i}-breakfast`) as string
       const snack1 = formData.get(`day${i}-snack1`) as string
       const lunch = formData.get(`day${i}-lunch`) as string
@@ -295,18 +295,17 @@ export async function saveDraft(formData: FormData) {
       const dinner = formData.get(`day${i}-dinner`) as string
       const notes = formData.get(`day${i}-notes`) as string
 
-      if (breakfast || snack1 || lunch || snack2 || dinner) {
-        days.push({
-          planId: plan.id,
-          dayNumber: i,
-          breakfast: breakfast || null,
-          snack1: snack1 || null,
-          lunch: lunch || null,
-          snack2: snack2 || null,
-          dinner: dinner || null,
-          notes: notes || null,
-        })
-      }
+      // Her günü kaydet, boş olsa bile (kullanıcı eklemiş demektir)
+      days.push({
+        planId: plan.id,
+        dayNumber: i,
+        breakfast: breakfast || null,
+        snack1: snack1 || null,
+        lunch: lunch || null,
+        snack2: snack2 || null,
+        dinner: dinner || null,
+        notes: notes || null,
+      })
     }
 
     if (days.length > 0) {

@@ -290,6 +290,9 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
         <input type="hidden" name="planId" value={existingPlan.id} />
       )}
       
+      {/* Hidden dayCount - kaç gün eklendi */}
+      <input type="hidden" name="dayCount" value={dayCount} />
+      
       {/* Progress Bar */}
       <Card className="bg-primary/5">
         <CardContent className="pt-6">
