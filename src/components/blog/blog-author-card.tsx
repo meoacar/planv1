@@ -21,7 +21,7 @@ export function BlogAuthorCard({ author }: BlogAuthorCardProps) {
         <div className="flex items-start gap-4">
           <Link href={`/profil/${author.username || author.id}`}>
             <Avatar className="w-16 h-16 ring-2 ring-background shadow-lg hover:scale-110 transition-transform">
-              <AvatarImage src={author.image || undefined} />
+              <AvatarImage src={author.image || undefined} alt={`${author.name || author.username || 'Yazar'} profil fotoğrafı`} />
               <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-xl">
                 {author.name?.[0] || author.username?.[0] || 'U'}
               </AvatarFallback>

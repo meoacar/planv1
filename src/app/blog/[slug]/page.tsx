@@ -231,7 +231,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <div className="flex flex-wrap items-center gap-6 text-sm mb-8">
                 <div className="flex items-center gap-3 group">
                   <Avatar className="w-12 h-12 ring-2 ring-background shadow-lg transition-transform group-hover:scale-110">
-                    <AvatarImage src={post.author.image || undefined} />
+                    <AvatarImage src={post.author.image || undefined} alt={`${post.author.name || post.author.username || 'Yazar'} profil fotoğrafı`} />
                     <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
                       {post.author.name?.[0] || post.author.username?.[0] || 'U'}
                     </AvatarFallback>

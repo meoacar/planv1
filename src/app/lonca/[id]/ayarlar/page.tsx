@@ -387,7 +387,7 @@ export default function GuildSettingsPage() {
                     className="flex items-center gap-3 p-3 border rounded-lg"
                   >
                     <Avatar className="w-10 h-10">
-                      <AvatarImage src={member.user.image || undefined} />
+                      <AvatarImage src={member.user.image || undefined} alt={`${member.user.name || member.user.username || 'Kullanıcı'} profil fotoğrafı`} />
                       <AvatarFallback>
                         {(member.user.name || member.user.username || 'A')[0].toUpperCase()}
                       </AvatarFallback>

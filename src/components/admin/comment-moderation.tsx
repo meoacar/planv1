@@ -113,7 +113,7 @@ export function CommentModeration({ comments, onStatusChange }: CommentModeratio
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={comment.user.image || undefined} />
+                    <AvatarImage src={comment.user.image || undefined} alt={`${comment.user.name || comment.user.username || 'Kullanıcı'} profil fotoğrafı`} />
                     <AvatarFallback>
                       {comment.user.name?.[0] || comment.user.username?.[0] || <User className="h-4 w-4" />}
                     </AvatarFallback>

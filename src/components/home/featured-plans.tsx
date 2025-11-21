@@ -170,7 +170,7 @@ export function FeaturedPlans() {
                 {/* Author Info - Mobile Optimized */}
                 <div className="flex items-center gap-3 mb-4">
                   <Avatar className="w-10 h-10 md:w-12 md:h-12 ring-2 ring-purple-200 dark:ring-purple-800">
-                    <AvatarImage src={plan.author.image || undefined} />
+                    <AvatarImage src={plan.author.image || undefined} alt={`${plan.author.name || plan.author.username || 'Yazar'} profil fotoğrafı`} />
                     <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-sm md:text-base">
                       {plan.author.name?.[0] || plan.author.username[0]}
                     </AvatarFallback>

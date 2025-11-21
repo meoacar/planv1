@@ -506,7 +506,7 @@ export default function GuildDetailPage() {
                                 index === 2 ? 'border-amber-600 shadow-md' :
                                 'border-border'
                               }`}>
-                                <AvatarImage src={member.user.image || undefined} />
+                                <AvatarImage src={member.user.image || undefined} alt={`${member.user.name || member.user.username || 'Kullanıcı'} profil fotoğrafı`} />
                                 <AvatarFallback className={index < 3 ? 'bg-gradient-to-br from-primary/20 to-primary/10' : ''}>
                                   {(member.user.name || member.user.username || 'A')[0].toUpperCase()}
                                 </AvatarFallback>
@@ -584,7 +584,7 @@ export default function GuildDetailPage() {
                               className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
                             >
                               <Avatar className="w-10 h-10">
-                                <AvatarImage src={member.user.image || undefined} />
+                                <AvatarImage src={member.user.image || undefined} alt={`${member.user.name || member.user.username || 'Kullanıcı'} profil fotoğrafı`} />
                                 <AvatarFallback>
                                   {(member.user.name || member.user.username || 'A')[0].toUpperCase()}
                                 </AvatarFallback>
@@ -712,7 +712,7 @@ export default function GuildDetailPage() {
                           <span className="text-muted-foreground">Lider</span>
                           <div className="flex items-center gap-2">
                             <Avatar className="w-6 h-6">
-                              <AvatarImage src={guild.leader.image || undefined} />
+                              <AvatarImage src={guild.leader.image || undefined} alt={`${guild.leader.name || guild.leader.username || 'Lider'} profil fotoğrafı`} />
                               <AvatarFallback className="text-xs">
                                 {(guild.leader.name || guild.leader.username || 'A')[0].toUpperCase()}
                               </AvatarFallback>

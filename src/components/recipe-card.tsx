@@ -117,7 +117,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
         <Link href={`/profil/${recipe.author.username || recipe.author.id}`}>
           <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Avatar className="w-6 h-6">
-              <AvatarImage src={recipe.author.image || undefined} />
+              <AvatarImage src={recipe.author.image || undefined} alt={`${recipe.author.name || 'Yazar'} profil fotoğrafı`} />
               <AvatarFallback>{recipe.author.name?.[0] || 'U'}</AvatarFallback>
             </Avatar>
             <span className="text-sm text-muted-foreground">

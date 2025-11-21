@@ -188,7 +188,7 @@ export function ModerationQueue({ initialConfessions, initialMeta }: ModerationQ
       render: (confession: ConfessionWithUser) => (
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={confession.user.image || undefined} />
+            <AvatarImage src={confession.user.image || undefined} alt={`${confession.user.name || confession.user.username || 'Kullanıcı'} profil fotoğrafı`} />
             <AvatarFallback>
               {confession.user.name?.[0] || confession.user.username?.[0] || "?"}
             </AvatarFallback>

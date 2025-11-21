@@ -213,7 +213,7 @@ export default async function GroupPage({ params }: Props) {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-8 w-8">
-                              <AvatarImage src={post.author.image} />
+                              <AvatarImage src={post.author.image} alt={`${post.author.name || 'Kullanıcı'} profil fotoğrafı`} />
                               <AvatarFallback>
                                 {post.author.name?.[0] || "U"}
                               </AvatarFallback>
@@ -261,7 +261,7 @@ export default async function GroupPage({ params }: Props) {
                       className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
                     >
                       <Avatar>
-                        <AvatarImage src={member.user.image} />
+                        <AvatarImage src={member.user.image} alt={`${member.user.name || 'Kullanıcı'} profil fotoğrafı`} />
                         <AvatarFallback>
                           {member.user.name?.[0] || "U"}
                         </AvatarFallback>

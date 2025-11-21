@@ -150,7 +150,7 @@ export function ConfessionReports({ initialData, initialMeta }: ConfessionReport
       render: (item: ReportedConfession) => (
         <div className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={item.confession.user.image || undefined} />
+            <AvatarImage src={item.confession.user.image || undefined} alt={`${item.confession.user.name || item.confession.user.username || 'Kullanıcı'} profil fotoğrafı`} />
             <AvatarFallback>
               {item.confession.user.name?.[0] || item.confession.user.username?.[0] || "?"}
             </AvatarFallback>
@@ -357,7 +357,7 @@ export function ConfessionReports({ initialData, initialMeta }: ConfessionReport
                     <div key={report.id} className="p-3 border rounded-lg">
                       <div className="flex items-start gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={report.user.image || undefined} />
+                          <AvatarImage src={report.user.image || undefined} alt={`${report.user.name || 'Kullanıcı'} profil fotoğrafı`} />
                           <AvatarFallback>
                             {report.user.name?.[0] || "?"}
                           </AvatarFallback>
