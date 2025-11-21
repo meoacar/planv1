@@ -176,11 +176,12 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
             {Array.from({ length: dayCount }, (_, i) => i + 1).map((dayNumber) => {
               const existingDay = existingDays?.find(d => d.dayNumber === dayNumber)
               return (
-              <TabsContent key={dayNumber} value={`day${dayNumber}`} className="space-y-4 mt-0">
+              <TabsContent key={`day-content-${dayNumber}`} value={`day${dayNumber}`} className="space-y-4 mt-0">
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor={`day${dayNumber}-breakfast`}>🍳 Kahvaltı</Label>
                     <Textarea
+                      key={`breakfast-${dayNumber}`}
                       id={`day${dayNumber}-breakfast`}
                       name={`day${dayNumber}-breakfast`}
                       placeholder="Örn: 2 yumurta (omlet), 1 dilim beyaz peynir, Yeşil çay"
@@ -193,6 +194,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                   <div className="space-y-2">
                     <Label htmlFor={`day${dayNumber}-snack1`}>🥜 Ara Öğün 1</Label>
                     <Input
+                      key={`snack1-${dayNumber}`}
                       id={`day${dayNumber}-snack1`}
                       name={`day${dayNumber}-snack1`}
                       placeholder="Örn: 1 avuç ceviz"
@@ -204,6 +206,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                   <div className="space-y-2">
                     <Label htmlFor={`day${dayNumber}-lunch`}>🍽️ Öğle Yemeği</Label>
                     <Textarea
+                      key={`lunch-${dayNumber}`}
                       id={`day${dayNumber}-lunch`}
                       name={`day${dayNumber}-lunch`}
                       placeholder="Örn: Izgara tavuk (150g), Bol yeşil salata"
@@ -216,6 +219,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                   <div className="space-y-2">
                     <Label htmlFor={`day${dayNumber}-snack2`}>🍎 Ara Öğün 2</Label>
                     <Input
+                      key={`snack2-${dayNumber}`}
                       id={`day${dayNumber}-snack2`}
                       name={`day${dayNumber}-snack2`}
                       placeholder="Örn: Yoğurt (şekersiz)"
@@ -227,6 +231,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                   <div className="space-y-2">
                     <Label htmlFor={`day${dayNumber}-dinner`}>🌙 Akşam Yemeği</Label>
                     <Textarea
+                      key={`dinner-${dayNumber}`}
                       id={`day${dayNumber}-dinner`}
                       name={`day${dayNumber}-dinner`}
                       placeholder="Örn: Izgara somon (150g), Buharda brokoli"
@@ -239,6 +244,7 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                   <div className="space-y-2">
                     <Label htmlFor={`day${dayNumber}-notes`}>📝 Notlar (opsiyonel)</Label>
                     <Input
+                      key={`notes-${dayNumber}`}
                       id={`day${dayNumber}-notes`}
                       name={`day${dayNumber}-notes`}
                       placeholder="Örn: İlk gün biraz açlık hissedebilirsiniz"
@@ -497,13 +503,16 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
     
     // Get source day data
     const sourceData = {
-      breakfast: formData.get(`day${fromDay}-breakfast`) as string,
-      snack1: formData.get(`day${fromDay}-snack1`) as string,
-      lunch: formData.get(`day${fromDay}-lunch`) as string,
-      snack2: formData.get(`day${fromDay}-snack2`) as string,
-      dinner: formData.get(`day${fromDay}-dinner`) as string,
-      notes: formData.get(`day${fromDay}-notes`) as string,
+      breakfast: formData.get(`day${fromDay}-breakfast`) as string || '',
+      snack1: formData.get(`day${fromDay}-snack1`) as string || '',
+      lunch: formData.get(`day${fromDay}-lunch`) as string || '',
+      snack2: formData.get(`day${fromDay}-snack2`) as string || '',
+      dinner: formData.get(`day${fromDay}-dinner`) as string || '',
+      notes: formData.get(`day${fromDay}-notes`) as string || '',
     }
+
+    console.log('Kopyalanacak veri:', sourceData)
+    console.log('Hedef günler:', toDays)
 
     // Copy to target days
     toDays.forEach(day => {
@@ -514,13 +523,40 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
       const dinnerEl = document.getElementById(`day${day}-dinner`) as HTMLTextAreaElement
       const notesEl = document.getElementById(`day${day}-notes`) as HTMLInputElement
 
-      if (breakfastEl) breakfastEl.value = sourceData.breakfast || ''
-      if (snack1El) snack1El.value = sourceData.snack1 || ''
-      if (lunchEl) lunchEl.value = sourceData.lunch || ''
-      if (snack2El) snack2El.value = sourceData.snack2 || ''
-      if (dinnerEl) dinnerEl.value = sourceData.dinner || ''
-      if (notesEl) notesEl.value = sourceData.notes || ''
+      if (breakfastEl) {
+        breakfastEl.value = sourceData.breakfast
+        // Trigger change event for React
+        const event = new Event('input', { bubbles: true })
+        breakfastEl.dispatchEvent(event)
+      }
+      if (snack1El) {
+        snack1El.value = sourceData.snack1
+        const event = new Event('input', { bubbles: true })
+        snack1El.dispatchEvent(event)
+      }
+      if (lunchEl) {
+        lunchEl.value = sourceData.lunch
+        const event = new Event('input', { bubbles: true })
+        lunchEl.dispatchEvent(event)
+      }
+      if (snack2El) {
+        snack2El.value = sourceData.snack2
+        const event = new Event('input', { bubbles: true })
+        snack2El.dispatchEvent(event)
+      }
+      if (dinnerEl) {
+        dinnerEl.value = sourceData.dinner
+        const event = new Event('input', { bubbles: true })
+        dinnerEl.dispatchEvent(event)
+      }
+      if (notesEl) {
+        notesEl.value = sourceData.notes
+        const event = new Event('input', { bubbles: true })
+        notesEl.dispatchEvent(event)
+      }
     })
+
+    console.log('Kopyalama tamamlandı')
   }
 
   // Calculate progress - all important fields
