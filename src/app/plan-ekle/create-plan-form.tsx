@@ -285,6 +285,11 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Hidden planId for editing */}
+      {existingPlan && (
+        <input type="hidden" name="planId" value={existingPlan.id} />
+      )}
+      
       {/* Progress Bar */}
       <Card className="bg-primary/5">
         <CardContent className="pt-6">
@@ -495,10 +500,10 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Yayınlanıyor...
+              {existingPlan ? 'Güncelleniyor...' : 'Yayınlanıyor...'}
             </>
           ) : (
-            'Planı Yayınla'
+            existingPlan ? 'Planı Güncelle ve Gönder' : 'Planı Yayınla'
           )}
         </Button>
         <Button
@@ -513,7 +518,7 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
               try {
                 const formData = new FormData(form)
                 await saveDraft(formData)
-                toast.success('Taslak kaydedildi')
+                toast.success(existingPlan ? 'Taslak güncellendi' : 'Taslak kaydedildi')
               } catch (error: any) {
                 toast.error(error.message || 'Bir hata oluştu')
                 setLoading(false)
@@ -521,7 +526,7 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
             }
           }}
         >
-          Taslak Olarak Kaydet
+          {existingPlan ? 'Taslak Olarak Güncelle' : 'Taslak Olarak Kaydet'}
         </Button>
       </div>
 

@@ -117,6 +117,11 @@ export default async function MyPlansPage() {
                           <Link href={`/plan/${plan.slug}`}>Görüntüle</Link>
                         </Button>
                       )}
+                      {plan.status === 'draft' && (
+                        <Button variant="default" size="sm" asChild>
+                          <Link href={`/plan-ekle?edit=${plan.id}`}>Düzenle</Link>
+                        </Button>
+                      )}
                       {plan.status === 'rejected' && (
                         <>
                           <Button variant="outline" size="sm" asChild>
