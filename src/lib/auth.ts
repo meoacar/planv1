@@ -88,11 +88,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string
         session.user.role = token.role as string
         
-        // Fetch user data including ban status
+        // Fetch fresh user data from database (including email, name, image)
         try {
           const user = await db.user.findUnique({
             where: { id: token.id as string },
             select: { 
+              email: true,
+              name: true,
+              image: true,
               coins: true, 
               xp: true, 
               level: true,
@@ -103,6 +106,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           })
           
           if (user) {
+            // Update session with fresh data from database
+            session.user.email = user.email
+            session.user.name = user.name
+            session.user.image = user.image
             session.user.coins = user.coins
             session.user.xp = user.xp
             session.user.level = user.level
