@@ -185,6 +185,42 @@ export function BlogSidebar({
           </CardContent>
         </Card>
       )}
+
+      {/* SEO İç Linkler - Dinamik */}
+      <div className="space-y-4">
+        <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-950/20 dark:to-pink-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              🔥 Popüler İçerikler
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground mb-3">
+              En çok okunan ve beğenilen yazılarımız
+            </p>
+            <nav>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/blog" className="text-purple-600 dark:text-purple-400 hover:underline">
+                    → Tüm blog yazılarını keşfet
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/tarif" className="text-purple-600 dark:text-purple-400 hover:underline">
+                    → Sağlıklı tarifler
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/kesfet" className="text-purple-600 dark:text-purple-400 hover:underline">
+                    → Topluluk içerikleri
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </CardContent>
+        </Card>
+      </div>
     </aside>
   );
 }

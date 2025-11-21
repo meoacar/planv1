@@ -18,6 +18,8 @@ import { BlogRelated } from '@/components/blog/blog-related'
 import { BlogComments } from '@/components/blog/blog-comments'
 import { BlogCommentForm } from '@/components/blog/blog-comment-form'
 import { BlogReadingProgress } from '@/components/blog/blog-reading-progress'
+import { InternalLinks, CategoryInternalLinks, PopularInternalLinks } from '@/components/blog/internal-links'
+import { RelatedPosts } from '@/components/blog/related-posts'
 import { BlogFloatingActions } from '@/components/blog/blog-floating-actions'
 import { BlogAuthorCard } from '@/components/blog/blog-author-card'
 import { Clock, Eye, Calendar, ArrowLeft, Heart, MessageCircle, Bookmark } from 'lucide-react'
@@ -333,6 +335,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <Card className="overflow-hidden border-2">
                   <BlogShare title={post.title} slug={post.slug} />
                 </Card>
+
+                {/* Kategori İç Linkleri */}
+                {post.category && (
+                  <CategoryInternalLinks 
+                    categorySlug={post.category.slug}
+                    currentPostId={post.id}
+                  />
+                )}
+
+                {/* Popüler İçerikler */}
+                <PopularInternalLinks currentPostId={post.id} />
 
                 {/* Engagement Stats */}
                 <Card className="p-6 border-2">
