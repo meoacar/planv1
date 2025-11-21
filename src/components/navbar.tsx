@@ -396,11 +396,11 @@ export function Navbar() {
                       {user?.image ? (
                         <img 
                           src={user.image} 
-                          alt={user.name || ''} 
+                          alt={`${user.name || user.username || 'Kullanıcı'} profil fotoğrafı`} 
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-sm">👤</span>
+                        <span className="text-sm" role="img" aria-label="Varsayılan profil ikonu">👤</span>
                       )}
                     </div>
                     <span className="text-sm font-medium max-w-[100px] truncate">
@@ -551,11 +551,11 @@ export function Navbar() {
                   {user?.image ? (
                     <img 
                       src={user.image} 
-                      alt={user.name || ''} 
+                      alt={`${user.name || user.username || 'Kullanıcı'} profil fotoğrafı`} 
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-2xl">👤</span>
+                    <span className="text-2xl" role="img" aria-label="Varsayılan profil ikonu">👤</span>
                   )}
                 </div>
                 <div>
