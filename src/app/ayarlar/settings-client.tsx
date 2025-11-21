@@ -294,6 +294,103 @@ export function SettingsClient({ user }: SettingsClientProps) {
         </CardContent>
       </Card>
 
+      {/* Password Change */}
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🔒 Şifre Değiştir
+          </CardTitle>
+          <CardDescription>
+            Hesap güvenliğini sağlamak için şifreni güncelle
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={async (e) => {
+            e.preventDefault()
+            setLoading(true)
+            try {
+              const formData = new FormData(e.currentTarget)
+              const currentPassword = formData.get('currentPassword') as string
+              const newPassword = formData.get('newPassword') as string
+              const confirmPassword = formData.get('confirmPassword') as string
+
+              if (!currentPassword || !newPassword || !confirmPassword) {
+                toast.error('Tüm alanları doldur')
+                return
+              }
+
+              if (newPassword !== confirmPassword) {
+                toast.error('Yeni şifreler eşleşmiyor')
+                return
+              }
+
+              if (newPassword.length < 6) {
+                toast.error('Şifre en az 6 karakter olmalı')
+                return
+              }
+
+              const response = await fetch('/api/user/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentPassword, newPassword }),
+              })
+
+              const data = await response.json()
+
+              if (!response.ok) {
+                throw new Error(data.error || 'Şifre değiştirilemedi')
+              }
+
+              toast.success('Şifre başarıyla değiştirildi')
+              e.currentTarget.reset()
+            } catch (error: any) {
+              toast.error(error.message || 'Bir hata oluştu')
+            } finally {
+              setLoading(false)
+            }
+          }} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword">Mevcut Şifre</Label>
+              <Input
+                id="currentPassword"
+                name="currentPassword"
+                type="password"
+                placeholder="Mevcut şifreni gir"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Yeni Şifre</Label>
+              <Input
+                id="newPassword"
+                name="newPassword"
+                type="password"
+                placeholder="Yeni şifreni gir (min 6 karakter)"
+                minLength={6}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Yeni Şifre (Tekrar)</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Yeni şifreni tekrar gir"
+                minLength={6}
+                required
+              />
+            </div>
+
+            <Button type="submit" disabled={loading}>
+              {loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Değiştiriliyor...</> : 'Şifreyi Değiştir'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
       {/* Push Notifications */}
       <Card className="shadow-lg">
         <CardHeader>
