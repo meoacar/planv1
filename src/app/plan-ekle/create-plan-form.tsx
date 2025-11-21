@@ -21,9 +21,11 @@ interface DailyMenuTabsProps {
   onRemoveDay: (dayNumber: number) => void
   onCopyDay: (fromDay: number, toDays: number[]) => void
   existingDays?: any[]
+  dayData: Record<number, any>
+  onDayDataChange: (dayNumber: number, field: string, value: string) => void
 }
 
-function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onCopyDay, existingDays }: DailyMenuTabsProps) {
+function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onCopyDay, existingDays, dayData, onDayDataChange }: DailyMenuTabsProps) {
   const [activeTab, setActiveTab] = useState('day1')
   const [showCopyDialog, setShowCopyDialog] = useState(false)
   const [copyFromDay, setCopyFromDay] = useState(1)
@@ -187,7 +189,8 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                       placeholder="Örn: 2 yumurta (omlet), 1 dilim beyaz peynir, Yeşil çay"
                       rows={2}
                       disabled={loading}
-                      defaultValue={existingDay?.breakfast || ''}
+                      value={dayData[dayNumber]?.breakfast || existingDay?.breakfast || ''}
+                      onChange={(e) => onDayDataChange(dayNumber, 'breakfast', e.target.value)}
                     />
                   </div>
 
@@ -199,7 +202,8 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                       name={`day${dayNumber}-snack1`}
                       placeholder="Örn: 1 avuç ceviz"
                       disabled={loading}
-                      defaultValue={existingDay?.snack1 || ''}
+                      value={dayData[dayNumber]?.snack1 || existingDay?.snack1 || ''}
+                      onChange={(e) => onDayDataChange(dayNumber, 'snack1', e.target.value)}
                     />
                   </div>
 
@@ -212,7 +216,8 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                       placeholder="Örn: Izgara tavuk (150g), Bol yeşil salata"
                       rows={2}
                       disabled={loading}
-                      defaultValue={existingDay?.lunch || ''}
+                      value={dayData[dayNumber]?.lunch || existingDay?.lunch || ''}
+                      onChange={(e) => onDayDataChange(dayNumber, 'lunch', e.target.value)}
                     />
                   </div>
 
@@ -224,7 +229,8 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                       name={`day${dayNumber}-snack2`}
                       placeholder="Örn: Yoğurt (şekersiz)"
                       disabled={loading}
-                      defaultValue={existingDay?.snack2 || ''}
+                      value={dayData[dayNumber]?.snack2 || existingDay?.snack2 || ''}
+                      onChange={(e) => onDayDataChange(dayNumber, 'snack2', e.target.value)}
                     />
                   </div>
 
@@ -235,9 +241,10 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                       id={`day${dayNumber}-dinner`}
                       name={`day${dayNumber}-dinner`}
                       placeholder="Örn: Izgara somon (150g), Buharda brokoli"
-                      defaultValue={existingDay?.dinner || ''}
                       rows={2}
                       disabled={loading}
+                      value={dayData[dayNumber]?.dinner || existingDay?.dinner || ''}
+                      onChange={(e) => onDayDataChange(dayNumber, 'dinner', e.target.value)}
                     />
                   </div>
 
@@ -249,7 +256,8 @@ function DailyMenuTabs({ dayCount, duration, loading, onAddDay, onRemoveDay, onC
                       name={`day${dayNumber}-notes`}
                       placeholder="Örn: İlk gün biraz açlık hissedebilirsiniz"
                       disabled={loading}
-                      defaultValue={existingDay?.notes || ''}
+                      value={dayData[dayNumber]?.notes || existingDay?.notes || ''}
+                      onChange={(e) => onDayDataChange(dayNumber, 'notes', e.target.value)}
                     />
                   </div>
                 </div>
@@ -418,7 +426,23 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
   const [duration, setDuration] = useState(existingPlan?.duration || 0)
   const [difficulty, setDifficulty] = useState(existingPlan?.difficulty || '')
   const [storyLength, setStoryLength] = useState(existingPlan?.authorStory?.length || 0)
-  const [dayData, setDayData] = useState<Record<number, any>>({})
+  const [dayData, setDayData] = useState<Record<number, any>>(() => {
+    // Initialize with existing plan data
+    const initial: Record<number, any> = {}
+    if (existingPlan?.days) {
+      existingPlan.days.forEach((day: any) => {
+        initial[day.dayNumber] = {
+          breakfast: day.breakfast || '',
+          snack1: day.snack1 || '',
+          lunch: day.lunch || '',
+          snack2: day.snack2 || '',
+          dinner: day.dinner || '',
+          notes: day.notes || '',
+        }
+      })
+    }
+    return initial
+  })
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle')
   const formRef = useRef<HTMLFormElement>(null)
   const autoSaveTimerRef = useRef<NodeJS.Timeout>()
@@ -497,66 +521,43 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
   }
 
   const copyDay = (fromDay: number, toDays: number[]) => {
-    if (!formRef.current) return
+    // Get current form data first
+    if (formRef.current) {
+      const formData = new FormData(formRef.current)
+      const currentData: Record<number, any> = {}
+      
+      // Save all current form values to state
+      for (let i = 1; i <= dayCount; i++) {
+        currentData[i] = {
+          breakfast: formData.get(`day${i}-breakfast`) as string || '',
+          snack1: formData.get(`day${i}-snack1`) as string || '',
+          lunch: formData.get(`day${i}-lunch`) as string || '',
+          snack2: formData.get(`day${i}-snack2`) as string || '',
+          dinner: formData.get(`day${i}-dinner`) as string || '',
+          notes: formData.get(`day${i}-notes`) as string || '',
+        }
+      }
+      
+      // Get source day data
+      const sourceData = currentData[fromDay] || dayData[fromDay]
+      
+      if (!sourceData) {
+        toast.error('Kaynak gün verisi bulunamadı')
+        return
+      }
 
-    const formData = new FormData(formRef.current)
-    
-    // Get source day data
-    const sourceData = {
-      breakfast: formData.get(`day${fromDay}-breakfast`) as string || '',
-      snack1: formData.get(`day${fromDay}-snack1`) as string || '',
-      lunch: formData.get(`day${fromDay}-lunch`) as string || '',
-      snack2: formData.get(`day${fromDay}-snack2`) as string || '',
-      dinner: formData.get(`day${fromDay}-dinner`) as string || '',
-      notes: formData.get(`day${fromDay}-notes`) as string || '',
+      console.log('Kopyalanacak veri:', sourceData)
+      console.log('Hedef günler:', toDays)
+
+      // Copy to target days in state
+      const newDayData = { ...currentData }
+      toDays.forEach(day => {
+        newDayData[day] = { ...sourceData }
+      })
+
+      setDayData(newDayData)
+      console.log('Kopyalama tamamlandı, state güncellendi')
     }
-
-    console.log('Kopyalanacak veri:', sourceData)
-    console.log('Hedef günler:', toDays)
-
-    // Copy to target days
-    toDays.forEach(day => {
-      const breakfastEl = document.getElementById(`day${day}-breakfast`) as HTMLTextAreaElement
-      const snack1El = document.getElementById(`day${day}-snack1`) as HTMLInputElement
-      const lunchEl = document.getElementById(`day${day}-lunch`) as HTMLTextAreaElement
-      const snack2El = document.getElementById(`day${day}-snack2`) as HTMLInputElement
-      const dinnerEl = document.getElementById(`day${day}-dinner`) as HTMLTextAreaElement
-      const notesEl = document.getElementById(`day${day}-notes`) as HTMLInputElement
-
-      if (breakfastEl) {
-        breakfastEl.value = sourceData.breakfast
-        // Trigger change event for React
-        const event = new Event('input', { bubbles: true })
-        breakfastEl.dispatchEvent(event)
-      }
-      if (snack1El) {
-        snack1El.value = sourceData.snack1
-        const event = new Event('input', { bubbles: true })
-        snack1El.dispatchEvent(event)
-      }
-      if (lunchEl) {
-        lunchEl.value = sourceData.lunch
-        const event = new Event('input', { bubbles: true })
-        lunchEl.dispatchEvent(event)
-      }
-      if (snack2El) {
-        snack2El.value = sourceData.snack2
-        const event = new Event('input', { bubbles: true })
-        snack2El.dispatchEvent(event)
-      }
-      if (dinnerEl) {
-        dinnerEl.value = sourceData.dinner
-        const event = new Event('input', { bubbles: true })
-        dinnerEl.dispatchEvent(event)
-      }
-      if (notesEl) {
-        notesEl.value = sourceData.notes
-        const event = new Event('input', { bubbles: true })
-        notesEl.dispatchEvent(event)
-      }
-    })
-
-    console.log('Kopyalama tamamlandı')
   }
 
   // Calculate progress - all important fields
@@ -809,6 +810,13 @@ export function CreatePlanForm({ existingPlan }: CreatePlanFormProps) {
         onAddDay={addDay}
         onRemoveDay={removeDay}
         onCopyDay={copyDay}
+        dayData={dayData}
+        onDayDataChange={(dayNumber, field, value) => {
+          setDayData(prev => ({
+            ...prev,
+            [dayNumber]: { ...prev[dayNumber], [field]: value }
+          }))
+        }}
       />
 
       {/* Submit */}
