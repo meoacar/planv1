@@ -303,15 +303,15 @@ export default async function HomePage() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-0">
+                  <Badge variant="secondary" className="bg-purple-200 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 border-0 font-semibold">
                     <Heart className="w-3 h-3 mr-1" />
                     Motivasyon
                   </Badge>
-                  <Badge variant="secondary" className="bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 border-0">
+                  <Badge variant="secondary" className="bg-pink-200 dark:bg-pink-900/50 text-pink-800 dark:text-pink-200 border-0 font-semibold">
                     <Sparkles className="w-3 h-3 mr-1" />
                     Tarifler
                   </Badge>
-                  <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-0">
+                  <Badge variant="secondary" className="bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border-0 font-semibold">
                     <MessageCircle className="w-3 h-3 mr-1" />
                     Sohbet
                   </Badge>
@@ -358,15 +358,15 @@ export default async function HomePage() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-0">
+                  <Badge variant="secondary" className="bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border-0 font-semibold">
                     <Flame className="w-3 h-3 mr-1" />
                     Rekabet
                   </Badge>
-                  <Badge variant="secondary" className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-0">
+                  <Badge variant="secondary" className="bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-200 border-0 font-semibold">
                     <Zap className="w-3 h-3 mr-1" />
                     XP Sistemi
                   </Badge>
-                  <Badge variant="secondary" className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border-0">
+                  <Badge variant="secondary" className="bg-amber-200 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 border-0 font-semibold">
                     <Crown className="w-3 h-3 mr-1" />
                     Ödüller
                   </Badge>
