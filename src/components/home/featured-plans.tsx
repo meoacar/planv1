@@ -33,10 +33,12 @@ interface Plan {
     username: string
     image: string | null
   }
-  _count: {
-    likes: number
-    comments: number
+  _count?: {
+    likes?: number
+    comments?: number
   }
+  likesCount?: number
+  commentsCount?: number
   createdAt: string
 }
 
@@ -205,11 +207,11 @@ export function FeaturedPlans() {
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className="flex items-center gap-1">
                       <Heart className="w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500" />
-                      <span className="font-semibold">{plan._count.likes}</span>
+                      <span className="font-semibold">{plan._count?.likes || plan.likesCount || 0}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-500" />
-                      <span className="font-semibold">{plan._count.comments}</span>
+                      <span className="font-semibold">{plan._count?.comments || plan.commentsCount || 0}</span>
                     </div>
                   </div>
                   <Badge variant="secondary" className="text-xs">
