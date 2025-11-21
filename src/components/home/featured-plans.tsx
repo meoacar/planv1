@@ -146,10 +146,13 @@ export function FeaturedPlans() {
             <TrendingUp className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
             Popüler Planlar
           </Badge>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 md:mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 dark:from-purple-400 dark:via-pink-400 dark:to-orange-400 bg-clip-text text-transparent px-4">
-            Gerçek İnsanlar, Gerçek Sonuçlar 🎯
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 md:mb-4 px-4">
+            <span className="bg-gradient-to-r from-purple-700 via-pink-700 to-orange-700 dark:from-purple-300 dark:via-pink-300 dark:to-orange-300 bg-clip-text text-transparent drop-shadow-sm">
+              Gerçek İnsanlar, Gerçek Sonuçlar
+            </span>{' '}
+            <span className="text-4xl md:text-5xl lg:text-6xl">🎯</span>
           </h2>
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+          <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 font-medium max-w-2xl mx-auto px-4">
             Binlerce kullanıcının başarıyla uyguladığı planları keşfet. 
             <span className="hidden md:inline"> Hemen şimdi sen de başla!</span>
           </p>
