@@ -187,7 +187,7 @@ export default function SinStreak() {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">
-                Sonraki Milestone: {nextMilestone} gün
+                Hedef: {nextMilestone} gün
               </span>
               <span className="font-semibold text-foreground">
                 {nextMilestone - streakData.currentStreak} gün kaldı
