@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
     const result = await sendPushToUser(session.user.id, 'custom', {
       title: '🔔 Test Bildirimi',
       body: 'Push notification sistemi çalışıyor! 🎉',
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/badge-72x72.png',
+      icon: '/maskot/maskot-192.png',
+      badge: '/maskot/maskot-192.png',
       data: { url: '/gunah-sayaci', test: true },
       tag: 'test-notification',
     });

@@ -1,70 +1,77 @@
 /**
- * Service Worker - Push Notifications
- * Web Push API için service worker
+ * Service Worker for Push Notifications
+ * Zayıflama Planı - Push Notification Handler
  */
 
+// Service Worker versiyonu
+const CACHE_VERSION = 'v1';
+const CACHE_NAME = `zayiflamaplan-${CACHE_VERSION}`;
+
+// Install event
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
+  console.log('[SW] Installing service worker...');
   self.skipWaiting();
 });
 
+// Activate event
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
-  event.waitUntil(clients.claim());
+  console.log('[SW] Activating service worker...');
+  event.waitUntil(
+    clients.claim().then(() => {
+      console.log('[SW] Service worker activated');
+    })
+  );
 });
 
-// Push notification alındığında
+// Push event - Bildirim geldiğinde
 self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received:', event);
 
-  if (!event.data) {
-    console.log('[SW] No data in push event');
-    return;
-  }
+  let data = {
+    title: 'Zayıflama Planı',
+    body: 'Yeni bir bildiriminiz var!',
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
+    data: { url: '/' },
+  };
 
   try {
-    const data = event.data.json();
-    console.log('[SW] Push data:', data);
-    
-    const { title, body, icon, badge, data: customData, tag, requireInteraction } = data;
-
-    const options = {
-      body,
-      icon: icon || '/icons/icon-192x192.png',
-      badge: badge || '/icons/badge-72x72.png',
-      tag: tag || 'default',
-      requireInteraction: requireInteraction || false,
-      data: customData || {},
-      vibrate: [200, 100, 200],
-      actions: [
-        {
-          action: 'open',
-          title: 'Aç',
-        },
-        {
-          action: 'close',
-          title: 'Kapat',
-        },
-      ],
-    };
-
-    console.log('[SW] Showing notification:', title, options);
-
-    event.waitUntil(
-      self.registration.showNotification(title, options).then(() => {
-        console.log('[SW] Notification shown successfully!');
-      }).catch((error) => {
-        console.error('[SW] Error showing notification:', error);
-      })
-    );
+    if (event.data) {
+      data = event.data.json();
+      console.log('[SW] Push data:', data);
+    }
   } catch (error) {
-    console.error('[SW] Error processing push:', error);
+    console.error('[SW] Error parsing push data:', error);
   }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || '/maskot/maskot-192.png',
+    badge: data.badge || '/maskot/maskot-192.png',
+    tag: data.tag || 'notification',
+    requireInteraction: data.requireInteraction || false,
+    data: data.data || {},
+    vibrate: [200, 100, 200],
+    actions: [
+      {
+        action: 'open',
+        title: 'Aç',
+      },
+      {
+        action: 'close',
+        title: 'Kapat',
+      },
+    ],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
 });
 
-// Notification tıklandığında
+// Notification click event - Bildirime tıklandığında
 self.addEventListener('notificationclick', (event) => {
-  console.log('Notification clicked:', event);
+  console.log('[SW] Notification clicked:', event);
 
   event.notification.close();
 
@@ -72,17 +79,22 @@ self.addEventListener('notificationclick', (event) => {
     return;
   }
 
-  const urlToOpen = event.notification.data?.url || '/gunah-sayaci';
+  const urlToOpen = event.notification.data?.url || '/';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Zaten açık bir pencere varsa, onu kullan
+      // Zaten açık bir pencere var mı?
       for (const client of clientList) {
-        if (client.url.includes(urlToOpen) && 'focus' in client) {
-          return client.focus();
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          return client.focus().then(() => {
+            if ('navigate' in client) {
+              return client.navigate(urlToOpen);
+            }
+          });
         }
       }
-      // Yoksa yeni pencere aç
+
+      // Yeni pencere aç
       if (clients.openWindow) {
         return clients.openWindow(urlToOpen);
       }
@@ -90,7 +102,37 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Notification kapatıldığında
+// Notification close event
 self.addEventListener('notificationclose', (event) => {
-  console.log('Notification closed:', event);
+  console.log('[SW] Notification closed:', event);
 });
+
+// Message event - Client'tan mesaj geldiğinde
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Fetch event - Offline support için (opsiyonel)
+self.addEventListener('fetch', (event) => {
+  // Sadece GET isteklerini cache'le
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // API isteklerini cache'leme
+  if (event.request.url.includes('/api/')) {
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+
+console.log('[SW] Service worker loaded');

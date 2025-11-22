@@ -161,8 +161,8 @@ export async function sendDailyReminder(userId: string) {
   return sendPushToUser(userId, 'daily_reminder', {
     title: '🍽️ Günlük Kontrol Zamanı!',
     body: 'Bugün kaçamak yaptın mı? Günlüğünü güncellemeyi unutma!',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
     data: { url: '/gunah-sayaci' },
     tag: 'daily-reminder',
   });
@@ -183,8 +183,8 @@ export async function sendWeeklySummary(userId: string) {
   return sendPushToUser(userId, 'weekly_summary', {
     title: '📊 Haftalık Özetin Hazır!',
     body: 'Bu haftaki performansını görmek için tıkla!',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
     data: { url: '/gunah-sayaci?tab=summary' },
     tag: 'weekly-summary',
     requireInteraction: true,
@@ -210,8 +210,8 @@ export async function sendBadgeEarned(
   return sendPushToUser(userId, 'badge_earned', {
     title: '🏆 Yeni Rozet Kazandın!',
     body: `Tebrikler! "${badgeName}" rozetini kazandın!`,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
     data: { url: '/gunah-sayaci?tab=badges', badgeName },
     tag: 'badge-earned',
     requireInteraction: true,
@@ -233,8 +233,8 @@ export async function sendStreakWarning(userId: string, currentStreak: number) {
   return sendPushToUser(userId, 'streak_warning', {
     title: '🔥 Streak\'in Tehlikede!',
     body: `${currentStreak} günlük streak'ini kaybetme! Bugün temiz kal!`,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
     data: { url: '/gunah-sayaci?tab=streak', currentStreak },
     tag: 'streak-warning',
     requireInteraction: true,
@@ -259,8 +259,8 @@ export async function sendChallengeReminder(
   return sendPushToUser(userId, 'challenge_reminder', {
     title: '🎯 Challenge Hatırlatıcısı',
     body: `"${challengeTitle}" challenge'ı devam ediyor! İlerlemeni kontrol et!`,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
     data: { url: '/gunah-sayaci?tab=challenges', challengeTitle },
     tag: 'challenge-reminder',
   });
