@@ -554,7 +554,7 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
   const currentDay = days.find(d => d.dayNumber === activeDay) || days[0]
 
   const handleDayChange = (newDay: number) => {
-    if (newDay < 1 || newDay > days.length) return
+    if (newDay < 1 || newDay > duration) return
     
     setDirection(newDay > activeDay ? 1 : -1)
     setActiveDay(newDay)
@@ -704,8 +704,8 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => activeDay < days.length && handleDayChange(activeDay + 1)}
-              disabled={activeDay === days.length}
+              onClick={() => activeDay < duration && handleDayChange(activeDay + 1)}
+              disabled={activeDay === duration}
               className="flex-shrink-0 h-10 w-10 p-0"
             >
               <ChevronRight className="h-5 w-5" />
@@ -801,8 +801,8 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
 
           <Button
             variant="outline"
-            onClick={() => activeDay < days.length && handleDayChange(activeDay + 1)}
-            disabled={activeDay === days.length}
+            onClick={() => activeDay < duration && handleDayChange(activeDay + 1)}
+            disabled={activeDay === duration}
             className="gap-2"
           >
             Sonraki Gün
