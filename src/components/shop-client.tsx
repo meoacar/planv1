@@ -52,8 +52,32 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
   const [coins, setCoins] = useState(userCoins);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('popular');
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
-  const [cart, setCart] = useState<Map<string, number>>(new Map());
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('shop-favorites');
+      if (saved) {
+        try {
+          return new Set(JSON.parse(saved));
+        } catch (e) {
+          return new Set();
+        }
+      }
+    }
+    return new Set();
+  });
+  const [cart, setCart] = useState<Map<string, number>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('shop-cart');
+      if (saved) {
+        try {
+          return new Map(JSON.parse(saved));
+        } catch (e) {
+          return new Map();
+        }
+      }
+    }
+    return new Map();
+  });
 
   const categories = ['all', ...new Set(items.map((item) => item.category))];
   
@@ -127,6 +151,10 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
         newFavorites.add(itemKey);
         toast.success('Favorilere eklendi! ⭐');
       }
+      // localStorage'a kaydet
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('shop-favorites', JSON.stringify(Array.from(newFavorites)));
+      }
       return newFavorites;
     });
   };
@@ -147,6 +175,12 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
 
       newCart.set(itemKey, currentQty + 1);
       toast.success('Sepete eklendi! 🛒');
+      
+      // localStorage'a kaydet
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('shop-cart', JSON.stringify(Array.from(newCart.entries())));
+      }
+      
       return newCart;
     });
   };
@@ -162,12 +196,21 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
         newCart.set(itemKey, currentQty - 1);
       }
       
+      // localStorage'a kaydet
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('shop-cart', JSON.stringify(Array.from(newCart.entries())));
+      }
+      
       return newCart;
     });
   };
 
   const clearCart = () => {
     setCart(new Map());
+    // localStorage'dan temizle
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('shop-cart');
+    }
     toast.info('Sepet temizlendi');
   };
 
@@ -200,6 +243,10 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
       setCart((prev) => {
         const newCart = new Map(prev);
         newCart.delete(itemKey);
+        // localStorage'a kaydet
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('shop-cart', JSON.stringify(Array.from(newCart.entries())));
+        }
         return newCart;
       });
       
@@ -701,6 +748,10 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                               setCart((prev) => {
                                 const newCart = new Map(prev);
                                 newCart.delete(itemKey);
+                                // localStorage'a kaydet
+                                if (typeof window !== 'undefined') {
+                                  localStorage.setItem('shop-cart', JSON.stringify(Array.from(newCart.entries())));
+                                }
                                 return newCart;
                               });
                               toast.info('Üründen çıkarıldı');
