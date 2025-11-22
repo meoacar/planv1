@@ -70,15 +70,33 @@ export default async function MagazaAdminPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardTitle>Ürünler</CardTitle>
-            <CardDescription>Ürün fiyatları ve stok yönetimi</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">🪙</span>
+              Coin Ürünleri
+            </CardTitle>
+            <CardDescription>Coin ile satın alınan ürünler</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/admin/magaza/urunler">
-              <Button className="w-full">Ürünleri Yönet</Button>
+            <Link href="/admin/magaza/coin-urunler">
+              <Button className="w-full">Yönet</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">💎</span>
+              Premium Ürünler
+            </CardTitle>
+            <CardDescription>Gerçek para ile satılan ürünler</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/admin/magaza/premium-urunler">
+              <Button className="w-full">Yönet</Button>
             </Link>
           </CardContent>
         </Card>
@@ -86,11 +104,11 @@ export default async function MagazaAdminPage() {
         <Card>
           <CardHeader>
             <CardTitle>Siparişler</CardTitle>
-            <CardDescription>Müşteri siparişlerini görüntüle</CardDescription>
+            <CardDescription>Premium ürün siparişleri</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/admin/magaza/siparisler">
-              <Button className="w-full">Siparişleri Görüntüle</Button>
+              <Button className="w-full">Görüntüle</Button>
             </Link>
           </CardContent>
         </Card>
@@ -98,11 +116,11 @@ export default async function MagazaAdminPage() {
         <Card>
           <CardHeader>
             <CardTitle>Kuponlar</CardTitle>
-            <CardDescription>İndirim kuponları oluştur</CardDescription>
+            <CardDescription>İndirim kuponları</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/admin/magaza/kuponlar">
-              <Button className="w-full">Kuponları Yönet</Button>
+              <Button className="w-full">Yönet</Button>
             </Link>
           </CardContent>
         </Card>

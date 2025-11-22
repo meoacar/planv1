@@ -101,8 +101,13 @@ const menuItems = [
     icon: ShoppingBag,
   },
   {
-    title: "Ürünler",
-    href: "/admin/magaza/urunler",
+    title: "Coin Ürünleri",
+    href: "/admin/magaza/coin-urunler",
+    icon: Package,
+  },
+  {
+    title: "Premium Ürünler",
+    href: "/admin/magaza/premium-urunler",
     icon: Package,
   },
   {
