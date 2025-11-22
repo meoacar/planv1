@@ -125,8 +125,7 @@ export function CreateGroupForm({ categories }: CreateGroupFormProps) {
         throw new Error(data.error?.message || "Grup oluşturulamadı");
       }
 
-      alert(data.message || "Grubunuz oluşturuldu ve admin onayı bekliyor.");
-      router.push("/gruplar");
+      router.push(`/gruplar/${data.data.slug}`);
     } catch (err: any) {
       setError(err.message);
     } finally {

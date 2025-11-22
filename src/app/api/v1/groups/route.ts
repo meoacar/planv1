@@ -22,6 +22,7 @@ const createGroupSchema = z.object({
   maxMembers: z.number().int().positive().optional(),
   tags: z.array(z.string()).optional(),
   rules: z.string().max(1000).optional(),
+  image: z.string().url().optional(),
 });
 
 // GET /api/v1/groups - List groups
@@ -125,7 +126,9 @@ export async function POST(req: NextRequest) {
         maxMembers: validated.maxMembers,
         tags: validated.tags ? JSON.stringify(validated.tags) : null,
         rules: validated.rules,
-        status: "pending", // Admin onayı bekliyor
+        image: validated.image,
+        status: "published", // Otomatik yayınla
+        memberCount: 1, // Kurucu otomatik üye
         creatorId: session.user.id,
         members: {
           create: {
@@ -149,7 +152,7 @@ export async function POST(req: NextRequest) {
     // Admin'lere bildirim gönder
     await notifyAdmins({
       type: 'group_pending',
-      title: 'Yeni Grup Onay Bekliyor',
+      title: 'Yeni Grup Oluşturuldu',
       message: `${group.creator.name || group.creator.username} tarafından "${group.name}" grubu oluşturuldu`,
       link: `/admin/gruplar`,
       metadata: {
@@ -161,7 +164,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: group,
-      message: "Grubunuz oluşturuldu ve admin onayı bekliyor.",
+      message: "Grubunuz başarıyla oluşturuldu!",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
