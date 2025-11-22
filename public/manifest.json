@@ -4,8 +4,8 @@
   "description": "Kişiselleştirilmiş zayıflama ve sağlıklı yaşam platformu",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#10b981",
+  "background_color": "#1e1b4b",
+  "theme_color": "#1e1b4b",
   "orientation": "portrait-primary",
   "icons": [
     {

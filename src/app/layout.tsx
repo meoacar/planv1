@@ -107,6 +107,25 @@ export default async function RootLayout({
 
   return (
     <html lang="tr" suppressHydrationWarning>
+      <head>
+        <meta name="color-scheme" content="dark light" />
+        <meta name="theme-color" content="#1e1b4b" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('zayiflamaplan-theme') || 'dark';
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className={inter.className} suppressHydrationWarning>
         {googleAnalytics && (
           <>
@@ -127,9 +146,9 @@ export default async function RootLayout({
         <SessionProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
-            disableTransitionOnChange
+            storageKey="zayiflamaplan-theme"
           >
             {children}
           </ThemeProvider>
