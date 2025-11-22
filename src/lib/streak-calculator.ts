@@ -47,6 +47,21 @@ export async function calculateUserStreak(userId: string): Promise<{
       .filter((dateStr) => !freezeDates.has(dateStr)) // Freeze günlerini hariç tut
   );
 
+  // Eğer hiç günah yoksa, streak 0 olmalı (henüz takip başlamamış)
+  if (sins.length === 0) {
+    return {
+      currentStreak: 0,
+      longestStreak: 0,
+      lastCleanDate: null,
+      streakBroken: false,
+    };
+  }
+
+  // İlk günah tarihini bul - streak hesaplaması buradan başlar
+  const firstSin = sins[sins.length - 1];
+  const firstSinDate = new Date(firstSin.createdAt);
+  firstSinDate.setHours(0, 0, 0, 0);
+
   // Mevcut streak'i hesapla (bugünden geriye doğru)
   let currentStreak = 0;
   let checkDate = new Date(today);
@@ -62,7 +77,8 @@ export async function calculateUserStreak(userId: string): Promise<{
     lastCleanDate = null;
   } else {
     // Bugünden başlayarak geriye doğru temiz günleri say
-    while (true) {
+    // Ama ilk günah tarihinden öncesine gitme
+    while (checkDate >= firstSinDate) {
       const dateStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
 
       if (sinDates.has(dateStr)) {
@@ -85,28 +101,18 @@ export async function calculateUserStreak(userId: string): Promise<{
     }
   }
 
-  // En uzun streak'i hesapla
-  // Eğer hiç günah yoksa, kullanıcının hesap yaşı kadar streak var demektir
+  // En uzun streak'i hesapla (ilk günah tarihinden bugüne)
   let longestStreak = currentStreak;
+  let tempStreak = 0;
+  
+  for (let d = new Date(firstSinDate); d <= today; d.setDate(d.getDate() + 1)) {
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-  if (sins.length > 0) {
-    // İlk günah tarihini bul
-    const firstSin = sins[sins.length - 1];
-    const firstSinDate = new Date(firstSin.createdAt);
-    firstSinDate.setHours(0, 0, 0, 0);
-
-    // Tüm günleri kontrol et (ilk günah tarihinden bugüne)
-    let tempStreak = 0;
-    
-    for (let d = new Date(firstSinDate); d <= today; d.setDate(d.getDate() + 1)) {
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-      if (!sinDates.has(dateStr)) {
-        tempStreak++;
-        longestStreak = Math.max(longestStreak, tempStreak);
-      } else {
-        tempStreak = 0;
-      }
+    if (!sinDates.has(dateStr)) {
+      tempStreak++;
+      longestStreak = Math.max(longestStreak, tempStreak);
+    } else {
+      tempStreak = 0;
     }
   }
 
