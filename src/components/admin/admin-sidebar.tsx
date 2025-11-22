@@ -22,6 +22,10 @@ import {
   UsersRound,
   BookOpen,
   Flame,
+  ShoppingBag,
+  Package,
+  ShoppingCart,
+  Tag,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -90,6 +94,26 @@ const menuItems = [
     title: "Günah Sayacı",
     href: "/admin/gunah-sayaci",
     icon: Flame,
+  },
+  {
+    title: "Mağaza",
+    href: "/admin/magaza",
+    icon: ShoppingBag,
+  },
+  {
+    title: "Ürünler",
+    href: "/admin/magaza/urunler",
+    icon: Package,
+  },
+  {
+    title: "Siparişler",
+    href: "/admin/magaza/siparisler",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Kuponlar",
+    href: "/admin/magaza/kuponlar",
+    icon: Tag,
   },
   {
     title: "Cohorts",

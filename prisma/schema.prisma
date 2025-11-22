@@ -100,6 +100,7 @@ model User {
   quests                 UserDailyQuest[]
   leagueParticipations   UserLeague[]
   purchases              UserPurchase[]
+  orders                 Order[]
   sinBadges              UserSinBadge[]
   sinChallenges          UserSinChallenge[]
   weightLogs             WeightLog[]
@@ -310,16 +311,16 @@ model RecipeLike {
 }
 
 model Comment {
-  id         String        @id @default(cuid())
+  id         String              @id @default(cuid())
   authorId   String
-  targetType TargetType
+  targetType comments_targetType
   targetId   String
-  body       String        @db.Text
-  status     CommentStatus @default(visible)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  plan       Plan          @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  body       String              @db.Text
+  status     CommentStatus       @default(visible)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  author     User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  plan       Plan                @relation(fields: [targetId], references: [id], onDelete: Cascade)
 
   @@index([targetType, targetId, createdAt])
   @@index([authorId])
@@ -329,13 +330,13 @@ model Comment {
 }
 
 model Like {
-  id         String     @id @default(cuid())
+  id         String           @id @default(cuid())
   userId     String
-  targetType TargetType
+  targetType likes_targetType
   targetId   String
-  createdAt  DateTime   @default(now())
-  plan       Plan       @relation(fields: [targetId], references: [id], onDelete: Cascade)
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime         @default(now())
+  plan       Plan             @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, targetType, targetId])
   @@index([targetType, targetId])
@@ -345,12 +346,12 @@ model Like {
 }
 
 model Favorite {
-  id         String     @id @default(cuid())
+  id         String               @id @default(cuid())
   userId     String
-  targetType TargetType
+  targetType favorites_targetType
   targetId   String
-  createdAt  DateTime   @default(now())
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime             @default(now())
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, targetType, targetId])
   @@index([targetType, targetId])
@@ -402,16 +403,16 @@ model ProgressPhoto {
 }
 
 model Notification {
-  id         String           @id @default(cuid())
+  id         String                    @id @default(cuid())
   userId     String
-  type       NotificationType
+  type       notifications_type
   title      String
-  body       String           @db.Text
-  targetType TargetType?
+  body       String                    @db.Text
+  targetType notifications_targetType?
   targetId   String?
-  read       Boolean          @default(false)
-  createdAt  DateTime         @default(now())
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  read       Boolean                   @default(false)
+  createdAt  DateTime                  @default(now())
+  user       User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, read, createdAt])
   @@map("notifications")
@@ -1614,27 +1615,10 @@ enum CommentStatus {
   hidden
 }
 
-enum TargetType {
-  plan
-  photo
-  confession
-}
-
 enum PhotoType {
   before
   after
   progress
-}
-
-enum NotificationType {
-  like
-  comment
-  follow
-  plan_approved
-  plan_rejected
-  message
-  confession_approved
-  confession_rejected
 }
 
 enum RecipeCategory {
@@ -1868,4 +1852,115 @@ enum FriendActivityType {
   streak_milestone
   challenge_completed
   level_up
+}
+
+enum comments_targetType {
+  plan
+  photo
+}
+
+enum favorites_targetType {
+  plan
+  photo
+}
+
+enum likes_targetType {
+  plan
+  photo
+}
+
+enum notifications_type {
+  like
+  comment
+  follow
+  plan_approved
+  plan_rejected
+  message
+}
+
+enum notifications_targetType {
+  plan
+  photo
+}
+
+// ============================================
+// MAĞAZA SİSTEMİ
+// ============================================
+
+model Product {
+  id            String      @id @default(cuid())
+  name          String
+  description   String      @db.Text
+  price         Float
+  originalPrice Float?
+  stock         Int         @default(0)
+  isActive      Boolean     @default(true)
+  category      String
+  image         String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orderItems    OrderItem[]
+
+  @@index([category])
+  @@index([isActive])
+  @@map("products")
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  total     Float
+  status    OrderStatus @default(pending)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  items     OrderItem[]
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int     @default(1)
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  discountType  DiscountType @default(percentage)
+  discountValue Float
+  minPurchase   Float?
+  maxDiscount   Float?
+  usageLimit    Int?
+  usageCount    Int          @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([code])
+  @@index([isActive])
+  @@map("coupons")
+}
+
+enum OrderStatus {
+  pending
+  completed
+  cancelled
+}
+
+enum DiscountType {
+  percentage
+  fixed
 }
