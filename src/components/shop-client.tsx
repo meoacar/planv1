@@ -312,33 +312,46 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
             <div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                ✨ Premium Mağaza
+                🪙 Coin Mağazası
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground">Coinlerini harca, özel ödüller kazan!</p>
             </div>
             
-            {/* Sepet Butonu */}
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 w-full sm:w-auto"
-                onClick={() => {
-                  if (cart.size > 0) {
-                    document.getElementById('cart-section')?.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    toast.info('Sepetiniz boş');
-                  }
-                }}
-              >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                Sepetim
-                {cartItemCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-red-500 text-white">
-                    {cartItemCount}
-                  </Badge>
-                )}
-              </Button>
-            </motion.div>
+            {/* Butonlar */}
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto border-purple-500/50 hover:bg-purple-500/10"
+                  onClick={() => router.push('/magaza/premium')}
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Premium Mağaza
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 w-full sm:w-auto"
+                  onClick={() => {
+                    if (cart.size > 0) {
+                      document.getElementById('cart-section')?.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      toast.info('Sepetiniz boş');
+                    }
+                  }}
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  Sepetim
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white">
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                </Button>
+              </motion.div>
+            </div>
           </div>
         </motion.div>
 
