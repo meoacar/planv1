@@ -82,47 +82,59 @@ export default function PhotoGallery({ userId }: PhotoGalleryProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-          <TabsList>
-            <TabsTrigger value="all">Tümü ({photos.length})</TabsTrigger>
-            <TabsTrigger value="before">
-              Başlangıç ({photos.filter(p => p.type === 'before').length})
-            </TabsTrigger>
-            <TabsTrigger value="progress">
-              İlerleme ({photos.filter(p => p.type === 'progress').length})
-            </TabsTrigger>
-            <TabsTrigger value="after">
-              Sonuç ({photos.filter(p => p.type === 'after').length})
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <Button onClick={() => setUploadOpen(true)} className="ml-4">
+      {/* Mobil için düzenlenmiş header */}
+      <div className="space-y-4">
+        {/* Yükle butonu - mobilde tam genişlik */}
+        <Button 
+          onClick={() => setUploadOpen(true)} 
+          className="w-full sm:w-auto sm:ml-auto sm:flex"
+          size="lg"
+        >
           <Upload className="w-4 h-4 mr-2" />
           Fotoğraf Yükle
         </Button>
+
+        {/* Tabs - mobilde scroll */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+          <div className="overflow-x-auto -mx-4 px-4 pb-2 scrollbar-hide">
+            <TabsList className="inline-flex w-auto min-w-full sm:w-full">
+              <TabsTrigger value="all" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                Tümü ({photos.length})
+              </TabsTrigger>
+              <TabsTrigger value="before" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                Başlangıç ({photos.filter(p => p.type === 'before').length})
+              </TabsTrigger>
+              <TabsTrigger value="progress" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                İlerleme ({photos.filter(p => p.type === 'progress').length})
+              </TabsTrigger>
+              <TabsTrigger value="after" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4">
+                Sonuç ({photos.filter(p => p.type === 'after').length})
+              </TabsTrigger>
+            </TabsList>
+          </div>
+        </Tabs>
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="h-96 animate-pulse bg-muted" />
+            <Card key={i} className="h-80 sm:h-96 animate-pulse bg-muted" />
           ))}
         </div>
       ) : filteredPhotos.length === 0 ? (
-        <Card className="p-12 text-center">
-          <Upload className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="text-lg font-semibold mb-2">Henüz fotoğraf yok</h3>
-          <p className="text-muted-foreground mb-4">
+        <Card className="p-8 sm:p-12 text-center">
+          <Upload className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-base sm:text-lg font-semibold mb-2">Henüz fotoğraf yok</h3>
+          <p className="text-sm sm:text-base text-muted-foreground mb-4">
             İlerlemenizi takip etmek için fotoğraf yükleyin
           </p>
-          <Button onClick={() => setUploadOpen(true)}>
+          <Button onClick={() => setUploadOpen(true)} size="lg" className="w-full sm:w-auto">
+            <Upload className="w-4 h-4 mr-2" />
             İlk Fotoğrafı Yükle
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredPhotos.map((photo) => (
             <Card key={photo.id} className="overflow-hidden group">
               <div className="relative aspect-[3/4] bg-muted">
@@ -133,11 +145,13 @@ export default function PhotoGallery({ userId }: PhotoGalleryProps) {
                   className="object-cover"
                   unoptimized
                 />
-                <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                {/* Mobilde her zaman görünür butonlar */}
+                <div className="absolute top-2 right-2 flex gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <Button
                     size="sm"
                     variant="secondary"
                     onClick={() => setEditPhoto(photo)}
+                    className="h-8 w-8 p-0"
                   >
                     <Edit2 className="w-4 h-4" />
                   </Button>
@@ -145,30 +159,31 @@ export default function PhotoGallery({ userId }: PhotoGalleryProps) {
                     size="sm"
                     variant="destructive"
                     onClick={() => handleDelete(photo.id)}
+                    className="h-8 w-8 p-0"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
                 <div className="absolute top-2 left-2">
-                  <span className="px-2 py-1 bg-black/70 text-white text-xs rounded">
+                  <span className="px-2 py-1 bg-black/70 text-white text-xs rounded-md">
                     {typeLabels[photo.type]}
                   </span>
                 </div>
               </div>
-              <div className="p-4 space-y-2">
+              <div className="p-3 sm:p-4 space-y-2">
                 {photo.caption && (
-                  <p className="text-sm">{photo.caption}</p>
+                  <p className="text-sm line-clamp-2">{photo.caption}</p>
                 )}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground flex-wrap">
                   {photo.weight && (
                     <div className="flex items-center gap-1">
                       <Weight className="w-3 h-3" />
-                      {photo.weight} kg
+                      <span>{photo.weight} kg</span>
                     </div>
                   )}
                   <div className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
-                    {format(new Date(photo.createdAt), 'dd MMM yyyy', { locale: tr })}
+                    <span>{format(new Date(photo.createdAt), 'dd MMM yyyy', { locale: tr })}</span>
                   </div>
                 </div>
               </div>
