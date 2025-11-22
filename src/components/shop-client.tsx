@@ -262,19 +262,19 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 ✨ Premium Mağaza
               </h1>
-              <p className="text-muted-foreground">Coinlerini harca, özel ödüller kazan!</p>
+              <p className="text-sm sm:text-base text-muted-foreground">Coinlerini harca, özel ödüller kazan!</p>
             </div>
             
             {/* Sepet Butonu */}
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                className="relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 w-full sm:w-auto"
                 onClick={() => {
                   if (cart.size > 0) {
                     document.getElementById('cart-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -316,18 +316,19 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                   </div>
                 </div>
                 
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className="border-yellow-500/50 hover:bg-yellow-500/10"
+                    className="border-yellow-500/50 hover:bg-yellow-500/10 w-full sm:w-auto"
                     onClick={() => router.push('/gorevler')}
                   >
                     <TrendingUp className="w-4 h-4 mr-2" />
-                    Coin Kazan
+                    <span className="hidden sm:inline">Coin Kazan</span>
+                    <span className="sm:hidden">Kazan</span>
                   </Button>
                   <Button
                     variant="outline"
-                    className="border-purple-500/50 hover:bg-purple-500/10"
+                    className="border-purple-500/50 hover:bg-purple-500/10 w-full sm:w-auto"
                     onClick={() => {
                       const favItems = items.filter((item) => favorites.has(item.key));
                       if (favItems.length === 0) {
@@ -557,7 +558,7 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                         </div>
                       )}
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           className="flex-1"
                           variant={inCart ? 'secondary' : 'default'}
@@ -578,6 +579,7 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                         </Button>
                         <Button
                           variant="outline"
+                          className="sm:w-auto"
                           onClick={() => purchaseItem(item.key, item.price, 1)}
                           disabled={
                             !canAfford || outOfStock || purchasing === item.key
@@ -651,30 +653,33 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg"
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-lg"
                       >
-                        <div className="text-3xl">{item.icon}</div>
-                        <div className="flex-1">
-                          <div className="font-semibold">{item.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {item.price.toLocaleString('tr-TR')} 🪙 × {quantity}
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                          <div className="text-2xl sm:text-3xl">{item.icon}</div>
+                          <div className="flex-1 sm:flex-none min-w-0">
+                            <div className="font-semibold truncate">{item.name}</div>
+                            <div className="text-xs sm:text-sm text-muted-foreground">
+                              {item.price.toLocaleString('tr-TR')} 🪙 × {quantity}
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-between w-full sm:w-auto sm:flex-1 gap-2 sm:gap-3">
                           <div className="text-right">
-                            <div className="font-bold text-lg">
+                            <div className="font-bold text-base sm:text-lg">
                               {itemTotal.toLocaleString('tr-TR')} 🪙
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 sm:gap-2">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => removeFromCart(itemKey)}
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                             >
                               -
                             </Button>
-                            <span className="font-bold w-8 text-center">
+                            <span className="font-bold w-6 sm:w-8 text-center text-sm sm:text-base">
                               {quantity}
                             </span>
                             <Button
@@ -684,6 +689,7 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                               disabled={
                                 item.stock !== null && quantity >= item.stock
                               }
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                             >
                               +
                             </Button>
@@ -699,6 +705,7 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                               });
                               toast.info('Üründen çıkarıldı');
                             }}
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
                             ✕
                           </Button>
@@ -708,21 +715,21 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                   })}
 
                   <div className="border-t pt-4 mt-4">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
                       <div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-xs sm:text-sm text-muted-foreground">
                           Toplam Tutar
                         </div>
-                        <div className="text-3xl font-bold text-purple-600">
+                        <div className="text-2xl sm:text-3xl font-bold text-purple-600">
                           {cartTotal.toLocaleString('tr-TR')} 🪙
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground">
+                      <div className="text-left sm:text-right">
+                        <div className="text-xs sm:text-sm text-muted-foreground">
                           Kalan Bakiye
                         </div>
                         <div
-                          className={`text-2xl font-bold ${
+                          className={`text-xl sm:text-2xl font-bold ${
                             coins >= cartTotal
                               ? 'text-green-600'
                               : 'text-red-600'
@@ -733,11 +740,11 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                       </div>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                       <Button
                         variant="outline"
                         onClick={clearCart}
-                        className="flex-1"
+                        className="w-full sm:flex-1"
                       >
                         Sepeti Temizle
                       </Button>
@@ -746,21 +753,22 @@ export function ShopClient({ items, userCoins }: ShopClientProps) {
                         disabled={
                           coins < cartTotal || purchasing === 'cart'
                         }
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                        className="w-full sm:flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                         size="lg"
                       >
                         {purchasing === 'cart' ? (
                           <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            İşleniyor...
+                            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
+                            <span className="text-sm sm:text-base">İşleniyor...</span>
                           </>
                         ) : coins < cartTotal ? (
-                          'Yetersiz Coin'
+                          <span className="text-sm sm:text-base">Yetersiz Coin</span>
                         ) : (
                           <>
-                            <ShoppingCart className="w-5 h-5 mr-2" />
-                            Tümünü Satın Al ({cartTotal.toLocaleString('tr-TR')}{' '}
-                            🪙)
+                            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                            <span className="text-sm sm:text-base">
+                              Tümünü Satın Al ({cartTotal.toLocaleString('tr-TR')} 🪙)
+                            </span>
                           </>
                         )}
                       </Button>
