@@ -29,7 +29,8 @@ import {
   Smile,
   TrendingDown,
   UserPlus,
-  BookOpen
+  BookOpen,
+  ShoppingCart
 } from 'lucide-react'
 
 export default async function HomePage() {
@@ -607,6 +608,146 @@ export default async function HomePage() {
             <p className="text-sm text-muted-foreground mt-4">
               Her hafta yeni içerikler ekleniyor ✨
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Shop Section - NEW! */}
+      <section className="relative py-16 md:py-24 bg-gradient-to-br from-purple-900 via-pink-900 to-orange-900 text-white overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <Badge className="mb-4 px-6 py-2.5 bg-white/20 backdrop-blur-sm text-white border-white/30">
+                <Sparkles className="w-4 h-4 mr-2" />
+                YENİ! Premium Mağaza
+              </Badge>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6">
+                💎 Premium Üyelik ile<br />
+                Daha Hızlı Sonuçlar!
+              </h2>
+              <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+                Özel özellikler, kişisel koçluk ve sınırsız erişimle hedeflerine daha hızlı ulaş!
+              </p>
+            </div>
+
+            {/* Premium Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {[
+                {
+                  icon: Crown,
+                  title: 'Premium Üyelik',
+                  desc: 'Tüm özelliklere sınırsız erişim, özel rozetler ve reklamsız deneyim',
+                  price: '₺49.99',
+                  period: '/ay',
+                  badge: 'En Popüler'
+                },
+                {
+                  icon: Zap,
+                  title: 'XP Boost Paketi',
+                  desc: '2x XP kazanımı, hızlı seviye atlama ve özel ödüller',
+                  price: '₺29.99',
+                  period: '/hafta',
+                  badge: 'Hızlı Başlangıç'
+                },
+                {
+                  icon: Target,
+                  title: 'Kişisel Koçluk',
+                  desc: 'Uzman diyetisyen eşliğinde özel program ve haftalık takip',
+                  price: '₺299.99',
+                  period: '/ay',
+                  badge: 'VIP'
+                }
+              ].map((item, i) => (
+                <Card key={i} className="relative overflow-hidden bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 transition-all duration-300 hover:-translate-y-2 group">
+                  {/* Badge */}
+                  {item.badge && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 font-bold shadow-lg">
+                        {item.badge}
+                      </Badge>
+                    </div>
+                  )}
+
+                  <CardContent className="pt-8 pb-8 text-center">
+                    {/* Icon */}
+                    <div className="inline-flex p-5 rounded-2xl bg-white/20 backdrop-blur-sm mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon className="w-10 h-10 text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-2xl font-black mb-3 text-white">
+                      {item.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-sm text-white/80 mb-6 leading-relaxed min-h-[60px]">
+                      {item.desc}
+                    </p>
+
+                    {/* Price */}
+                    <div className="mb-6">
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-black text-white">
+                          {item.price}
+                        </span>
+                        <span className="text-lg text-white/70">
+                          {item.period}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Features */}
+                    <div className="space-y-2 mb-6 text-left">
+                      <div className="flex items-center gap-2 text-sm text-white/90">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                        <span>Anında aktivasyon</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-white/90">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                        <span>7/24 öncelikli destek</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-white/90">
+                        <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                        <span>Para iade garantisi</span>
+                      </div>
+                    </div>
+
+                    {/* CTA Button */}
+                    <Button 
+                      asChild 
+                      className="w-full h-12 bg-white text-purple-600 hover:bg-white/90 font-bold shadow-xl hover:shadow-2xl transition-all group"
+                    >
+                      <Link href="/magaza/premium">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        İncele
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="text-center">
+              <Button asChild size="lg" variant="outline" className="h-14 px-10 text-lg font-bold bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white/20">
+                <Link href="/magaza/premium">
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Tüm Premium Ürünleri Gör
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
+              </Button>
+              <p className="text-sm text-white/70 mt-4">
+                🔒 Güvenli ödeme • 💳 Tüm kartlar kabul edilir • ✨ Anında aktivasyon
+              </p>
+            </div>
           </div>
         </div>
       </section>
