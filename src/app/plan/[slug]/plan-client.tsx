@@ -554,7 +554,9 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
   const currentDay = days.find(d => d.dayNumber === activeDay) || days[0]
 
   const handleDayChange = (newDay: number) => {
-    if (newDay < 1 || newDay > duration) return
+    // Check if the day exists in the days array
+    const dayExists = days.some(d => d.dayNumber === newDay)
+    if (!dayExists || newDay < 1) return
     
     setDirection(newDay > activeDay ? 1 : -1)
     setActiveDay(newDay)
@@ -658,8 +660,11 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => activeDay > 1 && handleDayChange(activeDay - 1)}
-              disabled={activeDay === 1}
+              onClick={() => {
+                const prevDay = days.find(d => d.dayNumber < activeDay && d.dayNumber === Math.max(...days.filter(d => d.dayNumber < activeDay).map(d => d.dayNumber)))
+                if (prevDay) handleDayChange(prevDay.dayNumber)
+              }}
+              disabled={!days.some(d => d.dayNumber < activeDay)}
               className="flex-shrink-0 h-10 w-10 p-0"
             >
               <ChevronLeft className="h-5 w-5" />
@@ -704,8 +709,11 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => activeDay < duration && handleDayChange(activeDay + 1)}
-              disabled={activeDay === duration}
+              onClick={() => {
+                const nextDay = days.find(d => d.dayNumber > activeDay && d.dayNumber === Math.min(...days.filter(d => d.dayNumber > activeDay).map(d => d.dayNumber)))
+                if (nextDay) handleDayChange(nextDay.dayNumber)
+              }}
+              disabled={!days.some(d => d.dayNumber > activeDay)}
               className="flex-shrink-0 h-10 w-10 p-0"
             >
               <ChevronRight className="h-5 w-5" />
@@ -787,8 +795,11 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
         <div className="bg-slate-100 dark:bg-slate-900 p-4 border-t flex items-center justify-between">
           <Button
             variant="outline"
-            onClick={() => activeDay > 1 && handleDayChange(activeDay - 1)}
-            disabled={activeDay === 1}
+            onClick={() => {
+              const prevDay = days.find(d => d.dayNumber < activeDay && d.dayNumber === Math.max(...days.filter(d => d.dayNumber < activeDay).map(d => d.dayNumber)))
+              if (prevDay) handleDayChange(prevDay.dayNumber)
+            }}
+            disabled={!days.some(d => d.dayNumber < activeDay)}
             className="gap-2"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -801,8 +812,11 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
 
           <Button
             variant="outline"
-            onClick={() => activeDay < duration && handleDayChange(activeDay + 1)}
-            disabled={activeDay === duration}
+            onClick={() => {
+              const nextDay = days.find(d => d.dayNumber > activeDay && d.dayNumber === Math.min(...days.filter(d => d.dayNumber > activeDay).map(d => d.dayNumber)))
+              if (nextDay) handleDayChange(nextDay.dayNumber)
+            }}
+            disabled={!days.some(d => d.dayNumber > activeDay)}
             className="gap-2"
           >
             Sonraki Gün
