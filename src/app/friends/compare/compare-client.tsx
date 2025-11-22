@@ -151,34 +151,34 @@ export function CompareClient() {
 
         <div className="divide-y">
           {/* Level */}
-          {privacy.showStats && (
+          {privacy.showStats && friend.level !== undefined && friend.level !== null && (
             <ComparisonRow
               label="Seviye"
               icon={<TrendingUp className="h-5 w-5 text-blue-500" />}
               userValue={user.level}
-              friendValue={friend.level!}
+              friendValue={friend.level}
               format={(v) => `Seviye ${v}`}
             />
           )}
 
           {/* XP */}
-          {privacy.showStats && (
+          {privacy.showStats && friend.xp !== undefined && friend.xp !== null && (
             <ComparisonRow
               label="Deneyim Puanı"
               icon={<Target className="h-5 w-5 text-green-500" />}
               userValue={user.xp}
-              friendValue={friend.xp!}
+              friendValue={friend.xp}
               format={(v) => `${v.toLocaleString('tr-TR')} XP`}
             />
           )}
 
           {/* Streak */}
-          {privacy.showStreak && (
+          {privacy.showStreak && friend.streak !== undefined && friend.streak !== null && (
             <ComparisonRow
               label="Streak"
               icon={<Flame className="h-5 w-5 text-orange-500" />}
               userValue={user.streak}
-              friendValue={friend.streak!}
+              friendValue={friend.streak}
               format={(v) => `${v} gün`}
             />
           )}
@@ -290,12 +290,12 @@ function UserCard({
             <StatItem
               icon={<TrendingUp className="h-4 w-4 text-green-500" />}
               label="XP"
-              value={user.xp?.toLocaleString('tr-TR') || '?'}
+              value={user.xp !== undefined && user.xp !== null ? user.xp.toLocaleString('tr-TR') : '?'}
             />
             <StatItem
               icon={<Trophy className="h-4 w-4 text-yellow-500" />}
               label="Seviye"
-              value={user.level || '?'}
+              value={user.level !== undefined && user.level !== null ? user.level : '?'}
             />
           </>
         )}
@@ -312,7 +312,7 @@ function UserCard({
           <StatItem
             icon={<Award className="h-4 w-4 text-blue-500" />}
             label="Rozetler"
-            value={user.sinBadges?.length || 0}
+            value={user.sinBadges?.length !== undefined ? user.sinBadges.length : 0}
           />
         )}
 
