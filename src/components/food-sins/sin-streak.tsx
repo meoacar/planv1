@@ -179,7 +179,7 @@ export default function SinStreak() {
               </div>
             </div>
             <Badge variant="secondary" className={`${streakLevel.color} text-lg px-4 py-1`}>
-              {streakLevel.level} Seviye
+              {streakLevel.emoji} {streakLevel.level} Seviye
             </Badge>
           </div>
 
@@ -325,7 +325,7 @@ export default function SinStreak() {
                   }`}
                 >
                   <span className="text-3xl">{milestone.emoji}</span>
-                  <p className="text-sm font-semibold mt-1 text-foreground">{milestone.days} Gün</p>
+                  <p className="text-sm font-semibold mt-1 text-foreground">{milestone.days} gün</p>
                   <p className="text-xs text-muted-foreground">+{milestone.xp} XP</p>
                   {achieved && (
                     <Badge variant="secondary" className="mt-1 text-xs">
