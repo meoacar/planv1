@@ -546,20 +546,22 @@ interface DailyMenuViewerProps {
 }
 
 export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: DailyMenuViewerProps) {
-  const [activeDay, setActiveDay] = useState(userProgress > 0 ? userProgress : 1)
+  // Always start from day 1, not from userProgress
+  const [activeDay, setActiveDay] = useState(1)
   const [direction, setDirection] = useState(0)
-  const scrollContainerRef = useState<HTMLDivElement | null>(null)[0]
   
-  const currentDay = days.find(d => d.dayNumber === activeDay) || days[0]
+  const currentDay = days.find(d => d.dayNumber === activeDay)
 
   const handleDayChange = (newDay: number) => {
+    if (newDay < 1 || newDay > days.length) return
+    
     setDirection(newDay > activeDay ? 1 : -1)
     setActiveDay(newDay)
     
     // Scroll to active day button
     setTimeout(() => {
       const activeButton = document.querySelector(`[data-day="${newDay}"]`)
-      if (activeButton && scrollContainerRef) {
+      if (activeButton) {
         activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
       }
     }, 100)
