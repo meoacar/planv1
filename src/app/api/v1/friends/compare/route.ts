@@ -50,42 +50,51 @@ export async function GET(req: NextRequest) {
     const monthEnd = endOfMonth(now);
 
     // Kullanıcı verileri
-    const [user, friend] = await Promise.all([
-      prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          level: true,
-          xp: true,
-          streak: true,
-          coins: true,
-          sinBadges: {
-            include: { badge: true },
-          },
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        image: true,
+        level: true,
+        xp: true,
+        streak: true,
+        coins: true,
+        sinBadges: {
+          include: { badge: true },
         },
-      }),
-      prisma.user.findUnique({
-        where: { id: friendId },
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          level: friendSettings?.showStats ? true : false,
-          xp: friendSettings?.showStats ? true : false,
-          streak: friendSettings?.showStreak ? true : false,
-          coins: friendSettings?.showStats ? true : false,
-          sinBadges: friendSettings?.showBadges
-            ? {
-                include: { badge: true },
-              }
-            : false,
-        },
-      }),
-    ]);
+      },
+    });
+
+    // Arkadaş verilerini gizlilik ayarlarına göre al
+    const friendSelectFields: any = {
+      id: true,
+      name: true,
+      username: true,
+      image: true,
+    };
+
+    if (friendSettings?.showStats ?? true) {
+      friendSelectFields.level = true;
+      friendSelectFields.xp = true;
+      friendSelectFields.coins = true;
+    }
+
+    if (friendSettings?.showStreak ?? true) {
+      friendSelectFields.streak = true;
+    }
+
+    if (friendSettings?.showBadges ?? true) {
+      friendSelectFields.sinBadges = {
+        include: { badge: true },
+      };
+    }
+
+    const friend = await prisma.user.findUnique({
+      where: { id: friendId },
+      select: friendSelectFields,
+    });
 
     if (!user || !friend) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
