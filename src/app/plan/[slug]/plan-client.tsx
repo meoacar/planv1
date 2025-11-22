@@ -550,7 +550,8 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
   const [activeDay, setActiveDay] = useState(1)
   const [direction, setDirection] = useState(0)
   
-  const currentDay = days.find(d => d.dayNumber === activeDay)
+  // Find current day, fallback to first day if not found
+  const currentDay = days.find(d => d.dayNumber === activeDay) || days[0]
 
   const handleDayChange = (newDay: number) => {
     if (newDay < 1 || newDay > days.length) return
