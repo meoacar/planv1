@@ -548,13 +548,30 @@ interface DailyMenuViewerProps {
 export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: DailyMenuViewerProps) {
   const [activeDay, setActiveDay] = useState(userProgress > 0 ? userProgress : 1)
   const [direction, setDirection] = useState(0)
+  const scrollContainerRef = useState<HTMLDivElement | null>(null)[0]
   
   const currentDay = days.find(d => d.dayNumber === activeDay) || days[0]
 
   const handleDayChange = (newDay: number) => {
     setDirection(newDay > activeDay ? 1 : -1)
     setActiveDay(newDay)
+    
+    // Scroll to active day button
+    setTimeout(() => {
+      const activeButton = document.querySelector(`[data-day="${newDay}"]`)
+      if (activeButton && scrollContainerRef) {
+        activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+      }
+    }, 100)
   }
+
+  // Auto scroll to active day on mount
+  useEffect(() => {
+    const activeButton = document.querySelector(`[data-day="${activeDay}"]`)
+    if (activeButton) {
+      activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }
+  }, [])
 
   const meals = [
     { 
@@ -640,31 +657,42 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
               size="sm"
               onClick={() => activeDay > 1 && handleDayChange(activeDay - 1)}
               disabled={activeDay === 1}
-              className="flex-shrink-0"
+              className="flex-shrink-0 h-10 w-10 p-0"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-5 w-5" />
             </Button>
 
-            <div className="flex-1 overflow-x-auto">
-              <div className="flex gap-2 min-w-max px-2">
+            <div 
+              className="flex-1 overflow-x-auto scrollbar-hide touch-pan-x snap-x snap-mandatory"
+              style={{ 
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none'
+              }}
+            >
+              <div className="flex gap-2 px-2" style={{ minWidth: 'max-content' }}>
                 {days.map((day) => (
                   <motion.button
                     key={day.id}
+                    data-day={day.dayNumber}
                     onClick={() => handleDayChange(day.dayNumber)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                    className={`relative px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap min-w-[80px] snap-center ${
                       activeDay === day.dayNumber
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                        : 'bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                        : 'bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                     }`}
                   >
                     {day.dayNumber <= userProgress && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-xs">
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-xs shadow-md">
                         ✓
                       </div>
                     )}
-                    Gün {day.dayNumber}
+                    <div className="flex flex-col items-center">
+                      <span className="text-xs opacity-75">Gün</span>
+                      <span className="text-lg font-bold">{day.dayNumber}</span>
+                    </div>
                   </motion.button>
                 ))}
               </div>
@@ -675,9 +703,9 @@ export function DailyMenuViewer({ days, duration, planId, userProgress = 0 }: Da
               size="sm"
               onClick={() => activeDay < days.length && handleDayChange(activeDay + 1)}
               disabled={activeDay === days.length}
-              className="flex-shrink-0"
+              className="flex-shrink-0 h-10 w-10 p-0"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
         </div>
