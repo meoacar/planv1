@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,12 +22,31 @@ interface PremiumShopClientProps {
   products: Product[]
 }
 
+interface PaymentSettings {
+  paytrEnabled: boolean
+  iyzicoEnabled: boolean
+  stripeEnabled: boolean
+}
+
 export function PremiumShopClient({ products }: PremiumShopClientProps) {
   const [loading, setLoading] = useState<string | null>(null)
   const { toast } = useToast()
 
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>({
+    paytrEnabled: true,
+    iyzicoEnabled: true,
+    stripeEnabled: true,
+  })
+
+  // Ödeme ayarlarını yükle
+  useEffect(() => {
+    fetch('/api/payment/settings')
+      .then(res => res.json())
+      .then(data => setPaymentSettings(data))
+      .catch(err => console.error('Failed to load payment settings:', err))
+  }, [])
 
   const handlePurchase = async (productId: string, paymentMethod: string) => {
     setLoading(productId)
@@ -227,11 +246,12 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
           {/* Payment Methods */}
           <div className="p-6 space-y-3">
             {/* Stripe */}
-            <button
-              onClick={() => selectedProduct && handlePurchase(selectedProduct, 'stripe')}
-              disabled={loading !== null}
-              className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-            >
+            {paymentSettings.stripeEnabled && (
+              <button
+                onClick={() => selectedProduct && handlePurchase(selectedProduct, 'stripe')}
+                disabled={loading !== null}
+                className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              >
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-shadow">
@@ -251,14 +271,16 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
                   </svg>
                 </div>
               </div>
-            </button>
+              </button>
+            )}
 
             {/* iyzico */}
-            <button
-              onClick={() => selectedProduct && handlePurchase(selectedProduct, 'iyzico')}
-              disabled={loading !== null}
-              className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-orange-500 dark:hover:border-orange-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-            >
+            {paymentSettings.iyzicoEnabled && (
+              <button
+                onClick={() => selectedProduct && handlePurchase(selectedProduct, 'iyzico')}
+                disabled={loading !== null}
+                className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-orange-500 dark:hover:border-orange-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              >
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:shadow-orange-500/50 transition-shadow">
@@ -283,14 +305,16 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
                   </svg>
                 </div>
               </div>
-            </button>
+              </button>
+            )}
 
             {/* PayTR */}
-            <button
-              onClick={() => selectedProduct && handlePurchase(selectedProduct, 'paytr')}
-              disabled={loading !== null}
-              className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-green-500 dark:hover:border-green-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-            >
+            {paymentSettings.paytrEnabled && (
+              <button
+                onClick={() => selectedProduct && handlePurchase(selectedProduct, 'paytr')}
+                disabled={loading !== null}
+                className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-green-500 dark:hover:border-green-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              >
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg group-hover:shadow-green-500/50 transition-shadow">
@@ -315,7 +339,20 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
                   </svg>
                 </div>
               </div>
-            </button>
+              </button>
+            )}
+
+            {/* Hiçbir ödeme yöntemi aktif değilse */}
+            {!paymentSettings.paytrEnabled && !paymentSettings.iyzicoEnabled && !paymentSettings.stripeEnabled && (
+              <div className="text-center py-8">
+                <div className="text-gray-500 dark:text-gray-400 mb-2">
+                  Şu anda hiçbir ödeme yöntemi aktif değil
+                </div>
+                <div className="text-sm text-gray-400 dark:text-gray-500">
+                  Lütfen daha sonra tekrar deneyin
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Footer */}

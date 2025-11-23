@@ -57,7 +57,12 @@ export async function updatePaymentSettings(settings: Record<string, string>) {
     )
   )
 
+  // Clear payment settings cache
+  const { clearPaymentSettingsCache } = await import('@/lib/payment/settings')
+  clearPaymentSettingsCache()
+
   revalidatePath('/admin/magaza/odeme-ayarlari')
+  revalidatePath('/magaza/premium')
   return { success: true }
 }
 

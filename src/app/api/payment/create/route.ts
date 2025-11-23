@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { createStripeCheckout } from '@/lib/payment/stripe'
 import { createIyzicoPayment } from '@/lib/payment/iyzico'
 import { createPayTRPayment } from '@/lib/payment/paytr'
+import { getPaymentSettings } from '@/lib/payment/settings'
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,6 +15,20 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json()
     const { productId, paymentMethod } = body
+
+    // Ödeme ayarlarını kontrol et
+    const paymentSettings = await getPaymentSettings()
+    
+    // Seçilen ödeme yönteminin aktif olup olmadığını kontrol et
+    if (paymentMethod === 'paytr' && !paymentSettings.paytrEnabled) {
+      return NextResponse.json({ error: 'PayTR ödeme yöntemi şu anda kullanılamıyor' }, { status: 400 })
+    }
+    if (paymentMethod === 'iyzico' && !paymentSettings.iyzicoEnabled) {
+      return NextResponse.json({ error: 'Iyzico ödeme yöntemi şu anda kullanılamıyor' }, { status: 400 })
+    }
+    if (paymentMethod === 'stripe' && !paymentSettings.stripeEnabled) {
+      return NextResponse.json({ error: 'Stripe ödeme yöntemi şu anda kullanılamıyor' }, { status: 400 })
+    }
 
     // Ürünü getir
     const product = await prisma.product.findUnique({
