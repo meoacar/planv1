@@ -28,6 +28,11 @@ export function PaymentSettingsForm({ initialSettings }: PaymentSettingsFormProp
     iyzicoApiKey: initialSettings.iyzicoApiKey || '',
     iyzicoSecretKey: initialSettings.iyzicoSecretKey || '',
     iyzicoTestMode: initialSettings.iyzicoTestMode === 'true',
+    
+    stripeEnabled: initialSettings.stripeEnabled === 'true',
+    stripePublishableKey: initialSettings.stripePublishableKey || '',
+    stripeSecretKey: initialSettings.stripeSecretKey || '',
+    stripeTestMode: initialSettings.stripeTestMode === 'true',
   })
 
   useEffect(() => {
@@ -58,6 +63,11 @@ export function PaymentSettingsForm({ initialSettings }: PaymentSettingsFormProp
         iyzicoApiKey: settings.iyzicoApiKey,
         iyzicoSecretKey: settings.iyzicoSecretKey,
         iyzicoTestMode: settings.iyzicoTestMode.toString(),
+        
+        stripeEnabled: settings.stripeEnabled.toString(),
+        stripePublishableKey: settings.stripePublishableKey,
+        stripeSecretKey: settings.stripeSecretKey,
+        stripeTestMode: settings.stripeTestMode.toString(),
       }
 
       await updatePaymentSettings(settingsToUpdate)
@@ -151,7 +161,18 @@ export function PaymentSettingsForm({ initialSettings }: PaymentSettingsFormProp
                 )}
               </div>
             )}
-            {!settings.paytrEnabled && !settings.iyzicoEnabled && (
+            {settings.stripeEnabled && (
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                <CheckCircle2 className="h-4 w-4" />
+                <span className="font-medium">Stripe</span>
+                {settings.stripeTestMode && (
+                  <span className="text-xs px-2 py-0.5 rounded bg-yellow-200 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-200">
+                    TEST
+                  </span>
+                )}
+              </div>
+            )}
+            {!settings.paytrEnabled && !settings.iyzicoEnabled && !settings.stripeEnabled && (
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">
                 <AlertCircle className="h-4 w-4" />
                 <span className="font-medium">Hiçbir ödeme yöntemi aktif değil!</span>
@@ -286,6 +307,71 @@ export function PaymentSettingsForm({ initialSettings }: PaymentSettingsFormProp
               <p className="text-sm text-yellow-800 dark:text-yellow-200 flex items-center gap-2">
                 <AlertCircle className="h-4 w-4" />
                 Sandbox modunda gerçek ödeme alınmaz
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Stripe Ayarları */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Stripe</CardTitle>
+              <CardDescription>Uluslararası ödeme altyapısı</CardDescription>
+            </div>
+            <Switch
+              checked={settings.stripeEnabled}
+              onCheckedChange={(checked) => setSettings({ ...settings, stripeEnabled: checked })}
+            />
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="stripePublishableKey">Publishable Key</Label>
+            <Input 
+              id="stripePublishableKey" 
+              value={settings.stripePublishableKey}
+              onChange={(e) => setSettings({ ...settings, stripePublishableKey: e.target.value })}
+              disabled={!settings.stripeEnabled}
+              placeholder="pk_test_..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Public key - Frontend'de kullanılır
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="stripeSecretKey">Secret Key</Label>
+            <Input 
+              id="stripeSecretKey" 
+              type="password"
+              value={settings.stripeSecretKey}
+              onChange={(e) => setSettings({ ...settings, stripeSecretKey: e.target.value })}
+              disabled={!settings.stripeEnabled}
+              placeholder="sk_test_..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Secret key - Backend'de kullanılır
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="stripeTestMode"
+              checked={settings.stripeTestMode}
+              onCheckedChange={(checked) => setSettings({ ...settings, stripeTestMode: checked })}
+              disabled={!settings.stripeEnabled}
+            />
+            <Label htmlFor="stripeTestMode">Test Modu</Label>
+          </div>
+
+          {settings.stripeTestMode && settings.stripeEnabled && (
+            <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4" />
+                Test modunda gerçek ödeme alınmaz. Test kartları kullanın: 4242 4242 4242 4242
               </p>
             </div>
           )}

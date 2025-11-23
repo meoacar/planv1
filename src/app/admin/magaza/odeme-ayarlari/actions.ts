@@ -36,6 +36,11 @@ export async function getPaymentSettings() {
     iyzicoApiKey: settingsObj.iyzicoApiKey || process.env.IYZICO_API_KEY || '',
     iyzicoSecretKey: settingsObj.iyzicoSecretKey || process.env.IYZICO_SECRET_KEY || '',
     iyzicoTestMode: settingsObj.iyzicoTestMode || 'false',
+    
+    stripeEnabled: settingsObj.stripeEnabled || 'true',
+    stripePublishableKey: settingsObj.stripePublishableKey || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '',
+    stripeSecretKey: settingsObj.stripeSecretKey || process.env.STRIPE_SECRET_KEY || '',
+    stripeTestMode: settingsObj.stripeTestMode || 'false',
   }
 }
 
