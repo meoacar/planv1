@@ -24,7 +24,10 @@ import {
   AlertTriangle,
   Weight,
   Target,
-  Ruler
+  Ruler,
+  Crown,
+  Sparkles,
+  Zap
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -42,6 +45,9 @@ interface UserEditFormProps {
     currentWeight: number | null
     targetWeight: number | null
     height: number | null
+    isPremium: boolean
+    premiumUntil: Date | null
+    premiumType: string | null
   }
 }
 
@@ -60,6 +66,30 @@ export function UserEditForm({ user }: UserEditFormProps) {
     targetWeight: user.targetWeight?.toString() || '',
     height: user.height?.toString() || '',
   })
+
+  const [grantingPremium, setGrantingPremium] = useState(false)
+  const [selectedPremiumType, setSelectedPremiumType] = useState<string>('monthly')
+
+  const handleGrantPremium = async () => {
+    try {
+      setGrantingPremium(true)
+      
+      const response = await fetch(`/api/admin/users/${user.id}/grant-premium`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ premiumType: selectedPremiumType })
+      })
+
+      if (!response.ok) throw new Error('Premium verilemedi')
+
+      toast.success('Premium başarıyla verildi!')
+      router.refresh()
+    } catch (error) {
+      toast.error('Premium verilirken hata oluştu')
+    } finally {
+      setGrantingPremium(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -289,6 +319,187 @@ export function UserEditForm({ user }: UserEditFormProps) {
                 <p className="text-xs text-muted-foreground">
                   Bu sebep kullanıcıya gösterilecektir
                 </p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Premium Yönetimi */}
+      <Card className={user.isPremium ? 'border-yellow-500 bg-gradient-to-br from-yellow-50/50 to-orange-50/50 dark:from-yellow-950/20 dark:to-orange-950/20' : ''}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                user.isPremium ? 'bg-gradient-to-br from-yellow-500 to-orange-500' : 'bg-yellow-500/10'
+              }`}>
+                <Crown className={`h-5 w-5 ${user.isPremium ? 'text-white' : 'text-yellow-500'}`} />
+              </div>
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  Premium Üyelik
+                  {user.isPremium && (
+                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Aktif
+                    </Badge>
+                  )}
+                </CardTitle>
+                <CardDescription>Premium üyelik yönetimi ve özellikleri</CardDescription>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {user.isPremium ? (
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg border-2 border-yellow-500/20 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+                    <Crown className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Premium Üye</h3>
+                    <p className="text-sm text-muted-foreground">Tüm premium özelliklere erişim</p>
+                  </div>
+                </div>
+
+                <Separator className="my-3" />
+
+                <div className="grid gap-3">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-black/20">
+                    <span className="text-sm font-medium">Premium Tipi</span>
+                    <Badge variant="outline" className="font-semibold">
+                      {user.premiumType === 'monthly' && '📅 Aylık'}
+                      {user.premiumType === 'yearly' && '📆 Yıllık'}
+                      {user.premiumType === 'lifetime' && '♾️ Ömür Boyu'}
+                    </Badge>
+                  </div>
+
+                  {user.premiumUntil && (
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-black/20">
+                      <span className="text-sm font-medium">Bitiş Tarihi</span>
+                      <span className="text-sm font-semibold">
+                        {new Date(user.premiumUntil).toLocaleDateString('tr-TR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-black/20">
+                    <span className="text-sm font-medium">Kalan Süre</span>
+                    <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                      {user.premiumUntil 
+                        ? `${Math.ceil((new Date(user.premiumUntil).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} gün`
+                        : 'Sınırsız'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg border bg-muted/30">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-yellow-500" />
+                  Premium Özellikler
+                </h4>
+                <div className="grid gap-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>⚡ 2x XP Kazancı</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>🚫 Reklamsız Deneyim</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>🏆 Özel Rozetler</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>💬 Öncelikli Destek</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>🎨 Özel Profil Teması</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                    <span>📊 Gelişmiş İstatistikler</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg border-2 border-dashed bg-muted/30">
+                <div className="text-center py-6">
+                  <Crown className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <h3 className="font-semibold mb-2">Premium Üyelik Yok</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Bu kullanıcı henüz premium üye değil
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label>Premium Tipi Seç</Label>
+                <Select value={selectedPremiumType} onValueChange={setSelectedPremiumType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <div className="text-left">
+                          <div className="font-medium">Aylık Premium</div>
+                          <div className="text-xs text-muted-foreground">30 gün - 49.99 TL</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="yearly">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <div className="text-left">
+                          <div className="font-medium">Yıllık Premium</div>
+                          <div className="text-xs text-muted-foreground">365 gün - 399.99 TL (%33 indirim)</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="lifetime">
+                      <div className="flex items-center gap-2">
+                        <Crown className="h-4 w-4" />
+                        <div className="text-left">
+                          <div className="font-medium">Ömür Boyu Premium</div>
+                          <div className="text-xs text-muted-foreground">Sınırsız - 999.99 TL</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button 
+                  type="button"
+                  onClick={handleGrantPremium}
+                  disabled={grantingPremium}
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                >
+                  {grantingPremium ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Premium Veriliyor...
+                    </>
+                  ) : (
+                    <>
+                      <Crown className="h-4 w-4 mr-2" />
+                      Premium Ver
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           )}

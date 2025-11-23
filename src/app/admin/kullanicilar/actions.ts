@@ -109,7 +109,24 @@ export async function getUserById(userId: string) {
 
   const user = await db.user.findUnique({
     where: { id: userId },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      name: true,
+      bio: true,
+      role: true,
+      isBanned: true,
+      bannedUntil: true,
+      banReason: true,
+      currentWeight: true,
+      targetWeight: true,
+      height: true,
+      isPremium: true,
+      premiumUntil: true,
+      premiumType: true,
+      createdAt: true,
+      updatedAt: true,
       _count: {
         select: {
           plans: true,
