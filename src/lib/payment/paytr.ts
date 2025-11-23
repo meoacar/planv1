@@ -17,13 +17,30 @@ export interface PayTRPaymentData {
 
 export async function createPayTRPayment(data: PayTRPaymentData) {
   try {
-    if (!process.env.PAYTR_MERCHANT_ID || !process.env.PAYTR_MERCHANT_KEY || !process.env.PAYTR_MERCHANT_SALT) {
+    // Admin panelinden ayarları al
+    const { db } = await import('@/lib/db')
+    const settings = await db.setting.findMany({
+      where: {
+        category: 'payment',
+        key: {
+          in: ['paytrMerchantId', 'paytrMerchantKey', 'paytrMerchantSalt', 'paytrTestMode']
+        }
+      }
+    })
+    
+    const settingsMap = settings.reduce((acc, setting) => {
+      acc[setting.key] = setting.value
+      return acc
+    }, {} as Record<string, string>)
+    
+    const merchantId = settingsMap.paytrMerchantId || process.env.PAYTR_MERCHANT_ID
+    const merchantKey = settingsMap.paytrMerchantKey || process.env.PAYTR_MERCHANT_KEY
+    const merchantSalt = settingsMap.paytrMerchantSalt || process.env.PAYTR_MERCHANT_SALT
+    const isTestMode = settingsMap.paytrTestMode === 'true'
+    
+    if (!merchantId || !merchantKey || !merchantSalt) {
       throw new Error('PayTR API bilgileri bulunamadı')
     }
-
-    const merchantId = process.env.PAYTR_MERCHANT_ID
-    const merchantKey = process.env.PAYTR_MERCHANT_KEY
-    const merchantSalt = process.env.PAYTR_MERCHANT_SALT
 
     // PayTR için gerekli parametreler
     const merchantOid = data.merchantOid
@@ -37,7 +54,7 @@ export async function createPayTRPayment(data: PayTRPaymentData) {
     const noInstallment = '1'
     const maxInstallment = '0'
     const currency = 'TL'
-    const testMode = process.env.PAYTR_TEST_MODE === 'true' ? '1' : '0'
+    const testMode = isTestMode ? '1' : '0'
 
     // Hash oluşturma
     const hashStr = `${merchantId}${userIp}${merchantOid}${email}${paymentAmount}${userBasket}${noInstallment}${maxInstallment}${currency}${testMode}`
@@ -100,12 +117,28 @@ export async function createPayTRPayment(data: PayTRPaymentData) {
 
 export async function verifyPayTRCallback(postData: any) {
   try {
-    if (!process.env.PAYTR_MERCHANT_KEY || !process.env.PAYTR_MERCHANT_SALT) {
+    // Admin panelinden ayarları al
+    const { db } = await import('@/lib/db')
+    const settings = await db.setting.findMany({
+      where: {
+        category: 'payment',
+        key: {
+          in: ['paytrMerchantKey', 'paytrMerchantSalt']
+        }
+      }
+    })
+    
+    const settingsMap = settings.reduce((acc, setting) => {
+      acc[setting.key] = setting.value
+      return acc
+    }, {} as Record<string, string>)
+    
+    const merchantKey = settingsMap.paytrMerchantKey || process.env.PAYTR_MERCHANT_KEY
+    const merchantSalt = settingsMap.paytrMerchantSalt || process.env.PAYTR_MERCHANT_SALT
+    
+    if (!merchantKey || !merchantSalt) {
       throw new Error('PayTR API bilgileri bulunamadı')
     }
-
-    const merchantKey = process.env.PAYTR_MERCHANT_KEY
-    const merchantSalt = process.env.PAYTR_MERCHANT_SALT
 
     // PayTR'den gelen hash kontrolü
     const hash = postData.hash
