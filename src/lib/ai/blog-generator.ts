@@ -1416,13 +1416,12 @@ Stres altında:
 - Etkili çözümler
 
 **Örnek:**
-```
-Tarih: 23 Kasım 2025
-Stres Kaynağı: İş toplantısı
-Seviye: 8/10
-Tepki: Çikolata yedim
+
+Tarih: 23 Kasım 2025  
+Stres Kaynağı: İş toplantısı  
+Seviye: 8/10  
+Tepki: Çikolata yedim  
 Alternatif: Yürüyüş yapabilirdim
-```
 
 ## Sonuç: Stres Yönetimi = Kilo Yönetimi
 
