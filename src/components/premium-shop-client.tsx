@@ -203,63 +203,140 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
         )}
       </div>
 
-      {/* Ödeme Yöntemi Seçim Modal */}
+      {/* Ödeme Yöntemi Seçim Modal - Modern Design */}
       <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Ödeme Yöntemi Seçin</DialogTitle>
-            <DialogDescription>
-              Güvenli ödeme için bir yöntem seçin
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <Button
-              className="w-full h-16 justify-start gap-4"
-              variant="outline"
+        <DialogContent className="sm:max-w-lg border-0 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 p-0 overflow-hidden">
+          {/* Header with gradient */}
+          <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 p-6 pb-8">
+            <div className="absolute inset-0 bg-black/10" />
+            <DialogHeader className="relative z-10">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <CreditCard className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <DialogTitle className="text-2xl font-bold text-white text-center">
+                Ödeme Yöntemi Seçin
+              </DialogTitle>
+              <DialogDescription className="text-white/90 text-center text-base">
+                Güvenli ve hızlı ödeme için bir yöntem seçin
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="p-6 space-y-3">
+            {/* Stripe */}
+            <button
               onClick={() => selectedProduct && handlePurchase(selectedProduct, 'stripe')}
               disabled={loading !== null}
+              className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             >
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-blue-600" />
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-shadow">
+                    <CreditCard className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-bold text-lg text-gray-900 dark:text-white">Stripe</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Kredi/Banka Kartı • Güvenli Ödeme</div>
+                </div>
+                <div className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
-              <div className="text-left flex-1">
-                <div className="font-semibold">Stripe</div>
-                <div className="text-xs text-muted-foreground">Kredi/Banka Kartı</div>
-              </div>
-            </Button>
+            </button>
 
-            <Button
-              className="w-full h-16 justify-start gap-4"
-              variant="outline"
+            {/* iyzico */}
+            <button
               onClick={() => selectedProduct && handlePurchase(selectedProduct, 'iyzico')}
               disabled={loading !== null}
+              className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-orange-500 dark:hover:border-orange-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             >
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-orange-600" />
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:shadow-orange-500/50 transition-shadow">
+                    <CreditCard className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                    iyzico
+                    <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs">
+                      Türkiye
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Kredi/Banka Kartı • Taksit İmkanı</div>
+                </div>
+                <div className="text-orange-600 dark:text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
-              <div className="text-left flex-1">
-                <div className="font-semibold">iyzico</div>
-                <div className="text-xs text-muted-foreground">Kredi/Banka Kartı</div>
-              </div>
-            </Button>
+            </button>
 
-            <Button
-              className="w-full h-16 justify-start gap-4"
-              variant="outline"
+            {/* PayTR */}
+            <button
               onClick={() => selectedProduct && handlePurchase(selectedProduct, 'paytr')}
               disabled={loading !== null}
+              className="group relative w-full p-4 rounded-xl border-2 border-gray-200 dark:border-gray-800 hover:border-green-500 dark:hover:border-green-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             >
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-green-600" />
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg group-hover:shadow-green-500/50 transition-shadow">
+                    <CreditCard className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                    PayTR
+                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs">
+                      Popüler
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Kredi/Banka Kartı • Hızlı İşlem</div>
+                </div>
+                <div className="text-green-600 dark:text-green-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
-              <div className="text-left flex-1">
-                <div className="font-semibold">PayTR</div>
-                <div className="text-xs text-muted-foreground">Kredi/Banka Kartı</div>
-              </div>
-            </Button>
+            </button>
           </div>
-          <div className="text-center text-xs text-muted-foreground mt-4">
-            🔒 Tüm ödemeler SSL ile güvence altındadır
+
+          {/* Footer */}
+          <div className="px-6 pb-6">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                    Güvenli Ödeme Garantisi
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                    Tüm ödemeler 256-bit SSL şifreleme ile korunmaktadır. Kart bilgileriniz asla saklanmaz.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
