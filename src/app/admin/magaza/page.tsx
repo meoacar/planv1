@@ -124,6 +124,21 @@ export default async function MagazaAdminPage() {
             </Link>
           </CardContent>
         </Card>
+
+        <Card className="border-2 border-primary/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">💳</span>
+              Ödeme Ayarları
+            </CardTitle>
+            <CardDescription>PayTR ve Iyzico yönetimi</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/admin/magaza/odeme-ayarlari">
+              <Button className="w-full" variant="default">Ayarla</Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
