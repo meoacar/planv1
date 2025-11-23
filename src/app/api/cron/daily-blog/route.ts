@@ -101,10 +101,9 @@ export async function GET(req: NextRequest) {
     await prisma.notification.createMany({
       data: activeUsers.map(user => ({
         userId: user.id,
-        type: 'blog_post',
+        type: 'message',
         title: '📰 Yeni Blog Yazısı!',
         body: blog.title,
-        targetType: 'blog',
         targetId: blog.id,
       }))
     });
