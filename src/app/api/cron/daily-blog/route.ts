@@ -68,6 +68,7 @@ export async function GET(req: NextRequest) {
         content: content.content,
         excerpt: content.excerpt,
         coverImage: content.coverImage,
+        coverImageAlt: content.coverImageAlt,
         metaTitle: content.title,
         metaDescription: content.excerpt,
         status: 'PUBLISHED',

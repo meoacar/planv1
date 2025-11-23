@@ -185,11 +185,13 @@ export async function generateDailyBlogContent() {
 
     const prompt = `
 Aşağıdaki blog yazısını bugünün tarihi (${dateStr}) ve mevsim göz önünde bulundurarak zenginleştir.
-Kısa bir güncel bilgi, mevsimsel ipucu veya motivasyon cümlesi ekle.
-Sadece eklenen kısmı döndür, maksimum 2-3 cümle.
+Türkiye'deki okuyucular için güncel, mevsimsel ve pratik bir ipucu ekle.
+SEO-friendly, doğal ve samimi bir dil kullan.
+Sadece eklenen paragrafı döndür, maksimum 3-4 cümle.
 
 Konu: ${template.topic}
 Başlık: ${template.title}
+Hedef Kitle: Sağlıklı yaşam ve kilo verme hedefi olan Türk okuyucular
 
 Zenginleştirme:`;
 
@@ -202,12 +204,22 @@ Zenginleştirme:`;
     // Slug oluştur
     const slug = `${template.topic}-${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 
+    // Unsplash'ten ücretsiz görseller
+    const coverImages = {
+      motivasyon: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=630&fit=crop',
+      beslenme: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1200&h=630&fit=crop',
+      egzersiz: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=630&fit=crop',
+      uyku: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=1200&h=630&fit=crop',
+      stres: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1200&h=630&fit=crop',
+    };
+
     return {
       title: `${template.title} - ${dateStr}`,
       slug,
       content: enrichedContent,
       excerpt: template.excerpt,
-      coverImage: `/images/blog/${template.topic}.jpg`, // Varsayılan görseller
+      coverImage: coverImages[template.topic as keyof typeof coverImages],
+      coverImageAlt: `${template.title} - Sağlıklı yaşam ve zayıflama ipuçları`,
     };
 
   } catch (error) {
@@ -223,12 +235,22 @@ Zenginleştirme:`;
     });
     const slug = `${template.topic}-${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 
+    // Unsplash'ten ücretsiz görseller
+    const coverImages = {
+      motivasyon: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=630&fit=crop',
+      beslenme: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1200&h=630&fit=crop',
+      egzersiz: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&h=630&fit=crop',
+      uyku: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=1200&h=630&fit=crop',
+      stres: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1200&h=630&fit=crop',
+    };
+
     return {
       title: `${template.title} - ${dateStr}`,
       slug,
       content: `${template.baseContent}\n\n---\n*${dateStr} tarihinde otomatik olarak oluşturulmuştur.*`,
       excerpt: template.excerpt,
-      coverImage: `/images/blog/${template.topic}.jpg`,
+      coverImage: coverImages[template.topic as keyof typeof coverImages],
+      coverImageAlt: `${template.title} - Sağlıklı yaşam ve zayıflama ipuçları`,
     };
   }
 }
