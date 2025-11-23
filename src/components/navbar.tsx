@@ -302,6 +302,14 @@ export function Navbar() {
           
           {user ? (
             <>
+              {/* Premium Link - Özel Buton */}
+              <Link
+                href="/premium"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm font-semibold bg-gradient-to-r from-yellow-500/10 to-orange-500/10 hover:from-yellow-500/20 hover:to-orange-500/20 rounded-lg transition-all hover:scale-105 border border-yellow-500/30 shadow-sm hover:shadow-md text-yellow-600 dark:text-yellow-400"
+              >
+                👑 <span className="hidden xl:inline">Premium</span>
+              </Link>
+
               {/* AI Önerileri - Özel Buton */}
               <Link
                 href="/ai-features"
@@ -484,6 +492,15 @@ export function Navbar() {
                     <Link href="/confessions" className="cursor-pointer bg-gradient-to-r from-purple-500/10 to-pink-500/10">
                       🎭
                       <span className="ml-2 font-semibold text-purple-600 dark:text-purple-400">İtiraf Duvarı</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem asChild>
+                    <Link href="/premium" className="cursor-pointer bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
+                      👑
+                      <span className="ml-2 font-semibold text-yellow-600 dark:text-yellow-400">Premium</span>
                     </Link>
                   </DropdownMenuItem>
                   
@@ -680,6 +697,15 @@ export function Navbar() {
               >
                 <span className="text-xl">✅</span>
                 <span className="font-medium">Günlük Check-in</span>
+              </Link>
+              
+              <Link 
+                href="/premium" 
+                className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 hover:from-yellow-500/20 hover:to-orange-500/20 rounded-lg transition-colors border border-yellow-500/20"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="text-xl">👑</span>
+                <span className="font-medium text-yellow-600 dark:text-yellow-400">Premium</span>
               </Link>
               
               <Link 

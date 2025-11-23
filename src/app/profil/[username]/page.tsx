@@ -95,7 +95,25 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   // Fetch user data with more details
   const user = await db.user.findUnique({
     where: { username },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      email: true,
+      image: true,
+      bio: true,
+      role: true,
+      currentWeight: true,
+      targetWeight: true,
+      height: true,
+      createdAt: true,
+      level: true,
+      xp: true,
+      coins: true,
+      streak: true,
+      isPremium: true,
+      premiumUntil: true,
+      premiumType: true,
       _count: {
         select: {
           plans: { where: { status: 'published' } },
@@ -317,6 +335,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                       }`}>
                         {user.name || `@${user.username}`}
                       </h1>
+                      {user.isPremium && user.premiumUntil && new Date() < new Date(user.premiumUntil) && (
+                        <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 shadow-lg">
+                          👑 Premium
+                        </Badge>
+                      )}
                       {userWithCosmetics.activeTitle && (
                         <Badge variant="secondary" className="text-xs">
                           {userWithCosmetics.activeTitle}

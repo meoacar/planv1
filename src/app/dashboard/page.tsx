@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/layout/footer'
 import { GamificationWidget } from '@/components/gamification-widget'
+import { PremiumWidget } from '@/components/dashboard/premium-widget'
 import Link from 'next/link'
 import { formatDistanceToNow, startOfWeek, endOfWeek, subDays } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -50,6 +51,9 @@ export default async function DashboardPage() {
         targetWeight: true,
         height: true,
         createdAt: true,
+        isPremium: true,
+        premiumUntil: true,
+        premiumType: true,
         _count: {
           select: {
             plans: { where: { status: 'published' } },
@@ -526,6 +530,15 @@ export default async function DashboardPage() {
 
           {/* Sağ Kolon - Hızlı İşlemler ve Son Aktiviteler */}
           <div className="space-y-6">
+            {/* Premium Widget */}
+            <div className="relative overflow-hidden rounded-2xl">
+              <PremiumWidget 
+                isPremium={user?.isPremium || false}
+                premiumUntil={user?.premiumUntil}
+                premiumType={user?.premiumType}
+              />
+            </div>
+            
             {/* Gamification Widget */}
             <div className="relative overflow-hidden rounded-2xl">
               <GamificationWidget />
