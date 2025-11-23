@@ -82,17 +82,14 @@ export async function GET(req: NextRequest) {
 
     console.log('[Daily Blog] Blog post created:', blog.id);
 
-    // 5. Aktif kullanıcılara bildirim gönder (son 7 günde aktif olanlar)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // 5. Aktif kullanıcılara bildirim gönder (son 30 günde aktif olanlar)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const activeUsers = await prisma.user.findMany({
       where: {
-        updatedAt: { gte: sevenDaysAgo },
+        updatedAt: { gte: thirtyDaysAgo },
         isBanned: false,
-        pushSubscriptions: {
-          some: { isActive: true }
-        }
       },
       select: { id: true },
       take: 1000, // İlk 1000 aktif kullanıcı
@@ -100,16 +97,39 @@ export async function GET(req: NextRequest) {
 
     console.log(`[Daily Blog] Found ${activeUsers.length} active users`);
 
-    // Batch olarak bildirim gönder
+    // In-app notification oluştur (tüm aktif kullanıcılar için)
+    await prisma.notification.createMany({
+      data: activeUsers.map(user => ({
+        userId: user.id,
+        type: 'blog_post',
+        title: '📰 Yeni Blog Yazısı!',
+        body: blog.title,
+        targetType: 'blog',
+        targetId: blog.id,
+      }))
+    });
+
+    // Push notification gönder (sadece subscription'ı olanlara)
+    const usersWithPush = await prisma.user.findMany({
+      where: {
+        id: { in: activeUsers.map(u => u.id) },
+        pushSubscriptions: {
+          some: { isActive: true }
+        }
+      },
+      select: { id: true },
+    });
+
     const notificationResults = await Promise.allSettled(
-      activeUsers.map(user => 
+      usersWithPush.map(user => 
         sendBlogNotification(user.id, blog.id, blog.title, blog.excerpt || '')
       )
     );
 
     const successCount = notificationResults.filter(r => r.status === 'fulfilled').length;
 
-    console.log(`[Daily Blog] Sent ${successCount}/${activeUsers.length} notifications`);
+    console.log(`[Daily Blog] Created ${activeUsers.length} in-app notifications`);
+    console.log(`[Daily Blog] Sent ${successCount}/${usersWithPush.length} push notifications`);
 
     return NextResponse.json({
       success: true,
@@ -119,8 +139,11 @@ export async function GET(req: NextRequest) {
         slug: blog.slug,
       },
       notifications: {
-        total: activeUsers.length,
-        sent: successCount,
+        inApp: activeUsers.length,
+        push: {
+          total: usersWithPush.length,
+          sent: successCount,
+        }
       }
     });
 
