@@ -68,8 +68,12 @@ export async function POST(
     const recipe = await RecipeService.getRecipeBySlug(slug)
     const result = await RecipeService.likeRecipe(recipe.id, session.user.id)
 
-    // Gamification: Update quest progress for likes
+    // Send notification if liked
     if (result.liked) {
+      const { NotificationService } = await import('@/services/notification.service')
+      await NotificationService.notifyRecipeLike(recipe.id, session.user.id)
+      
+      // Gamification: Update quest progress for likes
       try {
         const { updateQuestProgress } = await import('@/services/gamification.service')
         await updateQuestProgress(session.user.id, 'daily_like', 1)

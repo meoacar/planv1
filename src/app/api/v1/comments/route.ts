@@ -97,6 +97,8 @@ export async function POST(req: NextRequest) {
     // Send notification
     if (validatedData.targetType === 'plan') {
       await NotificationService.notifyComment(validatedData.targetId, session.user.id)
+    } else if (validatedData.targetType === 'recipe') {
+      await NotificationService.notifyRecipeComment(validatedData.targetId, session.user.id)
     }
 
     // Gamification: Award badge and XP for first comment

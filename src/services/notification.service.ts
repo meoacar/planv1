@@ -190,4 +190,215 @@ export class NotificationService {
       planId
     )
   }
+
+  // Tarif bildirimleri
+  static async notifyRecipeLike(recipeId: string, likerUserId: string) {
+    const recipe = await db.recipe.findUnique({
+      where: { id: recipeId },
+      include: { author: { select: { id: true } } },
+    })
+
+    if (!recipe || recipe.authorId === likerUserId) return
+
+    const liker = await db.user.findUnique({
+      where: { id: likerUserId },
+      select: { username: true, name: true },
+    })
+
+    await this.createNotification(
+      recipe.authorId,
+      'like',
+      'Yeni beğeni',
+      `${liker?.name || liker?.username} tarifini beğendi`,
+      'recipe',
+      recipeId
+    )
+  }
+
+  static async notifyRecipeComment(recipeId: string, commenterUserId: string) {
+    const recipe = await db.recipe.findUnique({
+      where: { id: recipeId },
+      include: { author: { select: { id: true } } },
+    })
+
+    if (!recipe || recipe.authorId === commenterUserId) return
+
+    const commenter = await db.user.findUnique({
+      where: { id: commenterUserId },
+      select: { username: true, name: true },
+    })
+
+    await this.createNotification(
+      recipe.authorId,
+      'comment',
+      'Yeni yorum',
+      `${commenter?.name || commenter?.username} tarifine yorum yaptı`,
+      'recipe',
+      recipeId
+    )
+  }
+
+  // Rozet bildirimleri
+  static async notifyBadgeEarned(userId: string, badgeName: string, badgeIcon: string) {
+    await this.createNotification(
+      userId,
+      'badge_earned',
+      'Yeni rozet kazandın!',
+      `${badgeIcon} ${badgeName} rozetini kazandın!`,
+      undefined,
+      undefined
+    )
+  }
+
+  // Level up bildirimi
+  static async notifyLevelUp(userId: string, newLevel: number) {
+    await this.createNotification(
+      userId,
+      'level_up',
+      'Seviye atladın!',
+      `Tebrikler! ${newLevel}. seviyeye ulaştın! 🎉`,
+      undefined,
+      undefined
+    )
+  }
+
+  // Görev bildirimleri
+  static async notifyQuestCompleted(userId: string, questTitle: string, reward: number) {
+    await this.createNotification(
+      userId,
+      'quest_completed',
+      'Görev tamamlandı!',
+      `"${questTitle}" görevini tamamladın! ${reward} coin kazandın! 🪙`,
+      undefined,
+      undefined
+    )
+  }
+
+  // Mesaj bildirimleri
+  static async notifyNewMessage(userId: string, senderName: string, conversationId: string) {
+    await this.createNotification(
+      userId,
+      'message',
+      'Yeni mesaj',
+      `${senderName} sana mesaj gönderdi`,
+      'conversation',
+      conversationId
+    )
+  }
+
+  // Grup bildirimleri
+  static async notifyGroupInvite(userId: string, groupName: string, groupId: string) {
+    await this.createNotification(
+      userId,
+      'group_invite',
+      'Grup daveti',
+      `"${groupName}" grubuna davet edildin`,
+      'group',
+      groupId
+    )
+  }
+
+  static async notifyGroupJoinRequest(groupOwnerId: string, userName: string, groupId: string) {
+    await this.createNotification(
+      groupOwnerId,
+      'group_join_request',
+      'Grup katılma isteği',
+      `${userName} grubuna katılmak istiyor`,
+      'group',
+      groupId
+    )
+  }
+
+  // Premium bildirimleri
+  static async notifyPremiumExpiring(userId: string, daysLeft: number) {
+    await this.createNotification(
+      userId,
+      'premium_expiring',
+      'Premium üyeliğin bitiyor',
+      `Premium üyeliğin ${daysLeft} gün içinde sona erecek. Yenilemeyi unutma!`,
+      undefined,
+      undefined
+    )
+  }
+
+  static async notifyPremiumActivated(userId: string, type: string) {
+    await this.createNotification(
+      userId,
+      'premium_activated',
+      'Premium aktif!',
+      `${type} premium üyeliğin aktif edildi! Tüm özelliklerin kilidini açtın! 👑`,
+      undefined,
+      undefined
+    )
+  }
+
+  // Streak bildirimleri
+  static async notifyStreakMilestone(userId: string, days: number) {
+    await this.createNotification(
+      userId,
+      'streak_milestone',
+      'Streak başarısı!',
+      `${days} günlük streak'ini tamamladın! Harikasın! 🔥`,
+      undefined,
+      undefined
+    )
+  }
+
+  static async notifyStreakLost(userId: string) {
+    await this.createNotification(
+      userId,
+      'streak_lost',
+      'Streak kırıldı',
+      `Streak'in sıfırlandı. Yeniden başla ve daha güçlü dön! 💪`,
+      undefined,
+      undefined
+    )
+  }
+
+  // Sistem bildirimleri
+  static async notifySystemAlert(userId: string, title: string, message: string) {
+    await this.createNotification(
+      userId,
+      'system_alert',
+      title,
+      message,
+      undefined,
+      undefined
+    )
+  }
+
+  // Mağaza bildirimleri
+  static async notifyPurchaseSuccess(userId: string, itemName: string) {
+    await this.createNotification(
+      userId,
+      'purchase_success',
+      'Satın alma başarılı!',
+      `${itemName} başarıyla satın alındı! 🎁`,
+      undefined,
+      undefined
+    )
+  }
+
+  // Lonca bildirimleri
+  static async notifyGuildInvite(userId: string, guildName: string, guildId: string) {
+    await this.createNotification(
+      userId,
+      'guild_invite',
+      'Lonca daveti',
+      `"${guildName}" loncasına davet edildin`,
+      'guild',
+      guildId
+    )
+  }
+
+  static async notifyGuildLevelUp(userId: string, guildName: string, newLevel: number) {
+    await this.createNotification(
+      userId,
+      'guild_level_up',
+      'Lonca seviye atladı!',
+      `"${guildName}" loncası ${newLevel}. seviyeye ulaştı! 🏰`,
+      undefined,
+      undefined
+    )
+  }
 }
