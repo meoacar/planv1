@@ -1,45 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/lib/db'
 import { verifyPayTRCallback } from '@/lib/payment/paytr'
+import { grantPremium } from '@/lib/subscription'
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData()
-    const postData: any = {}
+    const body = await req.json()
     
-    formData.forEach((value, key) => {
-      postData[key] = value
-    })
+    const result = await verifyPayTRCallback(body)
 
-    // PayTR callback doğrulama
-    const verification = await verifyPayTRCallback(postData)
-
-    if (!verification.success) {
-      return NextResponse.json({ error: verification.error }, { status: 400 })
+    if (!result.success) {
+      return new NextResponse('OK', { status: 200 }) // PayTR her zaman OK bekler
     }
 
-    const orderId = verification.merchantOid
-
-    if (verification.paid) {
-      // Sipariş güncelle
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: 'completed' },
+    if (result.paid) {
+      // merchant_oid ile payment kaydını bul
+      const payment = await db.payment.findFirst({
+        where: { providerOrderId: result.merchantOid }
       })
 
-      // TODO: Premium özellikleri aktif et
+      if (payment) {
+        // Ödeme kaydını güncelle
+        await db.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: 'completed',
+            paidAt: new Date()
+          }
+        })
 
-      return new NextResponse('OK', { status: 200 })
-    } else {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: 'cancelled' },
-      })
+        // Aboneliği getir
+        if (payment.subscriptionId) {
+          const subscription = await db.subscription.findUnique({
+            where: { id: payment.subscriptionId }
+          })
 
-      return new NextResponse('FAILED', { status: 200 })
+          if (subscription) {
+            // Kullanıcıya premium ver
+            await grantPremium(
+              subscription.userId,
+              subscription.premiumType,
+              payment.subscriptionId
+            )
+          }
+        }
+      }
     }
+
+    return new NextResponse('OK', { status: 200 })
   } catch (error: any) {
     console.error('PayTR callback error:', error)
-    return new NextResponse('ERROR', { status: 500 })
+    return new NextResponse('OK', { status: 200 }) // PayTR her zaman OK bekler
   }
 }

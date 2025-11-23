@@ -48,6 +48,9 @@ model User {
   dailyWaterGoal         Float?
   averageSleep           String?
   biggestChallenge       String?
+  isPremium              Boolean               @default(false)
+  premiumUntil           DateTime?
+  premiumType            PremiumType?
   accounts               Account[]
   blogComments           BlogComment[]
   blogPosts              BlogPost[]
@@ -80,6 +83,7 @@ model User {
   sentMessages           Message[]             @relation("SentMessages")
   notificationSettings   NotificationSettings?
   notifications          Notification[]
+  orders                 Order[]
   passwordResets         PasswordReset[]
   plans                  Plan[]
   photos                 ProgressPhoto[]
@@ -100,11 +104,12 @@ model User {
   quests                 UserDailyQuest[]
   leagueParticipations   UserLeague[]
   purchases              UserPurchase[]
-  orders                 Order[]
   sinBadges              UserSinBadge[]
   sinChallenges          UserSinChallenge[]
   weightLogs             WeightLog[]
   conversations          Conversation[]        @relation("conversationparticipants")
+  subscriptions          Subscription[]
+  payments               Payment[]
 
   @@index([email])
   @@index([username])
@@ -1590,6 +1595,73 @@ model ActivityLog {
   @@map("activity_logs")
 }
 
+model Product {
+  id            String      @id @default(cuid())
+  name          String
+  description   String      @db.Text
+  price         Float
+  originalPrice Float?
+  stock         Int         @default(0)
+  isActive      Boolean     @default(true)
+  category      String
+  image         String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orderItems    OrderItem[]
+
+  @@index([category])
+  @@index([isActive])
+  @@map("products")
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  total     Float
+  status    OrderStatus @default(pending)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  items     OrderItem[]
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int     @default(1)
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  discountType  DiscountType @default(percentage)
+  discountValue Float
+  minPurchase   Float?
+  maxDiscount   Float?
+  usageLimit    Int?
+  usageCount    Int          @default(0)
+  expiresAt     DateTime?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([code])
+  @@index([isActive])
+  @@map("coupons")
+}
+
 enum Role {
   USER
   ADMIN
@@ -1883,77 +1955,6 @@ enum notifications_targetType {
   photo
 }
 
-// ============================================
-// MAĞAZA SİSTEMİ
-// ============================================
-
-model Product {
-  id            String      @id @default(cuid())
-  name          String
-  description   String      @db.Text
-  price         Float
-  originalPrice Float?
-  stock         Int         @default(0)
-  isActive      Boolean     @default(true)
-  category      String
-  image         String?     @db.Text
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  orderItems    OrderItem[]
-
-  @@index([category])
-  @@index([isActive])
-  @@map("products")
-}
-
-model Order {
-  id        String      @id @default(cuid())
-  userId    String
-  total     Float
-  status    OrderStatus @default(pending)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  items     OrderItem[]
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, createdAt])
-  @@index([status])
-  @@map("orders")
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int     @default(1)
-  price     Float
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
-
-  @@index([orderId])
-  @@index([productId])
-  @@map("order_items")
-}
-
-model Coupon {
-  id            String       @id @default(cuid())
-  code          String       @unique
-  discountType  DiscountType @default(percentage)
-  discountValue Float
-  minPurchase   Float?
-  maxDiscount   Float?
-  usageLimit    Int?
-  usageCount    Int          @default(0)
-  expiresAt     DateTime?
-  isActive      Boolean      @default(true)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-
-  @@index([code])
-  @@index([isActive])
-  @@map("coupons")
-}
-
 enum OrderStatus {
   pending
   completed
@@ -1963,4 +1964,96 @@ enum OrderStatus {
 enum DiscountType {
   percentage
   fixed
+}
+
+// ============================================
+// ABONELİK SİSTEMİ
+// ============================================
+
+enum PremiumType {
+  monthly
+  yearly
+  lifetime
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
+  pending
+}
+
+enum PaymentProvider {
+  stripe
+  iyzico
+  paytr
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+model Subscription {
+  id              String             @id @default(cuid())
+  userId          String
+  premiumType     PremiumType
+  status          SubscriptionStatus @default(pending)
+  startDate       DateTime
+  endDate         DateTime
+  autoRenew       Boolean            @default(false)
+  cancelledAt     DateTime?
+  paymentProvider PaymentProvider
+  amount          Float
+  currency        String             @default("TRY")
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments        Payment[]
+
+  @@index([userId, status])
+  @@index([status, endDate])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id              String          @id @default(cuid())
+  subscriptionId  String?
+  userId          String
+  orderId         String?
+  amount          Float
+  currency        String          @default("TRY")
+  status          PaymentStatus   @default(pending)
+  paymentProvider PaymentProvider
+  providerOrderId String?
+  providerToken   String?
+  metadata        String?         @db.Text
+  paidAt          DateTime?
+  failedReason    String?         @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  subscription    Subscription?   @relation(fields: [subscriptionId], references: [id])
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([providerOrderId])
+  @@map("payments")
+}
+
+model PremiumFeature {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String   @db.Text
+  icon        String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@map("premium_features")
 }

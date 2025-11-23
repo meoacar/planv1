@@ -1,56 +1,68 @@
 // Stripe ödeme entegrasyonu
-// Not: stripe paketini yüklemek için: npm install stripe
-
-export interface StripePaymentData {
+export interface StripeCheckoutData {
   amount: number
-  currency: string
-  productId: string
+  productName: string
   userId: string
+  userEmail: string
   successUrl: string
   cancelUrl: string
+  metadata?: Record<string, string>
 }
 
-export async function createStripeCheckout(data: StripePaymentData) {
+export async function createStripeCheckout(data: StripeCheckoutData) {
   try {
-    // Stripe henüz yüklü değil, yüklendiğinde aktif olacak
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error('Stripe API key bulunamadı')
+    // Admin panelinden ayarları al
+    const { db } = await import('@/lib/db')
+    const settings = await db.setting.findMany({
+      where: {
+        category: 'payment',
+        key: {
+          in: ['stripeSecretKey', 'stripePublishableKey']
+        }
+      }
+    })
+    
+    const settingsMap = settings.reduce((acc, setting) => {
+      acc[setting.key] = setting.value
+      return acc
+    }, {} as Record<string, string>)
+    
+    const secretKey = settingsMap.stripeSecretKey || process.env.STRIPE_SECRET_KEY
+    
+    if (!secretKey) {
+      throw new Error('Stripe API anahtarı bulunamadı')
     }
 
-    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
-    
-    // const session = await stripe.checkout.sessions.create({
-    //   payment_method_types: ['card'],
-    //   line_items: [
-    //     {
-    //       price_data: {
-    //         currency: data.currency,
-    //         product_data: {
-    //           name: 'Premium Ürün',
-    //         },
-    //         unit_amount: Math.round(data.amount * 100), // Stripe kuruş cinsinden çalışır
-    //       },
-    //       quantity: 1,
-    //     },
-    //   ],
-    //   mode: 'payment',
-    //   success_url: data.successUrl,
-    //   cancel_url: data.cancelUrl,
-    //   metadata: {
-    //     productId: data.productId,
-    //     userId: data.userId,
-    //   },
-    // })
+    const Stripe = require('stripe')
+    const stripe = new Stripe(secretKey, {
+      apiVersion: '2023-10-16'
+    })
 
-    // return {
-    //   success: true,
-    //   checkoutUrl: session.url,
-    //   sessionId: session.id,
-    // }
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'try',
+            product_data: {
+              name: data.productName,
+            },
+            unit_amount: Math.round(data.amount * 100), // Kuruş cinsinden
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: data.successUrl,
+      cancel_url: data.cancelUrl,
+      customer_email: data.userEmail,
+      metadata: data.metadata || {},
+    })
 
     return {
-      success: false,
-      error: 'Stripe entegrasyonu henüz aktif değil. Lütfen STRIPE_SECRET_KEY ekleyin.',
+      success: true,
+      url: session.url,
+      sessionId: session.id,
     }
   } catch (error: any) {
     return {
@@ -60,24 +72,40 @@ export async function createStripeCheckout(data: StripePaymentData) {
   }
 }
 
-export async function verifyStripePayment(sessionId: string) {
+export async function verifyStripeWebhook(payload: string, signature: string) {
   try {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error('Stripe API key bulunamadı')
+    const { db } = await import('@/lib/db')
+    const settings = await db.setting.findMany({
+      where: {
+        category: 'payment',
+        key: {
+          in: ['stripeSecretKey', 'stripeWebhookSecret']
+        }
+      }
+    })
+    
+    const settingsMap = settings.reduce((acc, setting) => {
+      acc[setting.key] = setting.value
+      return acc
+    }, {} as Record<string, string>)
+    
+    const secretKey = settingsMap.stripeSecretKey || process.env.STRIPE_SECRET_KEY
+    const webhookSecret = settingsMap.stripeWebhookSecret || process.env.STRIPE_WEBHOOK_SECRET
+    
+    if (!secretKey || !webhookSecret) {
+      throw new Error('Stripe API bilgileri bulunamadı')
     }
 
-    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
-    // const session = await stripe.checkout.sessions.retrieve(sessionId)
+    const Stripe = require('stripe')
+    const stripe = new Stripe(secretKey, {
+      apiVersion: '2023-10-16'
+    })
 
-    // return {
-    //   success: true,
-    //   paid: session.payment_status === 'paid',
-    //   metadata: session.metadata,
-    // }
+    const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret)
 
     return {
-      success: false,
-      error: 'Stripe entegrasyonu henüz aktif değil',
+      success: true,
+      event,
     }
   } catch (error: any) {
     return {
