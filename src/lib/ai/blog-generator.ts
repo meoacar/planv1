@@ -33,31 +33,165 @@ Başarı bir gece gelmez. Ama her gün biraz daha yaklaşırsınız. 💪
   },
   {
     topic: 'beslenme',
-    title: 'Sağlıklı Beslenmenin Püf Noktaları',
-    excerpt: 'Sağlıklı beslenme karmaşık olmak zorunda değil. İşte size kolaylaştıracak pratik ipuçları.',
+    title: 'Sağlıklı Beslenmenin Püf Noktaları: Kilo Vermenin Sırrı',
+    excerpt: 'Sağlıklı beslenme karmaşık olmak zorunda değil. Kilo vermek ve sağlıklı yaşamak için bilmeniz gereken her şey bu rehberde.',
     baseContent: `
-# Sağlıklı Beslenmenin Püf Noktaları
+Sağlıklı beslenme, kilo verme yolculuğunuzun en önemli parçasıdır. Peki, gerçekten sağlıklı beslenmenin püf noktaları nelerdir? Bu yazıda, bilimsel araştırmalarla desteklenmiş, uygulaması kolay beslenme ipuçlarını sizlerle paylaşacağım.
 
-Sağlıklı beslenme düşündüğünüz kadar zor değil. Birkaç basit kural ile hayatınızı değiştirebilirsiniz.
+## Sağlıklı Beslenme Nedir?
 
-## Temel Kurallar
+Sağlıklı beslenme, vücudunuzun ihtiyaç duyduğu tüm besin öğelerini dengeli bir şekilde almanız demektir. Bu sadece kilo vermek için değil, genel sağlığınız için de kritik öneme sahiptir.
 
-### 1. Renkli Tabak
-Tabaklarınızı farklı renklerde sebze ve meyvelerle doldurun. Her renk farklı besin değeri demek.
+### Dengeli Beslenmenin Temel İlkeleri
 
-### 2. Su İçin
-Günde en az 2 litre su içmeyi hedefleyin. Su, metabolizmanızın en iyi arkadaşı.
+**1. Makro Besin Dengesi**
 
-### 3. Porsiyon Kontrolü
-Büyük tabaklardan küçük tabaklara geçin. Gözünüz doymasa da mideniz doyar.
+Vücudunuz üç ana makro besine ihtiyaç duyar:
+- **Karbonhidratlar:** Enerjinizin ana kaynağı (günlük kalorinin %45-65'i)
+- **Proteinler:** Kas yapımı ve onarımı için (günlük kalorinin %10-35'i)
+- **Yağlar:** Hormon üretimi ve vitamin emilimi için (günlük kalorinin %20-35'i)
 
-## Pratik İpuçları
-- Öğünleri atlamayın
-- Yavaş yiyin, tadını çıkarın
-- Hazır gıdalardan uzak durun
-- Kendinize hile günü tanıyın
+**2. Mikro Besinler**
 
-Sağlıklı beslenme bir yaşam tarzıdır, diyet değil! 🥗
+Vitaminler ve mineraller, metabolizmanızın düzgün çalışması için şarttır. Renkli sebze ve meyveler, bu mikro besinlerin en iyi kaynaklarıdır.
+
+## Kilo Vermek İçin Beslenme Stratejileri
+
+### Kalori Açığı Oluşturma
+
+Kilo vermek için harcadığınızdan daha az kalori almanız gerekir. Ancak bu açık çok büyük olmamalı:
+- Kadınlar için minimum 1200 kalori
+- Erkekler için minimum 1500 kalori
+- Günlük 500 kalori açık = haftada 0.5 kg kayıp
+
+### Öğün Zamanlaması
+
+Araştırmalar gösteriyor ki, ne zaman yediğiniz de önemli:
+- **Kahvaltı:** Metabolizmanızı başlatır
+- **Öğle:** En büyük öğününüz olabilir
+- **Akşam:** Hafif ve erken yiyin (uyumadan 3 saat önce)
+
+### Porsiyon Kontrolü
+
+Sağlıklı yiyecekler bile fazla tüketilirse kilo aldırır:
+- Tabak yöntemi: 1/2 sebze, 1/4 protein, 1/4 karbonhidrat
+- Avuç ölçüsü: Protein porsiyonunuz avucunuz kadar olmalı
+- Küçük tabaklar kullanın: Gözünüzü aldatır, daha az yersiniz
+
+## Pratik Beslenme İpuçları
+
+### Alışveriş Listesi Hazırlama
+
+Sağlıklı beslenmenin ilk adımı doğru alışveriştir:
+
+**Sebze ve Meyveler:**
+- Yeşil yapraklılar (ıspanak, roka, marul)
+- Çarmıh sebzeler (brokoli, karnabahar)
+- Renkli sebzeler (domates, biber, havuç)
+- Mevsim meyveleri
+
+**Protein Kaynakları:**
+- Tavuk göğsü (yağsız)
+- Balık (omega-3 açısından zengin)
+- Yumurta
+- Baklagiller (nohut, mercimek, fasulye)
+- Yoğurt ve peynir (az yağlı)
+
+**Sağlıklı Karbonhidratlar:**
+- Tam tahıllı ekmek
+- Esmer pirinç
+- Kinoa
+- Yulaf
+- Tatlı patates
+
+**Sağlıklı Yağlar:**
+- Zeytinyağı
+- Avokado
+- Fındık, badem, ceviz
+- Chia tohumu
+
+### Yemek Hazırlama Teknikleri
+
+Nasıl pişirdiğiniz de önemli:
+- **Haşlama:** En sağlıklı yöntem
+- **Fırında pişirme:** Yağsız ve lezzetli
+- **Buharda pişirme:** Besin değerini korur
+- **Izgara:** Az yağla lezzetli sonuçlar
+- **Kaçının:** Kızartma ve aşırı yağlı yöntemler
+
+### Su Tüketimi
+
+Su, metabolizmanızın en iyi arkadaşıdır:
+- Günde en az 2-3 litre su için
+- Her öğünden önce 1 bardak su içmek tokluk hissi verir
+- Susuzluk bazen açlık hissi olarak algılanır
+- Yeşil çay ve bitki çayları da sayılır
+
+## Kaçınılması Gereken Hatalar
+
+### 1. Aşırı Kısıtlama
+
+Çok sıkı diyet yapmak:
+- Metabolizmanızı yavaşlatır
+- Kas kaybına neden olur
+- Uzun vadede sürdürülemez
+- Yo-yo etkisi yaratır
+
+### 2. Öğün Atlamak
+
+Özellikle kahvaltı atlamak:
+- Metabolizmanızı yavaşlatır
+- Öğlen aşırı yemeye neden olur
+- Kan şekerinizi düşürür
+
+### 3. İşlenmiş Gıdalar
+
+Hazır gıdalar:
+- Yüksek kalori, düşük besin değeri
+- Gizli şeker ve tuz içerir
+- Katkı maddeleri sağlığa zararlı
+- Tokluk hissi vermez
+
+### 4. Duygusal Yeme
+
+Stres, üzüntü veya can sıkıntısıyla yemek:
+- Gerçek açlık değildir
+- Sağlıksız seçimlere yönlendirir
+- Suçluluk hissi yaratır
+
+## Başarı İçin Stratejiler
+
+### Meal Prep (Öğün Hazırlığı)
+
+Hafta sonu 2-3 saatinizi ayırın:
+- Haftanın öğünlerini planlayın
+- Toplu pişirin ve porsiyonlayın
+- Buzdolabında saklayın
+- Hazır olunca sağlıklı seçim yapmak kolay
+
+### Günlük Takip
+
+Yediklerinizi kaydetmek:
+- Farkındalık yaratır
+- Gizli kalorileri ortaya çıkarır
+- İlerlemenizi gösterir
+- Motivasyon sağlar
+
+### Esnek Olun
+
+%80-20 kuralı:
+- Haftanın %80'i sağlıklı beslenin
+- %20'si için kendinize esneklik tanıyın
+- Sosyal hayatınızdan vazgeçmeyin
+- Sürdürülebilir olmalı
+
+## Sonuç
+
+Sağlıklı beslenme bir maraton, sprint değil. Küçük, sürdürülebilir değişikliklerle başlayın. Her gün biraz daha iyi seçimler yapın. Unutmayın, mükemmel olmak zorunda değilsiniz, sadece dünden daha iyi olmaya çalışın.
+
+Kilo verme yolculuğunuzda sabırlı olun. Vücudunuz zaman ister. Hızlı sonuçlar yerine, kalıcı değişikliklere odaklanın. Sağlıklı beslenme bir diyet değil, yaşam tarzıdır.
+
+**Önemli Not:** Bu yazıdaki bilgiler genel sağlık önerileridir. Özel sağlık durumunuz varsa, mutlaka bir diyetisyen veya doktorla görüşün.
     `
   },
   {
@@ -214,7 +348,7 @@ Zenginleştirme:`;
     };
 
     return {
-      title: `${template.title} - ${dateStr}`,
+      title: template.title,
       slug,
       content: enrichedContent,
       excerpt: template.excerpt,
@@ -245,9 +379,9 @@ Zenginleştirme:`;
     };
 
     return {
-      title: `${template.title} - ${dateStr}`,
+      title: template.title,
       slug,
-      content: `${template.baseContent}\n\n---\n*${dateStr} tarihinde otomatik olarak oluşturulmuştur.*`,
+      content: `${template.baseContent}\n\n---\n*${dateStr} tarihinde yayınlanmıştır.*`,
       excerpt: template.excerpt,
       coverImage: coverImages[template.topic as keyof typeof coverImages],
       coverImageAlt: `${template.title} - Sağlıklı yaşam ve zayıflama ipuçları`,

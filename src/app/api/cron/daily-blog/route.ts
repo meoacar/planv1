@@ -29,8 +29,8 @@ export async function GET(req: NextRequest) {
       botUser = await prisma.user.create({
         data: {
           email: 'bot@zayiflamaplan.com',
-          username: 'zayiflamaplan_bot',
-          name: 'Zayıflama Plan Bot',
+          username: 'zayiflamaplanim',
+          name: 'zayiflamaplanim',
           role: 'ADMIN',
           bio: 'Günlük motivasyon ve sağlık içerikleri paylaşıyorum! 🌟',
         }
