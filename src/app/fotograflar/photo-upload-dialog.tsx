@@ -98,9 +98,15 @@ export default function PhotoUploadDialog({
         body: formData,
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Yükleme başarısız');
+        if (data.isPremiumRequired) {
+          setError(data.error + ' Premium üyeliğe geçmek için tıklayın.');
+        } else {
+          throw new Error(data.error || 'Yükleme başarısız');
+        }
+        return;
       }
 
       onSuccess();

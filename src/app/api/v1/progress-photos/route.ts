@@ -53,6 +53,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Premium limit kontrolü
+    const { checkPhotoLimit } = await import('@/lib/premium-features');
+    const limitCheck = await checkPhotoLimit(session.user.id);
+    
+    if (!limitCheck.allowed) {
+      return NextResponse.json({ 
+        error: limitCheck.message,
+        isPremiumRequired: true,
+        remaining: limitCheck.remaining
+      }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const weight = formData.get('weight') as string;

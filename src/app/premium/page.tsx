@@ -21,76 +21,74 @@ export const metadata = {
 
 const premiumFeatures = [
   {
-    icon: '🤖',
-    title: 'AI Kişisel Asistan',
-    description: 'Yapay zeka destekli kişisel diyet ve egzersiz önerileri',
-    category: 'AI Özellikler'
+    icon: '👑',
+    title: 'Premium Badge',
+    description: 'Profilinizde özel premium rozeti görünsün',
+    category: 'Aktif',
+    active: true
   },
   {
-    icon: '📊',
-    title: 'Gelişmiş Analitik',
-    description: 'Detaylı ilerleme raporları ve grafikler',
-    category: 'Analiz'
-  },
-  {
-    icon: '🎯',
+    icon: '�',
     title: 'Sınırsız Plan Oluşturma',
-    description: 'İstediğiniz kadar diyet planı oluşturun',
-    category: 'İçerik'
+    description: 'İstediğiniz kadar diyet planı oluşturun (Ücretsiz: 3/ay)',
+    category: 'Aktif',
+    active: true
   },
   {
     icon: '📸',
     title: 'Sınırsız Fotoğraf',
-    description: 'İlerleme fotoğraflarınızı sınırsız yükleyin',
-    category: 'İçerik'
-  },
-  {
-    icon: '🏆',
-    title: 'Özel Rozetler',
-    description: 'Premium üyelere özel rozetler ve başarılar',
-    category: 'Gamification'
-  },
-  {
-    icon: '⚡',
-    title: 'Öncelikli Destek',
-    description: '7/24 öncelikli müşteri desteği',
-    category: 'Destek'
+    description: 'İlerleme fotoğraflarınızı sınırsız yükleyin (Ücretsiz: 10/ay)',
+    category: 'Aktif',
+    active: true
   },
   {
     icon: '🎨',
     title: 'Profil Özelleştirme',
-    description: 'Özel temalar, renkler ve çerçeveler',
-    category: 'Kişiselleştirme'
+    description: 'Özel profil çerçeveleri ve renkler (Mağazadan)',
+    category: 'Aktif',
+    active: true
+  },
+  {
+    icon: '🪙',
+    title: 'Bonus Coinler',
+    description: 'Premium paketinize özel bonus coinler',
+    category: 'Aktif',
+    active: true
+  },
+  {
+    icon: '⚡',
+    title: 'Öncelikli Destek',
+    description: 'Sorunlarınız öncelikli olarak çözülür',
+    category: 'Aktif',
+    active: true
   },
   {
     icon: '📱',
     title: 'Reklamsız Deneyim',
     description: 'Hiç reklam görmeden kullanın',
-    category: 'Deneyim'
+    category: 'Aktif',
+    active: true
   },
   {
-    icon: '🔔',
-    title: 'Akıllı Bildirimler',
-    description: 'AI destekli kişiselleştirilmiş hatırlatmalar',
-    category: 'AI Özellikler'
+    icon: '🤖',
+    title: 'AI Özellikler',
+    description: 'Yapay zeka destekli öneriler ve analizler',
+    category: 'Aktif',
+    active: true
   },
   {
-    icon: '👥',
-    title: 'Özel Topluluk',
-    description: 'Premium üyelere özel grup ve etkinlikler',
-    category: 'Topluluk'
+    icon: '�',
+    title: 'Gelişmiş Analitik',
+    description: 'Detaylı ilerleme raporları ve grafikler',
+    category: 'Aktif',
+    active: true
   },
   {
-    icon: '📈',
-    title: 'Gelişmiş İstatistikler',
-    description: 'Detaylı performans ve ilerleme takibi',
-    category: 'Analiz'
-  },
-  {
-    icon: '🎁',
-    title: 'Aylık Hediyeler',
-    description: 'Her ay özel coin ve ödüller',
-    category: 'Ödüller'
+    icon: '🏆',
+    title: 'Özel Rozetler',
+    description: 'Premium üyelere özel rozetler ve başarılar',
+    category: 'Aktif',
+    active: true
   }
 ]
 
@@ -103,12 +101,14 @@ const plans = [
     popular: false,
     savings: null,
     features: [
-      'Tüm premium özellikler',
-      'AI kişisel asistan',
-      'Sınırsız plan oluşturma',
-      'Reklamsız deneyim',
-      'Öncelikli destek',
-      '500 bonus coin'
+      '👑 Premium Badge',
+      '� Sınırlsız plan oluşturma',
+      '📸 Sınırsız fotoğraf yükleme',
+      '🎨 Profil özelleştirme',
+      '⚡ Öncelikli destek',
+      '📱 Reklamsız deneyim',
+      '🤖 AI özellikler',
+      '🪙 500 bonus coin'
     ]
   },
   {
@@ -119,14 +119,17 @@ const plans = [
     popular: true,
     savings: '33% İndirim',
     features: [
-      'Tüm premium özellikler',
-      'AI kişisel asistan',
-      'Sınırsız plan oluşturma',
-      'Reklamsız deneyim',
-      'Öncelikli destek',
-      '7.500 bonus coin',
-      'Özel profil çerçevesi',
-      'Aylık özel hediyeler'
+      '👑 Premium Badge',
+      '� Sınlırsız plan oluşturma',
+      '� Sınırsı z fotoğraf yükleme',
+      '🎨 Profil özelleştirme',
+      '⚡ Öncelikli destek',
+      '📱 Reklamsız deneyim',
+      '🤖 AI özellikler',
+      '📊 Gelişmiş analitik',
+      '🪙 7.500 bonus coin',
+      '🎁 Özel profil çerçevesi',
+      '💎 En iyi değer'
     ]
   },
   {
@@ -137,16 +140,18 @@ const plans = [
     popular: false,
     savings: 'En İyi Değer',
     features: [
-      'Tüm premium özellikler',
-      'AI kişisel asistan',
-      'Sınırsız plan oluşturma',
-      'Reklamsız deneyim',
-      'Öncelikli destek',
-      '25.000 bonus coin',
-      'Özel profil çerçevesi',
-      'Aylık özel hediyeler',
-      'Kurucu rozeti',
-      'Ömür boyu güncellemeler'
+      '� TPremium Badge',
+      '🎯 Sınırsız plan oluşturma',
+      '📸 Sınırsız fotoğraf yükleme',
+      '🎨 Profil özelleştirme',
+      '⚡ Öncelikli destek',
+      '📱 Reklamsız deneyim',
+      '🤖 AI özellikler',
+      '📊 Gelişmiş analitik',
+      '🏆 Özel rozetler',
+      '🪙 25.000 bonus coin',
+      '🎁 Özel profil çerçevesi',
+      '♾️ Ömür boyu erişim'
     ]
   }
 ]
@@ -338,21 +343,36 @@ export default async function PremiumPage() {
           {premiumFeatures.map((feature, index) => (
             <Card 
               key={index}
-              className="group bg-white/5 backdrop-blur-xl border-white/10 hover:bg-white/10 hover:border-yellow-500/50 transition-all hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20"
+              className={`group backdrop-blur-xl transition-all hover:scale-105 ${
+                feature.active 
+                  ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-yellow-500/50 hover:shadow-2xl hover:shadow-yellow-500/20' 
+                  : 'bg-white/5 border-white/10 opacity-60'
+              }`}
             >
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-3xl transition-transform ${
+                    feature.active 
+                      ? 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 group-hover:scale-110' 
+                      : 'bg-slate-500/10'
+                  }`}>
                     {feature.icon}
                   </div>
                   <div className="flex-1">
-                    <Badge variant="outline" className="mb-3 text-xs border-white/20 text-slate-400">
+                    <Badge 
+                      variant="outline" 
+                      className={`mb-3 text-xs border-white/20 ${
+                        feature.active 
+                          ? 'text-green-400 border-green-500/30 bg-green-500/10' 
+                          : 'text-slate-500 border-slate-500/30'
+                      }`}
+                    >
                       {feature.category}
                     </Badge>
                     <h3 className="font-bold text-white mb-2 text-lg">{feature.title}</h3>
                     <p className="text-sm text-slate-400">{feature.description}</p>
                   </div>
-                  {isPremium && (
+                  {isPremium && feature.active && (
                     <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
                   )}
                 </div>
