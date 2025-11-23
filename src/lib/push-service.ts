@@ -265,3 +265,31 @@ export async function sendChallengeReminder(
     tag: 'challenge-reminder',
   });
 }
+
+/**
+ * Günlük blog bildirimi gönder
+ */
+export async function sendBlogNotification(
+  userId: string,
+  blogId: string,
+  blogTitle: string,
+  blogExcerpt: string
+) {
+  const settings = await prisma.notificationSettings.findUnique({
+    where: { userId },
+  });
+
+  // Kullanıcı bildirimleri kapatmışsa gönderme
+  if (settings && !settings.dailyReminder) {
+    return { success: false, reason: 'disabled' };
+  }
+
+  return sendPushToUser(userId, 'blog_post', {
+    title: '📰 Yeni Blog Yazısı!',
+    body: blogTitle,
+    icon: '/maskot/maskot-192.png',
+    badge: '/maskot/maskot-192.png',
+    data: { url: `/blog/${blogId}`, blogTitle, blogExcerpt },
+    tag: 'daily-blog',
+  });
+}
