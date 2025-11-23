@@ -4,7 +4,8 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ShoppingCart, Sparkles, Check } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ShoppingCart, Sparkles, Check, CreditCard } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface Product {
@@ -25,24 +26,55 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
   const [loading, setLoading] = useState<string | null>(null)
   const { toast } = useToast()
 
-  const handlePurchase = async (productId: string) => {
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+
+  const handlePurchase = async (productId: string, paymentMethod: string) => {
     setLoading(productId)
     
     try {
-      // TODO: Implement payment integration
-      toast({
-        title: "Yakında!",
-        description: "Ödeme sistemi entegrasyonu yakında eklenecek.",
+      const response = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId,
+          paymentMethod,
+        }),
       })
-    } catch (error) {
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ödeme oluşturulamadı')
+      }
+
+      if (data.paymentUrl) {
+        // Ödeme sayfasına yönlendir
+        window.location.href = data.paymentUrl
+      } else {
+        toast({
+          title: "Hata",
+          description: "Ödeme URL'si alınamadı",
+          variant: "destructive",
+        })
+      }
+    } catch (error: any) {
       toast({
         title: "Hata",
-        description: "Bir hata oluştu",
+        description: error.message || "Bir hata oluştu",
         variant: "destructive",
       })
     } finally {
       setLoading(null)
+      setShowPaymentModal(false)
     }
+  }
+
+  const openPaymentModal = (productId: string) => {
+    setSelectedProduct(productId)
+    setShowPaymentModal(true)
   }
 
   const groupedProducts = products.reduce((acc, product) => {
@@ -147,7 +179,7 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
                     <CardFooter>
                       <Button 
                         className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        onClick={() => handlePurchase(product.id)}
+                        onClick={() => openPaymentModal(product.id)}
                         disabled={loading === product.id}
                       >
                         <ShoppingCart className="mr-2 h-4 w-4" />
@@ -170,6 +202,67 @@ export function PremiumShopClient({ products }: PremiumShopClientProps) {
           </Card>
         )}
       </div>
+
+      {/* Ödeme Yöntemi Seçim Modal */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ödeme Yöntemi Seçin</DialogTitle>
+            <DialogDescription>
+              Güvenli ödeme için bir yöntem seçin
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Button
+              className="w-full h-16 justify-start gap-4"
+              variant="outline"
+              onClick={() => selectedProduct && handlePurchase(selectedProduct, 'stripe')}
+              disabled={loading !== null}
+            >
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <CreditCard className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="font-semibold">Stripe</div>
+                <div className="text-xs text-muted-foreground">Kredi/Banka Kartı</div>
+              </div>
+            </Button>
+
+            <Button
+              className="w-full h-16 justify-start gap-4"
+              variant="outline"
+              onClick={() => selectedProduct && handlePurchase(selectedProduct, 'iyzico')}
+              disabled={loading !== null}
+            >
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                <CreditCard className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="font-semibold">iyzico</div>
+                <div className="text-xs text-muted-foreground">Kredi/Banka Kartı</div>
+              </div>
+            </Button>
+
+            <Button
+              className="w-full h-16 justify-start gap-4"
+              variant="outline"
+              onClick={() => selectedProduct && handlePurchase(selectedProduct, 'paytr')}
+              disabled={loading !== null}
+            >
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <CreditCard className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="text-left flex-1">
+                <div className="font-semibold">PayTR</div>
+                <div className="text-xs text-muted-foreground">Kredi/Banka Kartı</div>
+              </div>
+            </Button>
+          </div>
+          <div className="text-center text-xs text-muted-foreground mt-4">
+            🔒 Tüm ödemeler SSL ile güvence altındadır
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
