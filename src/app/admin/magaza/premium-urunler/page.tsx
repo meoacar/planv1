@@ -26,6 +26,7 @@ export default function UrunlerPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState<Partial<Product>>({})
+  const [showForm, setShowForm] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -68,6 +69,7 @@ export default function UrunlerPage() {
         loadProducts()
         setEditingId(null)
         setFormData({})
+        setShowForm(false)
       }
     } catch (error) {
       toast({
@@ -114,13 +116,14 @@ export default function UrunlerPage() {
         <Button onClick={() => {
           setEditingId(null)
           setFormData({})
+          setShowForm(true)
         }}>
           <Plus className="mr-2 h-4 w-4" />
           Yeni Ürün
         </Button>
       </div>
 
-      {(editingId !== null || Object.keys(formData).length > 0) && (
+      {showForm && (
         <Card>
           <CardHeader>
             <CardTitle>{editingId ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}</CardTitle>
@@ -211,6 +214,7 @@ export default function UrunlerPage() {
               <Button variant="outline" onClick={() => {
                 setEditingId(null)
                 setFormData({})
+                setShowForm(false)
               }}>
                 İptal
               </Button>
@@ -255,6 +259,7 @@ export default function UrunlerPage() {
                     onClick={() => {
                       setEditingId(product.id)
                       setFormData(product)
+                      setShowForm(true)
                     }}
                   >
                     <Edit className="h-4 w-4" />
