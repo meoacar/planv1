@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getUsersForAdmin } from './actions'
-import { Eye, Edit } from 'lucide-react'
+import { Eye, Edit, Crown } from 'lucide-react'
 import Link from 'next/link'
 import { UserActions } from '@/components/admin/user-actions'
 import { UserFilters } from '@/components/admin/user-filters'
@@ -65,11 +65,23 @@ export default async function AdminUsersPage({
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-semibold">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-semibold relative">
                         {user.name?.[0] || 'U'}
+                        {user.isPremium && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+                            <Crown className="h-3 w-3 text-white" />
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <p className="font-medium">{user.name || 'İsimsiz'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{user.name || 'İsimsiz'}</p>
+                          {user.isPremium && (
+                            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 text-xs">
+                              Premium
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           @{user.username || user.email?.split('@')[0]}
                         </p>

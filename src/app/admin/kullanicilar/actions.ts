@@ -34,7 +34,18 @@ export async function getUsersForAdmin(role: string = 'all', page: number = 1, s
       take,
       skip,
       orderBy: { createdAt: 'desc' },
-      include: {
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        name: true,
+        role: true,
+        isBanned: true,
+        bannedUntil: true,
+        isPremium: true,
+        premiumUntil: true,
+        premiumType: true,
+        createdAt: true,
         _count: {
           select: {
             plans: true,
