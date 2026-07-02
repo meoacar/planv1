@@ -27,18 +27,18 @@ smartReminderWorker.on('ready', () => {
 
 // Schedule initial jobs
 setTimeout(async () => {
-  console.log('\n📋 İlk job'lar planlanıyor...');
+  console.log('\n📋 İlk joblar planlanıyor...');
   
   try {
     await scheduleBulkRecommendations();
-    console.log('✅ Recommendation job'ları planlandı');
+    console.log('✅ Recommendation jobları planlandı');
   } catch (error) {
     console.error('❌ Recommendation job hatası:', error);
   }
 
   try {
     await schedulePendingReminders();
-    console.log('✅ Reminder job'ları planlandı');
+    console.log('✅ Reminder jobları planlandı');
   } catch (error) {
     console.error('❌ Reminder job hatası:', error);
   }
@@ -46,12 +46,12 @@ setTimeout(async () => {
 
 // Schedule periodic jobs
 setInterval(async () => {
-  console.log('\n🔄 Periyodik job'lar çalıştırılıyor...');
+  console.log('\n🔄 Periyodik joblar çalıştırılıyor...');
   
   try {
     await scheduleBulkRecommendations();
     await schedulePendingReminders();
-    console.log('✅ Periyodik job'lar tamamlandı');
+    console.log('✅ Periyodik joblar tamamlandı');
   } catch (error) {
     console.error('❌ Periyodik job hatası:', error);
   }
@@ -59,14 +59,14 @@ setInterval(async () => {
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('\n⏹️  Worker'lar kapatılıyor...');
+  console.log('\n⏹️  Workerlar kapatılıyor...');
   await aiRecommendationWorker.close();
   await smartReminderWorker.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.log('\n⏹️  Worker'lar kapatılıyor...');
+  console.log('\n⏹️  Workerlar kapatılıyor...');
   await aiRecommendationWorker.close();
   await smartReminderWorker.close();
   process.exit(0);

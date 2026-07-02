@@ -30,10 +30,8 @@ export function FooterSettingsManager({ initialSettings }: FooterSettingsManager
     return acc
   }, {} as Record<string, string>)
 
-  const [settings, setSettings] = useState({
-    footerDescription: settingsMap.footerDescription || '',
-    copyrightText: settingsMap.copyrightText || '',
-  })
+  const [footerDescription, setFooterDescription] = useState(settingsMap.footerDescription || '')
+  const [copyrightText, setCopyrightText] = useState(settingsMap.copyrightText || '')
 
   const saveSettings = async () => {
     setLoading(true)
@@ -42,7 +40,12 @@ export function FooterSettingsManager({ initialSettings }: FooterSettingsManager
       const response = await fetch('/api/admin/footer/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ settings }),
+        body: JSON.stringify({ 
+          settings: {
+            footerDescription,
+            copyrightText,
+          }
+        }),
       })
 
       if (!response.ok) throw new Error()
@@ -87,10 +90,8 @@ export function FooterSettingsManager({ initialSettings }: FooterSettingsManager
             <Label htmlFor="footerDescription">Footer Açıklaması</Label>
             <Textarea
               id="footerDescription"
-              value={settings.footerDescription}
-              onChange={(e) =>
-                setSettings({ ...settings, footerDescription: e.target.value })
-              }
+              value={footerDescription}
+              onChange={(e) => setFooterDescription(e.target.value)}
               placeholder="Site hakkında kısa açıklama..."
               rows={3}
             />
@@ -103,10 +104,8 @@ export function FooterSettingsManager({ initialSettings }: FooterSettingsManager
             <Label htmlFor="copyrightText">Telif Hakkı Metni</Label>
             <Textarea
               id="copyrightText"
-              value={settings.copyrightText}
-              onChange={(e) =>
-                setSettings({ ...settings, copyrightText: e.target.value })
-              }
+              value={copyrightText}
+              onChange={(e) => setCopyrightText(e.target.value)}
               placeholder="© 2024 ZayiflamaPlan. Tüm hakları saklıdır."
               rows={2}
             />

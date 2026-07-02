@@ -191,7 +191,7 @@ export function Navbar() {
           {/* Keşfet Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="hidden lg:flex h-9 px-3 gap-1">
+              <Button variant="ghost" size="sm" className="hidden xl:flex h-9 px-3 gap-1">
                 <Zap className="h-4 w-4" />
                 <span className="text-sm font-medium">Keşfet</span>
                 <ChevronDown className="h-3 w-3 opacity-50" />
@@ -258,7 +258,7 @@ export function Navbar() {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="hidden lg:flex h-9 px-3 gap-1">
+                <Button variant="ghost" size="sm" className="hidden xl:flex h-9 px-3 gap-1">
                   <Trophy className="h-4 w-4" />
                   <span className="text-sm font-medium">Aktiviteler</span>
                   <ChevronDown className="h-3 w-3 opacity-50" />
@@ -305,13 +305,13 @@ export function Navbar() {
               {/* AI Önerileri - Özel Buton */}
               <Link
                 href="/ai-features"
-                className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm font-semibold bg-gradient-to-r from-purple-500/10 to-blue-500/10 hover:from-purple-500/20 hover:to-blue-500/20 rounded-lg transition-all hover:scale-105 border border-purple-500/30 shadow-sm hover:shadow-md text-purple-600 dark:text-purple-400"
+                className="hidden xl:flex items-center gap-1.5 px-3 py-2 text-sm font-semibold bg-gradient-to-r from-purple-500/10 to-blue-500/10 hover:from-purple-500/20 hover:to-blue-500/20 rounded-lg transition-all hover:scale-105 border border-purple-500/30 shadow-sm hover:shadow-md text-purple-600 dark:text-purple-400"
               >
-                🤖 <span className="hidden xl:inline">AI Asistan</span>
+                🤖 <span className="hidden 2xl:inline">AI Asistan</span>
               </Link>
 
               {/* Gamification Stats */}
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 rounded-full border border-amber-500/20 shadow-md hover:shadow-lg transition-all group">
+              <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 rounded-full border border-amber-500/20 shadow-md hover:shadow-lg transition-all group">
                 {/* Streak */}
                 {streak > 0 && (
                   <div className="flex items-center gap-1 group-hover:scale-110 transition-transform">
@@ -372,7 +372,7 @@ export function Navbar() {
               {user.role === 'ADMIN' && (
                 <Link 
                   href="/admin" 
-                  className="hidden lg:flex items-center gap-1 px-2 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 rounded-lg transition-colors"
+                  className="hidden xl:flex items-center gap-1 px-2 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20 rounded-lg transition-colors"
                 >
                   <Shield className="h-4 w-4" />
                 </Link>
@@ -382,7 +382,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden h-9 px-2"
+                className="xl:hidden h-9 px-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -391,7 +391,7 @@ export function Navbar() {
               {/* User Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="hidden lg:flex items-center gap-2 px-2 py-1.5 hover:bg-accent rounded-lg transition-all hover:scale-105">
+                  <button className="hidden xl:flex items-center gap-2 px-2 py-1.5 hover:bg-accent rounded-lg transition-all hover:scale-105">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary via-purple-500 to-pink-500 flex items-center justify-center overflow-hidden ring-2 ring-primary/20 shadow-lg">
                       {user?.image ? (
                         <img 
@@ -546,7 +546,7 @@ export function Navbar() {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && user && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 xl:hidden"
           onClick={() => setMobileMenuOpen(false)}
         >
           <div 

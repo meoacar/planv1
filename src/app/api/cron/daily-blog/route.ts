@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
         data: {
           email: 'bot@zayiflamaplan.com',
           username: 'zayiflamaplanim',
-          name: 'zayiflamaplanim',
+          name: 'zayıflamaplani',
           role: 'ADMIN',
           bio: 'Günlük motivasyon ve sağlık içerikleri paylaşıyorum! 🌟',
         }
